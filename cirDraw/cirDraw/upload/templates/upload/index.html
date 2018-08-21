@@ -1,0 +1,17 @@
+<!DOCTYPE=html>
+<html>
+<head>
+    <title>Search</title>
+</head>
+<body>
+    <form enctype="multipart/form-data" action="/display/" method="post">
+    	{% csrf_token %}
+        <input type="file" name="upload_file" id="upload_file" required="True" class="form-control">
+
+        <div class="submitted" style="margin-bottom:10px;">
+         	<button class="botton"> Upload </button>
+    	</div> 
+
+    </form>
+</body>
+</html>

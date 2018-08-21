@@ -1,0 +1,16 @@
+<!DOCTYPE=html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Result Page</title>
+</head>
+<body>
+	<p>Hello, test</p>
+	<p>Displaying: {{ header.name }}</p>
+	<ul>
+	{% for res in result %}
+		<li>{{ res.circRNA_start }}  {{ res.circRNA_end }} and {{ res.chr }}</li>
+	{% endfor %}
+    </ul>
+</body>
+</html>
