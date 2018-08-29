@@ -1,7 +1,9 @@
+{% load static %}
 <!DOCTYPE=html>
 <html>
 <head>
     <title>Search</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/upload.css' %}">
 </head>
 <body>
     <form enctype="multipart/form-data" action="/display/" method="post">
@@ -13,5 +15,6 @@
     	</div> 
 
     </form>
+    <h1>Hello Test</h1>
 </body>
 </html>

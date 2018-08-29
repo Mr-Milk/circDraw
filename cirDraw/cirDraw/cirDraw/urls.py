@@ -17,10 +17,17 @@ from django.contrib import admin
 from django.conf.urls import url, include
 from django.urls import path
 from upload.views import current_datetime, results, display
+from tools.views import index
+
+
 
 urlpatterns = [
-	url(r'^$', current_datetime),
+	#url(r'^$', current_datetime),
+    url(r'^$', index, name = 'home'),
     url(r'^admin/$', admin.site.urls),
+    url(r'^tools/', include('tools.urls')),
     url(r'^upload/', include('upload.urls')),
     url(r'^display/$', display),
+    url(r'^download/', include('download.urls')),
+    url(r'^information/', include('information.urls'))
 ]
