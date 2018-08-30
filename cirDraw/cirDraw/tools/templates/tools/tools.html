@@ -5,6 +5,8 @@
 <div class="container">
   <div class="form-group">
     <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
+    <form enctype="multipart/form-data" action="/display/" method="post">
+    {% csrf_token %}
     <label class="btn btn-primary btn-sm" for="my-file-selector">
         <input id="my-file-selector" type="file" style="display:none" 
         onchange='$("#upload-file-info").html($(this).val());'>
@@ -15,6 +17,7 @@
         <input id="my-file-submit" type="submit" hidden>
         Submit
     </label>
+    </form>
   </div>
 </div>
 
