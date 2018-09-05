@@ -30,7 +30,7 @@
         </canvas>
         <br>
         <label class="btn btn-primary btn-sm text-center" for="draw">
-                <input id="draw" style="display:none" onclick='drawCirc()'>
+                <input id="draw" style="display:none" onclick="drawCirc()">
                 Draw
         </label>
         </div>
@@ -88,10 +88,10 @@
 {% endblock %}
  
 
-
-
-
 {% block otherJS %}
+        {% load static %}
+        <!-- Custom js for this template -->
+        <script src="{% static 'js/circ.js' %}"></script>
         <!-- Datatable -->
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
         <script>

@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'download',
     'information',
     'tools',
+    'ajaxtest',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -124,3 +125,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    'static/css',
+    'static/js/',
+    'static/vendor/',
+    'static/vendor/jquery-easing/',
+)
+
+
+MEDIA_ROOT = '/Users/tianqinli/Code/circle/cirDraw/cirDraw/media/'
+
+
+MEDIA_URL = '/media/'
+
+
+

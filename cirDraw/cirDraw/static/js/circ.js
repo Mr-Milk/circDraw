@@ -14,10 +14,10 @@ getCanvas.height = h * ratio;
 getCanvas.style.width = w + 'px';
 getCanvas.style.height = h + 'px';
 ratioMessage = "devicePixelRatio: " + ratio
-console.log(ratioMessage)
+//console.log(ratioMessage)
 w = getCanvas.width
 h = getCanvas.height
-let lineY = 3*h/5
+let lineY = 1*h/5
 
 // altering scale-slider
 let max = "2"
@@ -64,15 +64,18 @@ function drawRectangle(start,color)
     ctx.fillRect(start,lineY-5*ratio,2*ratio,10*ratio)
 }
 
-function drawCirc()
-{
-    drawLine(ctx, 0.75, "grey")
-    drawArc(125, 225, 0.75, "red")
-    drawRectangle(200, "orange")
-    drawRectangle(125, "orange")
-    drawRectangle(400, "orange")
-    drawRectangle(225, "green")
-    drawRectangle(350, "green")
-    drawRectangle(280, "green")
+
+document.getElementById('draw').onclick = drawCirc();
+
+function drawCirc() {
+    console.log('hello');
+    drawLine(ctx, 0.75, "grey");
+    drawArc(100, 300, 0.75, "red");
+    drawRectangle(200, "orange");
+    drawRectangle(200, "orange");
+    drawRectangle(200, "orange");
+    drawRectangle(200, "green");
+    drawRectangle(200, "green");
+    drawRectangle(200, "green");
 }
 

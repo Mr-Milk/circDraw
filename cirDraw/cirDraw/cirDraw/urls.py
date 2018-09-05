@@ -13,21 +13,25 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
+from django.conf import settings
 from django.contrib import admin
 from django.conf.urls import url, include
 from django.urls import path
-from upload.views import current_datetime, results, display
-from tools.views import index
+from upload.views import current_datetime, results
+from tools import views as toolviews
+
 
 
 
 urlpatterns = [
 	#url(r'^$', current_datetime),
-    url(r'^$', index, name = 'home'),
+    url(r'^$', toolviews.index, name = 'home'),
+    url(r'^ajax/', include('ajaxtest.urls')),
     url(r'^admin/$', admin.site.urls),
     url(r'^tools/', include('tools.urls')),
     url(r'^upload/', include('upload.urls')),
-    url(r'^display/$', display),
+    url(r'^display/$', toolviews.display),
     url(r'^download/', include('download.urls')),
     url(r'^information/', include('information.urls'))
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

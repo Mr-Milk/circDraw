@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ajax - Local JSON</title>
+</head>
+<body>
+	<button id="button1">Get User</button>
+	<button id="button2">Get All</button>
+	<h1>USERS</h1>
+	<div id="user"></div>
+	<h1>USERS</h1>
+	<div id="users"></div>
+	
+
+
+
+	<script type="text/javascript">
+		document.getElementById('button1').addEventListener('click', loadUser);
+
+		function loadUser() {
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', 'media/user.json', true);
+
+
+			xhr.onload = function() {
+				if (this.status == 200) {
+					var user = JSON.parse(this.responseText);
+					inner = '<ul>' + '<li>' + user.name + '</li>' + '<li>' + user.id + '</li>' + '</ul>'
+					document.getElementById('user').innerHTML = inner;
+				} else if (this.status == 404) {
+					document.getElementById('user').innerHTML = 'Not found...';
+				}
+			}
+
+			xhr.send();
+		}
+
+	</script>
+</body>
+</html>
