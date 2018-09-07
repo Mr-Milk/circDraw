@@ -5,10 +5,10 @@
 <div class="container">
   <div class="form-group">
     <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
-    <form enctype="multipart/form-data" action="/display/" method="post">
+    <form enctype="multipart/form-data" action="/tools/display/" method="post">
     {% csrf_token %}
     <label class="btn btn-primary btn-sm" for="my-file-selector">
-        <input id="my-file-selector" type="file" style="display:none" 
+        <input name="my-file-selector" id="my-file-selector" type="file" 
         onchange='$("#upload-file-info").html($(this).val());'>
         Browse
     </label>
@@ -22,7 +22,7 @@
 </div>
 
 
-<section id="Tools" style="padding: 0;">
+<!-- <section id="Tools" style="padding: 0;">
     <div class="container">
         <div class="col-lg-12 text-center">
         <canvas id="drawCirc" style="border:3px solid #fed136;">
@@ -83,8 +83,91 @@
         </div>
     
 </section>
-
+ -->
 <br><br><br><br>
+        {% load static %}
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        <h1>circRNA Distrubution on Chromosome.</h1>
+        <div class="canvas">
+
+            <!-- This is where you input your data. -->
+            <p id="circData" style="display: none;">
+                    [{ "chr":2 , "start":230, "end":400},
+                    { "chr":1 , "start":350, "end":500},
+                    { "chr":1 , "start":350, "end":470},
+                    { "chr":1 , "start":146, "end":230},
+                    { "chr":1 , "start":25, "end":150},
+                    { "chr":1 , "start":98, "end":187}]
+            </p>
+            <div id="selector">
+                <p>Chromosome
+                    <select>
+                        <option>All</option>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                </p>
+                <a id='download' download='Image.png'>
+                        <button>Download</button>
+                </a>
+            </div>
+            
+            
+                    <canvas id="drawCirc">
+                        Please update your Browser to use this feature.
+                    </canvas>
+                    <br>
+                    <input type="number" id="start">
+                    <input type="number" id="end">
+                    <div id="slider-range"></div>
+                    <p id="mouse_cd"></p>
+        </div>
+        <div class="densityTable">
+            <table id="table_id" class="display">
+                <thead>
+                    <tr>
+                        <th>Chromosome</th>
+                        <th>Species</th>
+                        <th>Gene Name</th>
+                        <th>Gene ID</th>
+                        <th>Gene Type</th>
+                        <th>Density</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>chr1</td>
+                        <td>Human</td>
+                        <td>CDSN</td>
+                        <td>ENSG00000237114</td>
+                        <td>Protein coding</td>
+                        <td>98.9</td>
+                        <td>98567</td>
+                        <td>106789</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-warning">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>chr1</td>
+                        <td>Human</td>
+                        <td>LINC01556</td>
+                        <td>ENSG00000237313</td>
+                        <td>Protein coding</td>
+                        <td>54.6</td>
+                        <td>6598006</td>
+                        <td>6834540</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-warning">View</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
 {% endblock %}
  
 
@@ -97,7 +180,30 @@
         <script>
                 $(document).ready( function () {
                     $('#table_id').DataTable();
-                } );
+
+                    $('form').submit(function(event) {
+                        event.preventDefault();
+
+                        var formData = $('my-file-selector');
+
+                        $.ajax({
+                            type : 'POST',
+                            url : '/tools/save/',
+                            data : formData,
+                            datatype : 'json',
+                            success : function(data) {
+                                console.log(data.content)
+                                }
+                            })
+                    })
+                })
+
+
+                        
+                        // handle errors
+
+
+
         </script>
 {% endblock %}
 

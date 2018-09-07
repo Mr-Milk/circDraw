@@ -33,7 +33,7 @@ def display(request):
 	if request.method == "POST":
 		form = UploadFileForm(request.POST, request.FILES)
 		#if form.is_valid():
-		data_raw_file = request.FILES['upload_file']
+		data_raw_file = request.FILES['upload__file']
 		header, result = handle_uploaded_file(data_raw_file)
 	context = {'result': result, 'header': header,}
 	return render(request, 'upload/results.html', context)

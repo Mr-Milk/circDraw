@@ -6,7 +6,10 @@ getCanvas.height = 500
 let w = getCanvas.width
 let h = getCanvas.height
 
-
+// Read data to JSON
+let circinfo = JSON.parse(document.getElementById('circData').innerHTML)
+let t = circinfo[1].start
+console.log(typeof t)
 // Setting Canvas to fit Retina Screen
 ratio = window.devicePixelRatio
 getCanvas.width = w * ratio;
@@ -14,10 +17,10 @@ getCanvas.height = h * ratio;
 getCanvas.style.width = w + 'px';
 getCanvas.style.height = h + 'px';
 ratioMessage = "devicePixelRatio: " + ratio
-//console.log(ratioMessage)
+console.log(ratioMessage)
 w = getCanvas.width
 h = getCanvas.height
-let lineY = 1*h/5
+let lineY = 3*h/5
 
 // altering scale-slider
 let max = "2"
@@ -64,18 +67,41 @@ function drawRectangle(start,color)
     ctx.fillRect(start,lineY-5*ratio,2*ratio,10*ratio)
 }
 
+function drawCirc()
+{
+    drawLine(ctx, 0.75, "grey")
+    for (var i=0;i<3;i++)
+    {
+        drawArc(circinfo[i].start,circinfo[i].end,0.75,"red");
+        drawRectangle(circinfo[i].start, "orange")
+        drawRectangle(circinfo[i].end, "green")
+    }
 
-document.getElementById('draw').onclick = drawCirc();
-
-function drawCirc() {
-    console.log('hello');
-    drawLine(ctx, 0.75, "grey");
-    drawArc(100, 300, 0.75, "red");
-    drawRectangle(200, "orange");
-    drawRectangle(200, "orange");
-    drawRectangle(200, "orange");
-    drawRectangle(200, "green");
-    drawRectangle(200, "green");
-    drawRectangle(200, "green");
+    getCanvas.addEventListener('mousemove', function(evt) {
+        var rect = getCanvas.getBoundingClientRect();
+        var mouseX = evt.clientX - rect.left;
+        var mouseY = evt.clientY - rect.top;
+        document.getElementById("start").value = mouseX;
+        document.getElementById("end").value = mouseY;
+      }, false);
 }
+
+function mouse_coords()
+{
+    ctx.canvas.addEventListener('mousemove', function(event){
+    var mouseX = event.clientX - ctx.getCanvas.offsetLeft;
+    var mouseY = event.clientY - ctx.getCanvas.offsetTop;
+    var status = document.getElementById("mouse_cd");
+    var canvasX = mouseX * getCanvas.width / getCanvas.clientWidth;
+    var canvasY = mouseY * getCanvas.height / getCanvas.clientHeight;
+    status.innerHTML = mouseX+" | "+mouseY+"<br>"+canvasX+" | "+canvasY;})
+}
+
+// Download from canvas
+document.getElementById("download").onclick = function(){
+    getCanvas.toBlob(function(blob){
+        document.getElementById('download').setAttribute("href", URL.createObjectURL(blob));});
+}
+
+$(document).ready(drawCirc())
 
