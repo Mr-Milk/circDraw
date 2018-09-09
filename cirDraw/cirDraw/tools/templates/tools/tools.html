@@ -5,205 +5,164 @@
 <div class="container">
   <div class="form-group">
     <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
-    <form enctype="multipart/form-data" action="/tools/display/" method="post">
+    <form enctype="multipart/form-data" action="/tools/display/" method="post" name="upload">
     {% csrf_token %}
-    <label class="btn btn-primary btn-sm" for="my-file-selector">
-        <input name="my-file-selector" id="my-file-selector" type="file" 
-        onchange='$("#upload-file-info").html($(this).val());'>
+        <label class="btn btn-primary btn-sm" for="my-file-selector"></label>
+        <input name="my-file-selector" id="my-file-selector" type="file" onchange='$("#upload-file-info").html($(this).val());'>
         Browse
-    </label>
-    <br>
-    <label class="btn btn-primary btn-sm" for="my-file-submit">
-        <input id="my-file-submit" type="submit" hidden>
-        Submit
-    </label>
+
+        <br>
+
+        <label class="btn btn-primary btn-sm" for="my-file-submit">Submit</label>
+        <input id="my-file-submit" type="button" value="Upload File(s)" onclick='uploadFile()'>
+        <progress id="progressBar" value="0" min="0" max="100"></progress>
+        <h3 id="status"></h3>
+
+
+
     </form>
+
   </div>
 </div>
 
+<br><br><br><br>
+    {% load static %}
 
-<!-- <section id="Tools" style="padding: 0;">
     <div class="container">
-        <div class="col-lg-12 text-center">
-        <canvas id="drawCirc" style="border:3px solid #fed136;">
-                Please update your Browser to use this feature.
-        </canvas>
-        <br>
-        <label class="btn btn-primary btn-sm text-center" for="draw">
-                <input id="draw" style="display:none" onclick="drawCirc()">
-                Draw
-        </label>
+        <div class="form-group">
+            <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
+            <label class="btn btn-primary btn-sm" for="my-file-selector">
+                <input id="my-file-selector" type="file" style="display:none" 
+                onchange='$("#upload-file-info").html($(this).val());'>
+                Browse
+            </label>
+            <br>
+            <label class="btn btn-primary btn-sm" for="my-file-submit">
+                <input id="my-file-submit" type="submit" hidden>
+                Submit
+            </label>
         </div>
     </div>
 
-    <div class="col-lg-12 text-center densityTable">
-            <table id="table_id" class="display">
-                <thead>
-                    <tr>
-                        <th>Chromosome</th>
-                        <th>Species</th>
-                        <th>Gene Name</th>
-                        <th>Gene ID</th>
-                        <th>Gene Type</th>
-                        <th>Density</th>
-                        <th>Start</th>
-                        <th>End</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>chr1</td>
-                        <td>Human</td>
-                        <td>CDSN</td>
-                        <td>ENSG00000237114</td>
-                        <td>Protein coding</td>
-                        <td>98.9</td>
-                        <td>98567</td>
-                        <td>106789</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-warning">View</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>chr1</td>
-                        <td>Human</td>
-                        <td>LINC01556</td>
-                        <td>ENSG00000237313</td>
-                        <td>Protein coding</td>
-                        <td>54.6</td>
-                        <td>6598006</td>
-                        <td>6834540</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-warning">View</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    
-</section>
- -->
-<br><br><br><br>
-        {% load static %}
-        <link href="{% static 'css/style.css' %}" rel="stylesheet">
-        <h1>circRNA Distrubution on Chromosome.</h1>
-        <div class="canvas">
 
-            <!-- This is where you input your data. -->
-            <p id="circData" style="display: none;">
-                    [{ "chr":2 , "start":230, "end":400},
-                    { "chr":1 , "start":350, "end":500},
-                    { "chr":1 , "start":350, "end":470},
-                    { "chr":1 , "start":146, "end":230},
-                    { "chr":1 , "start":25, "end":150},
-                    { "chr":1 , "start":98, "end":187}]
-            </p>
-            <div id="selector">
-                <p>Chromosome
-                    <select>
-                        <option>All</option>
-                        <option>1</option>
-                        <option>2</option>
-                    </select>
-                </p>
-                <a id='download' download='Image.png'>
-                        <button>Download</button>
-                </a>
-            </div>
-            
-            
-                    <canvas id="drawCirc">
+    <section id="Tools" style="padding: 0;">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <div id='denCanvas'>
+                  <h5>circRNA density distribution on chromosome</h5>
+                    <canvas id="density" style="border:3px solid #fed136;">
                         Please update your Browser to use this feature.
                     </canvas>
                     <br>
-                    <input type="number" id="start">
-                    <input type="number" id="end">
-                    <div id="slider-range"></div>
-                    <p id="mouse_cd"></p>
+                    <label class="btn btn-primary btn-sm text-center" for="denDownload">
+                        <input id="denDownload" style="display:none">
+                        Download
+                    </label>
+                  </div>
+            <div id='circCanvas'>
+              <h5>circRNA isoforms on chromosome region</h5>
+            <canvas id="drawCirc" style="border:3px solid #fed136;">
+                Please update your Browser to use this feature.
+            </canvas>
+            <br>
+            <label class="btn btn-primary btn-sm text-center" for="draw">
+                <input id="draw" style="display:none">
+                Draw
+            </label>
+            <label class="btn btn-primary btn-sm text-center" for="circDownload">
+                <input id="circDownload" style="display:none">
+                Download
+            </label>
+            <br><br>
+                <p class='inputbox'>
+                    Start
+                    <input type="number" id="start" class='scale-input'>
+                  </p>
+                  <p class='inputbox'>
+                      End
+                      <input type="number" id="end" class='scale-input'>
+                    </p>
+                  <div id="slider-range"></div>
+                  <br><br>
+          </div>
+            <br>
+            </div>
         </div>
+
+        <div class="container">
+          <div class="col-lg-8 text-center">
+          </div>
+        </div>
+
+        <br><br>
+
         <div class="densityTable">
-            <table id="table_id" class="display">
-                <thead>
-                    <tr>
-                        <th>Chromosome</th>
-                        <th>Species</th>
-                        <th>Gene Name</th>
-                        <th>Gene ID</th>
-                        <th>Gene Type</th>
-                        <th>Density</th>
-                        <th>Start</th>
-                        <th>End</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>chr1</td>
-                        <td>Human</td>
-                        <td>CDSN</td>
-                        <td>ENSG00000237114</td>
-                        <td>Protein coding</td>
-                        <td>98.9</td>
-                        <td>98567</td>
-                        <td>106789</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-warning">View</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>chr1</td>
-                        <td>Human</td>
-                        <td>LINC01556</td>
-                        <td>ENSG00000237313</td>
-                        <td>Protein coding</td>
-                        <td>54.6</td>
-                        <td>6598006</td>
-                        <td>6834540</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-warning">View</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <table id="table_id" class="display compact">
+                    <thead>
+                        <tr>
+                            <th>Chromosome</th>
+                            <th>Species</th>
+                            <th>Gene Name</th>
+                            <th>Gene ID</th>
+                            <th>Gene Type</th>
+                            <th>Density</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>chr1</td>
+                            <td>Human</td>
+                            <td>CDSN</td>
+                            <td>ENSG00000237114</td>
+                            <td>Protein coding</td>
+                            <td>98.9</td>
+                            <td>98567</td>
+                            <td>106789</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-warning" id='view' href='#Tools'>View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>chr1</td>
+                            <td>Human</td>
+                            <td>LINC01556</td>
+                            <td>ENSG00000237313</td>
+                            <td>Protein coding</td>
+                            <td>54.6</td>
+                            <td>6598006</td>
+                            <td>6834540</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-warning" id='view' href='#Tools'>View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+    </section>
+
+    <br><br><br><br>
 
 {% endblock %}
  
 
 {% block otherJS %}
         {% load static %}
+        {% csrf_token %}
         <!-- Custom js for this template -->
-        <script src="{% static 'js/circ.js' %}"></script>
+        <script src="{% static 'js/circDraw.js' %}"></script>
         <!-- Datatable -->
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+        <script src="{% static 'js/ajax-call.js' %}"></script>
+
         <script>
-                $(document).ready( function () {
-                    $('#table_id').DataTable();
-
-                    $('form').submit(function(event) {
-                        event.preventDefault();
-
-                        var formData = $('my-file-selector');
-
-                        $.ajax({
-                            type : 'POST',
-                            url : '/tools/save/',
-                            data : formData,
-                            datatype : 'json',
-                            success : function(data) {
-                                console.log(data.content)
-                                }
-                            })
-                    })
-                })
-
-
-                        
-                        // handle errors
-
-
-
+            $(document).ready( function () {
+                $('#table_id').DataTable();
+            })
         </script>
 {% endblock %}
 

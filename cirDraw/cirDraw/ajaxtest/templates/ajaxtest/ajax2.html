@@ -25,7 +25,7 @@
 			xhr.onload = function() {
 				if (this.status == 200) {
 					var user = JSON.parse(this.responseText);
-					inner = '<ul>' + '<li>' + user.name + '</li>' + '<li>' + user.id + '</li>' + '</ul>'
+					inner = '<ul>' + '<li>' + user.name + '</li>' + '<li>' + user.id + '</li>' + '</ul>';
 					document.getElementById('user').innerHTML = inner;
 				} else if (this.status == 404) {
 					document.getElementById('user').innerHTML = 'Not found...';
