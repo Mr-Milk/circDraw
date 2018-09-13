@@ -7,4 +7,7 @@ urlpatterns = [
 	url(r'^$', views.tools, name='tools'),
 	url(r'^display/$', views.display, name='tool_display'),
 	url(r'^save/$', views.save),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

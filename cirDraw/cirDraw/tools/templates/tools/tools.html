@@ -1,49 +1,31 @@
 {% extends "base.html" %}
+
+{% load static %}
  
 {% block content %}
 <br><br><br><br><br><br>
-<div class="container">
-  <div class="form-group">
-    <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
-    <form enctype="multipart/form-data" action="/tools/display/" method="post" name="upload">
-    {% csrf_token %}
-        <label class="btn btn-primary btn-sm" for="my-file-selector"></label>
-        <input name="my-file-selector" id="my-file-selector" type="file" onchange='$("#upload-file-info").html($(this).val());'>
-        Browse
-
-        <br>
-
-        <label class="btn btn-primary btn-sm" for="my-file-submit">Submit</label>
-        <input id="my-file-submit" type="button" value="Upload File(s)" onclick='uploadFile()'>
-        <progress id="progressBar" value="0" min="0" max="100"></progress>
-        <h3 id="status"></h3>
-
-
-
-    </form>
+    <div class="container">
+          <div class="form-group">
+                <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
+                <form enctype="multipart/form-data" method="post" action="save/">
+                <label class="btn btn-primary btn-sm" for="my-file-selector">
+                    <input id="my-file-selector" name="myfile" type="file" style="display:none" 
+                    onchange='$("#upload-file-info").html($(this).val());'>
+                    Browse
+                </label>
+                <br>
+                <label class="btn btn-primary btn-sm" for="my-file-submit">
+                    <input id="my-file-submit" type="submit" hidden>
+                    Submit
+                </label>
+                </form>
+              </div>
+              </div>
 
   </div>
 </div>
 
 <br><br><br><br>
-    {% load static %}
-
-    <div class="container">
-        <div class="form-group">
-            <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
-            <label class="btn btn-primary btn-sm" for="my-file-selector">
-                <input id="my-file-selector" type="file" style="display:none" 
-                onchange='$("#upload-file-info").html($(this).val());'>
-                Browse
-            </label>
-            <br>
-            <label class="btn btn-primary btn-sm" for="my-file-submit">
-                <input id="my-file-submit" type="submit" hidden>
-                Submit
-            </label>
-        </div>
-    </div>
-
 
     <section id="Tools" style="padding: 0;">
         <div class="container">

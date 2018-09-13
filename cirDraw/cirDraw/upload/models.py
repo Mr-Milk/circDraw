@@ -1,18 +1,51 @@
 from django.db import models
+import uuid
+
+class Document(models.Model):
+    description = models.CharField(max_length=255, blank=True)
+    document = models.FileField(upload_to='documents/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
+
+
 
 # Create your models here.
-class CIRIdata(models.Model):
-	rawfile = models.FileField(null=True, blank=True)
+class uploadCase(models.Model):
+	case_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+	#filetype = models.CharField(max_length=100, null=True)
+
+	def __str__(self):
+		return "caseid-" + str(case_id)
+
+
+
+# class errorsss(models.Model):
+# 	caseid =  models.ForeignKey(uploadCase, on_delete=models.CASCADE, null=True)
+# 	header = models.CharField(max_length=200)
+# 	data = 
+
+
+
+
 
 class eachObservation(models.Model):
-	circRNA_ID = models.CharField(max_length=100)
-	chr_ci = models.CharField(max_length=40)
-	circRNA_start = models.IntegerField()
-	circRNA_end = models.IntegerField()
-	junction_reads = models.IntegerField()
-	non_junction_reads = models.IntegerField()
-	circRNA_type = models.CharField(max_length=100)
-	gene_id = models.CharField(max_length=100)
+	caseid =  models.ForeignKey(uploadCase, on_delete=models.CASCADE, null=True)
+	circRNA_ID = models.CharField(max_length=200, primary_key=True)
+	chr_ci = models.CharField(max_length=40, null=True)
+	circRNA_start = models.IntegerField(null=True)
+	circRNA_end = models.IntegerField(null=True)
+	SM_MS_SMS = models.CharField(max_length=40, null=True)
+	junction_reads = models.IntegerField(null=True)
+	non_junction_reads = models.IntegerField(null=True)
+	circRNA_type = models.CharField(max_length=100, null=True)
+	junction_reads_ratio = models.FloatField(null=True)
+	circRNA_type = models.CharField(max_length=40, null=True)
+	gene_id = models.CharField(max_length=100, null=True)
+	strand = models.CharField(max_length=100, null=True)
+	junction_reads_ID = models.CharField(max_length=500, null=True)
+
+
 
 	def __str__(self):
 		return 'rawdataobject-' + str(self.circRNA_start) + '->' + str(self.circRNA_end)

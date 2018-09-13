@@ -6,15 +6,52 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/upload.css' %}">
 </head>
 <body>
-    <form enctype="multipart/form-data" action="/upload/saved/" method="post">
-    	{% csrf_token %}
-        <input type="file" name="upload__file" id="upload_file" required="True" class="form-control">
+    <div class="container">
+          <div class="form-group">
+                <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
+                <form enctype="multipart/form-data" method="post" action="display/">
+                {% csrf_token %}
+                <label class="btn btn-primary btn-sm" for="my-file-selector">Browse</label>
+                <input id="my-file-selector" type="file" name="myfile">
+                    <!-- onchange='$("#upload-file-info").html($(this).val());' -->
+                    
+            
+                <br>
+                <!-- <label class="btn btn-primary btn-sm" for="my-file-submit">Submit</label> -->
+                <input id="my-file-submit" type="submit">
+                </form>
+                   
+            </div>
+    </div>
 
-        <div class="submitted" style="margin-bottom:10px;">
-         	<button class="botton"> Upload </button>
-    	</div> 
 
-    </form>
     <h1>Hello Test</h1>
+
+
+    <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    
+    <!-- <script type="text/javascript">
+        
+        $( 'form' ).submit(function ( e ) {
+            var data, xhr;
+
+            data = new FormData();
+            data.append( 'file', $( '#my-file-selector' )[0].files[0] );
+
+            xhr = new XMLHttpRequest();
+
+            xhr.open( 'POST', '/upload/save/', true );
+            xhr.onreadystatechange = function ( response ) {};
+            xhr.send( data );
+            console.log(xhr.responseText);
+
+            e.preventDefault();
+
+
+});
+
+
+    </script> -->
 </body>
 </html>

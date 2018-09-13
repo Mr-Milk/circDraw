@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-
+from django.conf import settings
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+# from django.conf import settings
+
+settings.configure(DEBUG=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -69,6 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -82,8 +87,10 @@ WSGI_APPLICATION = 'cirDraw.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cirDraw',
+        'USER': 'root',
+        'PASSWORD': '12345678',
     }
 }
 
@@ -135,7 +142,7 @@ STATICFILES_DIRS = (
 )
 
 
-MEDIA_ROOT = '/Users/tianqinli/Code/circle/cirDraw/cirDraw/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 MEDIA_URL = '/media/'

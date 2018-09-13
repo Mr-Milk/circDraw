@@ -34,4 +34,7 @@ urlpatterns = [
     url(r'^display/$', toolviews.display),
     url(r'^download/', include('download.urls')),
     url(r'^information/', include('information.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
