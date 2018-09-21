@@ -4,25 +4,168 @@
 <head>
     <title>Search</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/upload.css' %}">
+    <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    
+
 </head>
 <body>
-    <div class="container">
+  <!--   <div class="container">
           <div class="form-group">
                 <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
                 <form enctype="multipart/form-data" method="post" action="display/">
                 {% csrf_token %}
                 <label class="btn btn-primary btn-sm" for="my-file-selector">Browse</label>
                 <input id="my-file-selector" type="file" name="myfile">
-                    <!-- onchange='$("#upload-file-info").html($(this).val());' -->
+                
                     
             
                 <br>
-                <!-- <label class="btn btn-primary btn-sm" for="my-file-submit">Submit</label> -->
+                 <label class="btn btn-primary btn-sm" for="my-file-submit">Submit</label> 
                 <input id="my-file-submit" type="submit">
                 </form>
                    
             </div>
     </div>
+
+ -->
+
+
+
+
+    <div class="form-group">
+        <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
+        <form id="fileform" method="POST" action="{% url 'upload_save' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p id="ifnotprevent">Nothing</p>
+          <label class="btn btn-primary btn-sm" for="fileupload">
+            + Select File
+            <input type="file" id="fileupload" name="mfile"><!-- style="display:none" -->
+          </label>
+          
+          <label class="btn btn-primary btn-sm" for="submit">
+              Submit
+              <input type="submit" id="submit">
+            </label>
+            <p id='uploadname'></p>
+        </form>
+        <div class="progress col-sm-8">
+            <div id='bar' class="progress-bar" role="progressbar" style="width: 0%;background:#fed136;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+          </div>
+      </div>
+
+
+      <script type="text/javascript">
+          
+            $('#fileform').submit(function(event){
+
+                event.preventDefault();
+
+                console.log('hello')
+            
+                var formdata = new FormData();
+                var myfile = $('#fileupload').prop('files')[0];
+
+                //console.log(myfile)
+
+                formdata.append('mfile', myfile)
+
+                for (var value of formdata.values()) {
+                    console.log(value); 
+                };
+
+                
+
+                // var xhr = new XMLHttpRequest();
+                // // Add any event handlers here...
+                // xhr.open('POST', '/upload/save/', true);
+            
+
+                // xhr.upload.onprogress = function(e){
+                //             if (e.lengthComputable) {
+                //                 var percent = Math.round((e.loaded / e.total) * 100)
+                //                 $('#bar').attr('aria-valuenow', percent).css('width', percent + '%').text(percent + '%')
+                //             };
+                //         }
+
+
+                // xhr.onload = function() {
+                // if (this.status == 200) {
+                //   var resp = JSON.parse(this.responseText);
+                //   console.log('Server got:', resp);
+                // } else {
+                //     console.log('error error')
+                //     };
+                // };
+
+                // var myfile = $('#fileupload').prop('files')[0];
+                // xhr.setRequestHeader("Content-Type", myfile.type);
+
+                // xhr.onreadystatechange = function(e) {
+                //     if ( 4 == this.readyState ) {
+                //         console.log(['xhr upload complete', e]);
+                //     }
+                // };
+
+                // xhr.send(formdata);
+
+
+
+
+
+                //return false;
+
+
+
+
+
+
+                $.ajax({
+                    // xhr: function(){
+                    //     var xhr = new window.XMLHttpRequest();
+                    //     xhr.upload.addEventLister('process', function(e){
+                    //         if (e.lengthComputable) {
+                    //             var percent = Math.round((e.loaded / e.total) * 100)
+                    //             $('#bar').attr('aria-valuenow', percent).css('width', percent + '%').text(percent + '%')
+                    //         };
+                    //     });
+
+                    //     return xhr;
+                    // },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Content-Type", "form-data");
+                    },
+                    type: 'POST',
+                    url: "{% url 'upload_save' %}",
+                    data: formdata,
+                    processData: false,
+                    contentType: false,
+                    enctype: 'multipart/form-data',
+                    dataType: "json",
+                    cache: false,
+                    success: function(caseid){
+                        console.log('yes')
+                        var filename = $('#fileupload').prop("files")['mfile'];
+                        $('#uploadname').text(filename);
+                        var caseID = new STRING(caseid[caseid])
+                        var myURL = document.URL + "?id=" + caseID;
+                        // window.location.href = myURL + "?id=" + caseID;
+                        window.history.pushState(null, "", myURL);
+                    },
+                });
+    });
+
+
+
+      </script>
+
+
+
+
+
+
+
+
 
 
     <h1>Hello Test</h1>

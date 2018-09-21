@@ -75,17 +75,53 @@ def display(request):
 
 
 @csrf_exempt 
+# def save(request):
+# 	if request.method == "POST" and request.FILES['myfile']:
+# 		form = UploadFileForm(request.POST, request.FILES)
+# 		context = {}
+# 		if True:
+# 			data_raw_file = request.FILES['myfile']
+# 			header, result = handle_uploaded_file(data_raw_file)
+# 			context = {'result':result, 'header': header}
+# 		return render(request, 'upload/results.html', context)
+# 	else:
+# 		raise Http404
+
 def save(request):
-	if request.method == "POST" and request.FILES['myfile']:
-		form = UploadFileForm(request.POST, request.FILES)
-		context = {}
-		if True:
-			data_raw_file = request.FILES['myfile']
-			header, result = handle_uploaded_file(data_raw_file)
-			context = {'result':result, 'header': header}
-		return render(request, 'upload/results.html', context)
-	else:
-		raise Http404
+	result = ["There is None."]
+
+	case = "no case"
+
+	if request.method == "POST":
+		#form = UploadFileForm(request.POST, request.FILES)
+		print(request.FILES)
+		#if form.is_valid():
+		data_raw_file = request.FILES['mfile']
+		header, result = handle_uploaded_file(data_raw_file)
+
+		# sink into database:
+		# HOw to sink to the database:
+		# import from models.py make instance and f.save()
+
+		case = uploadCase()
+		case.save()
+
+		for e in result:
+			ob = eachObservation(caseid = case)
+			for each in header.lst:
+				exec('ob.' + each +' = ' + 'e["' + each +'"]', globals(), locals())
+			ob.save()
+
+
+
+		# plan to change to manager system for query the database!
+		#obs = eachObservation.objects.filter(caseid__exact=case.whichcase).filter(circRNA_start__gt=10000).filter(circRNA_end__lt=20000)
+		# # test outside saving the result
+		# else: 
+		# 	obs = eachObservation.objects.filter(chr_ci = 'chr1')
+		# 	context = {'result': obs, 'header': header, 'caseid': "not obtain data"}
+
+	return JsonResponse({'caseid': case.whichcase})
 		
 
 

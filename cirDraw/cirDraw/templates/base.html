@@ -25,6 +25,7 @@
         <link href="{% static 'css/agency.min.css' %}" rel="stylesheet">
         <link href="{% static 'css/slider.css' %}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+
     </head>
     
 
@@ -95,6 +96,8 @@
             </div>
         </div>
     </footer>
+
+
     <!-- Bootstrap core JavaScript -->
     <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="https://code.jquery.com/ui/1.9.2/jquery-ui.js"></script> 
@@ -106,6 +109,9 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script> -->
     <script src="{% static 'js/script.min.js' %}"></script>
 
+    {% block otherJS %} {% endblock %}
+
     </body>
+
 
 </html>

@@ -8,7 +8,7 @@ urlpatterns = [
 	url(r'^$', views.index, name = 'index'),
 	url(r'^results/$', views.results, name='results'),
 	url(r'^display/$', views.display),
-	url(r'^save/$', views.save)
+	url(r'^save/$', views.save, name='upload_save')
 	#url(r'^saved/$', views.save),
 ]
 

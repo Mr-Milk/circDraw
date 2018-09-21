@@ -12,11 +12,11 @@ class Document(models.Model):
 
 # Create your models here.
 class uploadCase(models.Model):
-	case_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+	whichcase = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	#filetype = models.CharField(max_length=100, null=True)
 
 	def __str__(self):
-		return "caseid-" + str(case_id)
+		return "caseid-" + str(whichcase)
 
 
 
@@ -32,16 +32,16 @@ class uploadCase(models.Model):
 class eachObservation(models.Model):
 	caseid =  models.ForeignKey(uploadCase, on_delete=models.CASCADE, null=True)
 	circRNA_ID = models.CharField(max_length=200, primary_key=True)
-	chr_ci = models.CharField(max_length=40, null=True)
-	circRNA_start = models.IntegerField(null=True)
-	circRNA_end = models.IntegerField(null=True)
+	chr_ci = models.CharField(max_length=40, null=True, blank=True)
+	circRNA_start = models.IntegerField(null=True, blank=True)
+	circRNA_end = models.IntegerField(null=True, blank=True)
 	SM_MS_SMS = models.CharField(max_length=40, null=True)
-	junction_reads = models.IntegerField(null=True)
-	non_junction_reads = models.IntegerField(null=True)
-	circRNA_type = models.CharField(max_length=100, null=True)
+	junction_reads = models.IntegerField(null=True, blank=True)
+	non_junction_reads = models.IntegerField(null=True, blank=True)
+	circRNA_type = models.CharField(max_length=100, null=True, blank=True)
 	junction_reads_ratio = models.FloatField(null=True)
-	circRNA_type = models.CharField(max_length=40, null=True)
-	gene_id = models.CharField(max_length=100, null=True)
+	circRNA_type = models.CharField(max_length=40, null=True, blank=True)
+	gene_id = models.CharField(max_length=100, null=True, blank=True)
 	strand = models.CharField(max_length=100, null=True)
 	junction_reads_ID = models.CharField(max_length=500, null=True)
 
