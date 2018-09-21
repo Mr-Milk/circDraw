@@ -7,6 +7,8 @@ urlpatterns = [
 	url(r'^$', views.tools, name='tools'),
 	url(r'^display/$', views.display, name='tool_display'),
 	url(r'^save/$', views.save),
+	url(r'^lenChart/$', views.lenChart),
+	url(r'^exonChart/$', views.exonChart)
 ]
 
 if settings.DEBUG:

@@ -1,3 +1,7 @@
+// Getting caseid for following drawing
+var thisURL = document.URL
+var caseid = thisURL.split("=")[1]
+
 // Canvas for displaying circRNA
 var circCanvas = document.getElementById("drawCirc");
 var circCtx = circCanvas.getContext("2d");
@@ -125,7 +129,8 @@ function drawDensityLegend(ctx)
 var realStart
 var realEnd
 $(document).ready((function() {
-    $.getJSON('file3_URL',function(scaleValue){
+    $.getJSON('file3_URL',{'caseid': caseid})
+    .done(function(scaleValue){
         realStart = scaleValue.realStart
         realEnd = scaleValue.realEnd
     });
@@ -156,18 +161,31 @@ $(document).ready((function() {
   $( "#end" ).val( $( "#slider-range" ).slider( "values", 1 ) );
 }));
 
+// Getting chromosome number, start and end for calling JSON
+var ajaxStart = parseInt($("#start").val());
+var ajaxEnd = parseInt($("#end").val());
+var ajaxChrNum = parseInt($('#chrSelector').val());
+
 // Draw circRNAs and genes on the canvas
 $('draw').click(function(){
+    var ajaxStart = parseInt($("#start").val());
+    var ajaxEnd = parseInt($("#end").val());
+    var ajaxChrNum = parseInt($('#chrSelector').val());
+
     drawLine(circCtx,lineY,0.75, "grey")
 
-    $.getJSON('file1_URL',function(circinfo){
+    $.getJSON('file1_URL',{'caseid': caseid,'chr':ajaxChrNum, 'start':ajaxStart, 'end':ajaxEnd})
+    .done(function(circinfo){
         for (var i=0;i<circinfo.length;i++){
             drawRectangle(circCtx,circinfo[i].start,"orange")
             drawRectangle(circCtx,circinfo[i].end,"green")
+            drawArc(circCtx,circinfo[i].start,circinfo[i].end,0.75,'red')
         }
-    });
+    })
+    .fail(alert('Fail to load the file, Please Retry.'));
 
-    $.getJSON('file2_URL',function(geneinfo){
+    $.getJSON('file2_URL',{'caseid': caseid,'chr':ajaxChrNum, 'start':ajaxStart, 'end':ajaxEnd})
+    .done(function(geneinfo){
         for (var i=0;i<geneinfo.length;i++){
             drawGene(circCtx,geneinfo[i].start,geneinfo[i].end,geneinfo[i].name,'purple')
         }
@@ -177,14 +195,16 @@ $('draw').click(function(){
 // Draw density distribution
 $('submit').click(function(){
     var chrnum
-    $.getJSON('file4_URL',function(chrinfo){
+    $.getJSON('file4_URL',{'caseid': caseid})
+    .done(function(chrinfo){
         chrnum = chrinfo.length
         for (var i=0;i<chrinfo.length;i++){
             drawDensityBackground(denCtx,(460-15*chrnum)+15*i,chrinfo[i].chrLen,chrinfo[i].chr)
         }
     });
 
-    $.getJSON('file5_URL',function(densityinfo){
+    $.getJSON('file5_URL',{'caseid': caseid,})
+    .done(function(densityinfo){
         for (var i=0;i<densityinfo.length;i++){
             var chrindex = densityinfo[i].chr
             var yAxis = (460-15*chrnum)+15*chrindex
@@ -197,24 +217,36 @@ $('submit').click(function(){
 
 // Draw from density table
 $('view').click(function(){
-    $.getJSON('file3_URL',function(scaleValue){
+    $(this).parent().prevAll('#tableChr').attr('class', 'ajaxtableChr');
+    $(this).parent().prevAll('#tableStart').attr('class', 'ajaxtableStart');
+    $(this).parent().prevAll('#tableEnd').attr('class', 'ajaxtableEnd');
+    thisStart = Number($(this).parent().prevAll('.ajaxtableStart').html());
+    thisEnd = Number($(this).parent().prevAll('.ajaxtableEnd').html());
+    thisChr = $(this).parent().prevAll('.ajaxtableChr').html();
+
+    $.getJSON('file3_URL',{'caseid': caseid,'chr':thisChr, 'start':thisStart, 'end':thisEnd})
+    .done(function(scaleValue){
         realStart = scaleValue.realStart
-        realEnd = scaleValue.realEnd
-    });
+        realEnd = scaleValue.realEnd});
+
     $("#start").val(realStart)
     $("#end").val(realEnd)
 
     circCtx.clear()
     drawLine(circCtx,lineY,0.75, "grey")
 
-    $.getJSON('file1_URL',function(circinfo){
+    $.getJSON('file1_URL',{'caseid': caseid,'chr':thisChr, 'start':thisStart, 'end':thisEnd})
+    .done(function(circinfo){
         for (var i=0;i<circinfo.length;i++){
             drawRectangle(circCtx,circinfo[i].start,"orange")
             drawRectangle(circCtx,circinfo[i].end,"green")
+            drawArc(circCtx,circinfo[i].start,circinfo[i].end,0.75,'red')
         }
-    });
+    })
+    .fail(alert('Fail to load the file, Please Retry.'));
 
-    $.getJSON('file2_URL',function(geneinfo){
+    $.getJSON('file2_URL',{'caseid': caseid,'chr':thisChr, 'start':thisStart, 'end':thisEnd})
+    .done(function(geneinfo){
         for (var i=0;i<geneinfo.length;i++){
             drawGene(circCtx,geneinfo[i].start,geneinfo[i].end,geneinfo[i].name,'purple')
         }
