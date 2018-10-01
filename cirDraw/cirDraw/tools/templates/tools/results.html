@@ -8,7 +8,7 @@
 	<p>Displaying: {{ header.name }}</p>
 	<p>caseid: {{ caseid }}</p>
 	<ul>
-	{% for res in result %}
+	{% for res in results %}
 		<li>{{ res.circRNA_start }} | {{ res.chr_ci }}</li>
 	{% endfor %}
     </ul>

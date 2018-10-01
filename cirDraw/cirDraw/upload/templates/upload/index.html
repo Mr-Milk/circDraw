@@ -29,13 +29,44 @@
     </div>
 
  -->
+    <h1>HHHH 没错了！！！</h1>
+
+    <form id="uploadForm" enctype="multipart/form-data">   
+        {% csrf_token %}
+        <input id="file" type="file" name="mfile"/>
+        
+    </form>
+    <button id="upload">上传文件</button>
+
+
+    <script type="text/javascript">    
+        $(function () {        
+            $("#upload").click(function () {            
+                var formData = new FormData($('#uploadForm')[0]);            
+                $.ajax({                
+                type: 'post',                
+                url: "upload/",                
+                data: formData,                
+                cache: false,                
+                processData: false,                
+                contentType: false,            
+            }).success(function (data) {                
+                alert(data.result);            
+            }).error(function () {                
+                alert("上传失败");            
+                });        
+            });    
+        });
+        </script>
+
+
 
 
 
 
     <div class="form-group">
         <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
-        <form id="fileform" method="POST" action="{% url 'upload_save' %}" enctype="multipart/form-data">
+        <form id="fileform" method="POST" action="{% url 'upload_display' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <p id="ifnotprevent">Nothing</p>
           <label class="btn btn-primary btn-sm" for="fileupload">
@@ -55,133 +86,57 @@
       </div>
 
 
-      <script type="text/javascript">
-          
-            $('#fileform').submit(function(event){
-
-                event.preventDefault();
-
-                console.log('hello')
-            
-                var formdata = new FormData();
-                var myfile = $('#fileupload').prop('files')[0];
-
-                //console.log(myfile)
-
-                formdata.append('mfile', myfile)
-
-                for (var value of formdata.values()) {
-                    console.log(value); 
-                };
-
-                
-
-                // var xhr = new XMLHttpRequest();
-                // // Add any event handlers here...
-                // xhr.open('POST', '/upload/save/', true);
-            
-
-                // xhr.upload.onprogress = function(e){
-                //             if (e.lengthComputable) {
-                //                 var percent = Math.round((e.loaded / e.total) * 100)
-                //                 $('#bar').attr('aria-valuenow', percent).css('width', percent + '%').text(percent + '%')
-                //             };
-                //         }
-
-
-                // xhr.onload = function() {
-                // if (this.status == 200) {
-                //   var resp = JSON.parse(this.responseText);
-                //   console.log('Server got:', resp);
-                // } else {
-                //     console.log('error error')
-                //     };
-                // };
-
-                // var myfile = $('#fileupload').prop('files')[0];
-                // xhr.setRequestHeader("Content-Type", myfile.type);
-
-                // xhr.onreadystatechange = function(e) {
-                //     if ( 4 == this.readyState ) {
-                //         console.log(['xhr upload complete', e]);
-                //     }
-                // };
-
-                // xhr.send(formdata);
-
-
-
-
-
-                //return false;
-
-
-
-
-
-
-                $.ajax({
-                    // xhr: function(){
-                    //     var xhr = new window.XMLHttpRequest();
-                    //     xhr.upload.addEventLister('process', function(e){
-                    //         if (e.lengthComputable) {
-                    //             var percent = Math.round((e.loaded / e.total) * 100)
-                    //             $('#bar').attr('aria-valuenow', percent).css('width', percent + '%').text(percent + '%')
-                    //         };
-                    //     });
-
-                    //     return xhr;
-                    // },
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("Content-Type", "form-data");
-                    },
-                    type: 'POST',
-                    url: "{% url 'upload_save' %}",
-                    data: formdata,
-                    processData: false,
-                    contentType: false,
-                    enctype: 'multipart/form-data',
-                    dataType: "json",
-                    cache: false,
-                    success: function(caseid){
-                        console.log('yes')
-                        var filename = $('#fileupload').prop("files")['mfile'];
-                        $('#uploadname').text(filename);
-                        var caseID = new STRING(caseid[caseid])
-                        var myURL = document.URL + "?id=" + caseID;
-                        // window.location.href = myURL + "?id=" + caseID;
-                        window.history.pushState(null, "", myURL);
-                    },
-                });
-    });
-
-
-
-      </script>
-
-
-
-
-
-
 
 
 
 
     <h1>Hello Test</h1>
 
+
+
+
+
+    
+
+
+
+    <script type="text/javascript">
+        $('#woshishabi').submit(function(e){
+            
+            console.log('hi shabi')
+
+            e.preventDefault();
+
+        })
+    </script>
+
     <script type="text/javascript">
         
         var hi = 20;
     </script>
 
+    <script type="text/javascript" src="{% static 'js/xhr2upload.js' %}"></script>
+    <!-- 
     <script type="text/javascript">
-        
-        console.log(hi)
+        // click the button
+        $('#upload').on('click', function() {
+            // ajax upload
+            $('#myFile').upload("some.php", function(success) {
+                console.log('done');
+            }, $('#prog'));
+        })
     </script>
+ -->
+    <h1>test sending form</h1>
+
+    <input type="file" id="myFile" name="myFile">
+    <input type="button" id="upload" value="upload">
+    <br>
+    <progress id="prog" value="0" min="0" max="100"></progress>
 
 
 
+<!-- // -------------------- -->
 
     <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="https://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>

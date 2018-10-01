@@ -5,10 +5,13 @@ from django.conf import settings
 
 urlpatterns = [
 	url(r'^$', views.tools, name='tools'),
-	url(r'^display/$', views.display, name='tool_display'),
-	url(r'^save/$', views.save, name='tools_save'  ),
-	url(r'^lenChart/$', views.lenChart),
-	url(r'^exonChart/$', views.exonChart)
+	url(r'^upload&save/$', views.save),
+	url(r'^display/$', views.display, name='tools_display'),
+	#url(r'^save/$', views.save, name='tools_save'),
+	url(r'^draw/$', views.draw, name='tools_draw'),
+	url(r'^chrstartend/', views.chrstartend, name='tools_chrstartend')
+	#url(r'^lenChart/$', views.lenChart),
+	#url(r'^exonChart/$', views.exonChart)
 ]
 
 if settings.DEBUG:

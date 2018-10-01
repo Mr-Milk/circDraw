@@ -17,28 +17,39 @@ def tools(request):
 	return render(request, 'tools/tools.html', context)
 
 
+def new_upload(request):
+	if request.method == "POST":
+		form = UploadFileForm(request.POST, request.FILES)
+		#if form.is_valid():
+		data_raw_file = request.FILES['file']
+		header, result = handle_uploaded_file(data_raw_file)
+
+		return JsonResponse({'result': [i['circRNA_start'] for i in result]})
+
 def display(request):
-	result = ["There is None."]
 	if request.method == "POST":
 		form = UploadFileForm(request.POST, request.FILES)
 		#if form.is_valid():
 		data_raw_file = request.FILES['my-file-selector']
 		header, result = handle_uploaded_file(data_raw_file)
-	context = {}
-	return render(request, 'tools/tools.html', context)
+		case = uploadCase()
+		case.save()
+		for e in result:
+			ob = eachObservation(caseid = case)
+			for each in header.lst:
+				exec('ob.' + each +' = ' + 'e["' + each +'"]', globals(), locals())
+			ob.save()
 
-@csrf_exempt 
+	context = {'results': result, 'header': header, 'caseid':case.whichcase}
+	return render(request, 'tools/results.html', context)
+
+
 def save(request):
-	result = ["There is None."]
-
-	case = "no case"
-
 	if request.method == "POST":
 		form = UploadFileForm(request.POST, request.FILES)
-		#if form.is_valid():
-		data_raw_file = request.FILES['myfile']
+		data_raw_file = request.FILES["file"]
 		header, result = handle_uploaded_file(data_raw_file)
-
+		
 		# sink into database:
 		# HOw to sink to the database:
 		# import from models.py make instance and f.save()
@@ -60,35 +71,74 @@ def save(request):
 		# else: 
 		# 	obs = eachObservation.objects.filter(chr_ci = 'chr1')
 		# 	context = {'result': obs, 'header': header, 'caseid': "not obtain data"}
+		return JsonResponse({'caseid': case.whichcase})
+	else:
+		raise Http404
 
-	return JsonResponse({'caseid': case.whichcase})
+
+
+
+
+
+
+
+
+def scaling(point, max_end, min_start, scale):
+	assert point <= max_end, 'Invalid scaling input'
+	return scale[0] + (point - min_start) / (max_end - min_start) * (scale[1] - scale[0])
+
+
+
+def descaling(spoint, max_end, min_start, scale):
+	assert spoint >= scale[0] and spoint <= scale[1], 'Wrong descaling input'
+	return min_start + (spoint - scale[0]) / (scale[1] - scale[0]) * (max_end - min_start)
+
+
 
 @csrf_exempt 
 # file_
-def lenChart(request):
+def draw(request):
 	if request.method == 'GET':
 		case_id = request.GET['caseid']
 		chr_ci = request.GET['chr']
 		start = request.GET['start']
 		end = request.GET['end']
-		obs = eachObservation.objects.filter(caseid__exact=case_id).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
+		obs = eachObservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
 		max_end, min_start = obs.aggregate(Max('circRNA_end'))['circRNA_end__max'], obs.aggregate(Min('circRNA_start'))['circRNA_start__min']
 
-		def scaling(point, max_end, min_start, scale):
-			return (point - min_start) / (max_end - min_start) * scale
 
-		results = []
 		for ob in obs:
-			result_lenDraw = {
+			result_draw = {
 				'start': scaling(ob.circRNA_start, max_end, min_start, 400),
 				'end': scaling(ob.circRNA_end, max_end, min_start, 400),
 				'obid': ob.pk,
 			} 
-			results.append(result_lenDraw)
+			results.append(result_Draw)
 
-		return JsonResponse({'lenChart_data': results})
+
+		return JsonResponse(results)
 	else:
 		raise Http404
+
+
+def chrstartend(request):
+	"""
+	A view function which return the start and end info of the chr in the upload case.
+	"""
+	if request.method == 'GET':
+		case_id = request.GET['caseid']
+		chr_ci = request.GET['chr']
+		start = request.GET['start']
+		end = request.GET['end']
+		obs = eachObservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci)
+		return JsonResponse({'realStart': min_start, 'realEnd': max_en})
+	else:
+		raise Http404
+
+
+
+
+
 
 
 def exonChart(request):
@@ -103,26 +153,6 @@ def exonChart(request):
 
 
 
-
-
-
-
-
-# def save(request):
-# 	if request.is_ajax() and request.method == "POST":
-# 		result = ["There is None."]
-# 		form = UploadFileForm(request.POST, request.FILES)
-# 		if form.is_valid():
-# 			data_raw_file = request.FILES['my-file-selector']
-# 			header, results = handle_uploaded_file(data_raw_file)
-# 			case = uploadCase()
-# 			case.save()
-# 			for each in results:
-# 				ob = eachObservation(caseid = case.id, circRNA_ID=each.circRNA_ID, chr_ci = each.chr, circRNA_start = each.circRNA_start, circRNA_end = circRNA_end, junction_reads = each.junction_reads, non_junction_reads = each.non_junction_reads, circRNA_type = each.circRNA_type, gene_id = each.gene_id)
-# 				ob.save()
-# 			return JsonResponse({ "caseid" : case.id })
-# 	else:
-# 		raise Http404
 
 
 def results(request):

@@ -8,7 +8,40 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404, HttpResponse, JsonResponse
 
 
+def tryupload(request):
+	a = request.FILES['myFile']
+	header, result = handle_uploaded_file(a)
+	return JsonResponse({'result':result})
 
+
+def new(request):
+	context = {}
+	return render(request, 'upload/test.html', context)
+
+def new_upload(request):
+	if request.method == "POST":
+		form = UploadFileForm(request.POST, request.FILES)
+		#if form.is_valid():
+		data_raw_file = request.FILES['file']
+		header, result = handle_uploaded_file(data_raw_file)
+
+
+		case = uploadCase()
+		case.save()
+
+		context = {'result': result, 'header': result[0], 'caseid': "Nothing"}
+
+		if True:
+			for e in result:
+				ob = eachObservation(caseid = case)
+				for each in header.lst:
+					exec('ob.' + each +' = ' + 'e["' + each +'"]', globals(), locals())
+				ob.save()
+
+				obs = eachObservation.objects.all()
+				context = {'result': obs, 'header': header, 'caseid': "obtain data"}
+
+		return JsonResponse(context)
 
 def index(request):
 	all_data = eachObservation.objects.all()
@@ -40,7 +73,7 @@ def display(request):
 	if request.method == "POST":
 		form = UploadFileForm(request.POST, request.FILES)
 		#if form.is_valid():
-		data_raw_file = request.FILES['myfile']
+		data_raw_file = request.FILES['mfile']
 		header, result = handle_uploaded_file(data_raw_file)
 
 		# sink into database:
