@@ -48,7 +48,7 @@ def upload_fine(request):
             catch_file = request.FILES[filename]
             file_content = catch_file.readlines()
             context = {'output': file_content}
-            return render(request, 'tools/page_test.html', context)
+            return redirect('test_display')
         else:
             print('upload file form is not valid')
             context = {'output': "upload file form is not valid"}
@@ -59,6 +59,10 @@ def upload_fine(request):
         return render(request,'tools/page_test.html', context)
 
 
+# test display is connected
+def display_fine(request):
+    context = {'caseid':'ec04092365e64a8aa1fc6e1e9ff9822c'}
+    return render(request, 'tools/tools.html', context)
 
 
 
@@ -83,15 +87,17 @@ def process_upload(request, filename):
     >>> c = Client()
     """
     if request.method == "POST":
-        #form = UploadFileForm(request.POST, request.FILES)
-        #if form.is_valid():
-        data_raw_file = request.FILES[filename]
-        header, result = handle_uploaded_file(data_raw_file)
-        return header, result
-#        else:
-#            print('upload file form is not valid')
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            data_raw_file = request.FILES[filename]
+            header, result = handle_uploaded_file(data_raw_file)
+            return header, result
+        else:
+            print('upload file form is not valid')
+            raise Http404
     else:
         print('request of upload is not POST')
+        raise Http404
 
 
 
