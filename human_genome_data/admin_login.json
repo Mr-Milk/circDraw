@@ -1,0 +1,14 @@
+[
+    {
+        "user": "root",
+        "password": "sysucircDraw@2018",
+        "host": "127.0.0.1",
+        "database": "cirDraw"
+    },
+    {
+        "user": "root",
+        "password": "sysucircDraw@2018",
+        "host": "production_host",
+        "database": "cirDraw"
+    }
+]
