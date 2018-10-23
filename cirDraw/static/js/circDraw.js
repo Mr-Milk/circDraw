@@ -167,7 +167,7 @@ var ajaxEnd = parseInt($("#end").val());
 var ajaxChrNum = parseInt($('#chrSelector').val());
 
 // Draw circRNAs and genes on the canvas
-$('draw').click(function(){
+$(document).ready(function(){
     var ajaxStart = parseInt($("#start").val());
     var ajaxEnd = parseInt($("#end").val());
     var ajaxChrNum = parseInt($('#chrSelector').val());
