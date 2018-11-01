@@ -1,0 +1,9 @@
+start,end,type,name
+5,13,backsplice,circ_09
+5,43,gene,NMT43
+13,25,exon,NMT43_1
+25,33,intron,NMT43_I1
+33,40,exon,NMT43_2
+54,82,backsplice,circ_90
+54,66,exon,MILK
+66,82,intron,JACKLI
