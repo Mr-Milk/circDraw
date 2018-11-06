@@ -137,7 +137,7 @@ def get_scale_se(model_name, chr_ci, start_name, end_name):
 @csrf_exempt
 def handle_file1(request):
     if request.method == 'GET':
-        case_id = request.GET['caseid']
+        case_id = request.GET['case_id']
         chr_ci = request.GET['chr']
         start = request.GET['start']
         end = request.GET['end']
@@ -160,10 +160,10 @@ def handle_file1(request):
 # ------------------------handle_flie2---------------------------------
 def handle_file2(request):
     if request.method == 'GET':
-        case_id = request.GET['caseid']
+        case_id = request.GET['case_id']
         chr_ci = request.GET['chr']
-        start = request.GET['start']
-        end = request.GET['end']
+        start = int(request.GET['start'])
+        end = int(request.GET['end'])
         obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
         max_end, min_start = get_scale_se(ToolsAnnotation, chr_ci, 'gene_start', 'gene_end')
         results = []
@@ -182,13 +182,13 @@ def handle_file2(request):
 # --------------------handle_file_3------------------------------
 def handle_file3(request):
     if request.method == 'GET':
-        chr_ci = request['chr']
-        start = request['start']
-        end = request['end']
+        chr_ci = request.GET['chr']
+        start = int(request.GET['start'])
+        end = int(request.GET['end'])
         max_end, min_start = get_scale_se(ToolsAnnotation, chr_ci, 'gene_start', 'gene_end')
         real_start = descaling(start, max_end, min_start, 400)
         real_end = descaling(end, max_end, min_start, 400)
-        result = {'readStart': real_start, 'realEnd': read_end}
+        result = {'realStart': real_start, 'realEnd': real_end}
         return JsonResponse(result)
     else:
         print("your request method for file3 is not get")
@@ -196,7 +196,7 @@ def handle_file3(request):
 # -------------------handle_file_4------------------------------
 def handle_file4(request):
     if request.method == 'GET':
-        caseid = request['caseid']
+        caseid = request.GET['case_id']
         obs = ToolsEachobservation.objects.filter(caseid__exact=caseid).distinct('chr_ci')
         chr_lens = []
         for ob in obs:
@@ -215,7 +215,7 @@ def handle_file4(request):
 # -------------handle_file5----------------------------------
 def handle_file5(request):
     if request.method == "GET":
-        caseid = request['caseid']
+        caseid = request.GET['case_id']
         circobs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
         geneobs = ToolsAnnotation.objects.filter(gene_type__exact="gene")
         results = []
@@ -244,7 +244,7 @@ def chrstartend(request):
     A view function which return the start and end info of the chr in the upload case.
     """
     if request.method == 'GET':
-        case_id = request.GET['caseid']
+        case_id = request.GET['case_id']
         chr_ci = request.GET['chr']
         start = request.GET['start']
         end = request.GET['end']
