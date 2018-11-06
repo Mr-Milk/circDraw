@@ -256,17 +256,19 @@ $(document).ready((function(){
     });
 }));
 
-//Download from canvas
-document.getElementById("circDownload").onclick = function(){
-    circCanvas.toBlob(function(blob){
-        document.getElementById('circDownload').setAttribute("href", URL.createObjectURL(blob));});
-}
+//Download function
+function download(canvas_id, document_id)
+{
+document.getElementById(document_id).onclick = function(){
+    canvas_id.toBlob(function(blob){
+        document.getElementById(document_id).setAttribute("href", URL.createObjectURL(blob));});
+};
 
-document.getElementById("denDownload").onclick = function(){
-    circCanvas.toBlob(function(blob){
-        document.getElementById('denDownload').setAttribute("href", URL.createObjectURL(blob));});
-}
-
+$(document).ready(function(){
+    download(circCanvas, circDownload);
+    download(denCanvas, denDownload);
+});
+    
 /*
 //=============================================================
 // Adding function for displaying single circRNA in circle form
