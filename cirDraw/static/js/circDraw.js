@@ -266,3 +266,96 @@ document.getElementById("denDownload").onclick = function(){
     circCanvas.toBlob(function(blob){
         document.getElementById('denDownload').setAttribute("href", URL.createObjectURL(blob));});
 }
+
+/*
+//=============================================================
+// Adding function for displaying single circRNA in circle form
+// circCirc Canvas setup
+var ccCanvas = document.getElementById("circCirc");
+var ccCtx = ccCanvas.getContext("2d")
+ccCanvas.width = 500
+ccCanvas.height = 500
+var ccWidth = ccCanvas.width
+var ccHeight = ccCanvas.height
+
+// Setting Canvas to fit Retina Screen
+ccCanvas.width = ccWidth * ratio;
+ccCanvas.height = ccHeight * ratio;
+ccCanvas.style.width = ccWidth + 'px';
+ccCanvas.style.height = ccHeight + 'px';
+ccWidth = ccCanvas.width
+ccHeight = ccCanvas.height
+
+function drawCircleCirc(ctx,x,y,r)
+{
+    ctx.beginPath();
+    ctx.arc(x*ratio, y*ratio, r*ratio, 0, 2 * Math.PI, false);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#003300';
+    ctx.stroke();
+}
+
+function drawCircExon(ctx,x,y,r,start,end,color)
+{
+    ctx.beginPath();
+    x_cord = (x*(5*ratio-1)/4) + 50 - ratio
+    ctx.arc(x_cord, y*ratio, r*ratio, start*Math.PI+0.5*Math.PI, end*Math.PI+0.5*Math.PI, false);
+    ctx.lineWidth = 15;
+    ctx.strokeStyle = color;
+    ctx.stroke();
+}
+
+function drawCircLine(ctx,x1,x2)
+{
+    ctx.beginPath()
+    ctx.moveTo((x1*(5*ratio-1)/4) + 50 - ratio, lineY-15)
+    ctx.lineTo((x2*(5*ratio-1)/4) + 50 - ratio, 270*ratio)
+    ctx.closePath()
+    ctx.lineWidth = 2
+    ctx.strokeStyle = 'grey'
+    ctx.stroke()
+}
+
+//drawCircExon(ccCtx,150,10,40,start,end)
+
+var exonList = [{"name": "GNS2", "start":220, "end":230},
+            {"name": "CDN1", "start":250, "end":260},
+            {"name": "MILK", "start":290, "end":295}]
+
+$(document).ready(function(){
+    drawLine(ccCtx,lineY,0.75, "grey")
+
+    var exonlen = 0
+    for (var i=0;i<exonList.length;i++){
+        exonlen = exonlen + (exonList[i].end-exonList[i].start)
+    };
+
+    var mlist = []
+    for (var i=0;i<exonList.length;i++){
+        mlist.push(exonList[i].start)
+        mlist.push(exonList[i].end)
+    };
+
+    x_RLine = Math.max.apply(null,mlist)
+    x_LLine = Math.min.apply(null,mlist)
+    x_circ = x_LLine+((x_RLine-x_LLine)/2)
+    console.log(x_circ)
+
+    palette = ['red','green','blue','purple']
+
+    var initLen = 0
+    for (var i=0;i<exonList.length;i++){
+        name = exonList[i].name
+        start = initLen
+        end = initLen+(exonList[i].end - exonList[i].start)*2/exonlen
+        initLen = end
+        console.log(name, start, end)
+        drawGene(ccCtx, exonList[i].start, exonList[i].end, exonList[i].name, palette[i])
+        drawCircExon(ccCtx,x_circ,230,40,start,end,palette[i])
+    };
+
+    drawCircLine(ccCtx,x_RLine,x_circ)
+    drawCircLine(ccCtx,x_LLine,x_circ)
+})
+//=============================================================
+*/
