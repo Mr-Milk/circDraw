@@ -26,10 +26,10 @@ function initializeCanvas(canvasName){
 // Canvas for displaying circRNA
 var circCanvas = document.getElementById("drawCirc");
 var circCtx = circCanvas.getContext("2d");
-initializeCanvas(circCanvas)
-var circHeight = circCanvas.height
-var circWidth = circCanvas.width
-var lineY = 3*circHeight/5
+initializeCanvas(circCanvas);
+var circHeight = circCanvas.height;
+var circWidth = circCanvas.width;
+var lineY = 3*circHeight/5;
 
 // Canvas for displaying density distribution
 var denCanvas = document.getElementById("density");
@@ -168,8 +168,8 @@ var ajaxChrNum = parseInt($('#chrSelector').val());
 
 // Draw circRNAs and genes on the canvas
 $(document).ready(function(){
-    var ajaxStart = parseInt($("#start").val());
-    var ajaxEnd = parseInt($("#end").val());
+    var ajaxStart = parseInt($('#start').val());
+    var ajaxEnd = parseInt($('#end').val());
     var ajaxChrNum = parseInt($('#chrSelector').val());
     // check if the ajaxStart / ajax are not Nan
     if (ajaxStart == null) {
@@ -182,7 +182,9 @@ $(document).ready(function(){
     };
     drawLine(circCtx,lineY,0.75, "grey")
     // file_1
-    console.log(ajaxStart)
+    console.log(ajaxStart);
+    console.log(ajaxEnd);
+    console.log(ajaxChrNum);
     $.getJSON("/tools/tools_file1/",{case_id: caseid, chr: ajaxChrNum, start: ajaxStart, end: ajaxEnd})
     .done(function(circinfo){
         for (var i=0;i<circinfo.length;i++){
