@@ -1,44 +1,40 @@
 // Getting caseid for following drawing
 var thisURL = document.URL;
 var caseid = thisURL.split("/").slice(-1)[0];
-console.log(caseid)
+var ratio = window.devicePixelRatio
+
+// device display ratio message
+ratioMessage = "devicePixelRatio: " + ratio
+console.log(ratioMessage)
+
+// setting up canvas
+function initializeCanvas(canvasName){
+    canvasName.width = 500
+    canvasName.height = 500
+    var canvasWidth = canvasName.width
+    var canvasHeight = canvasName.height
+
+    // Response to retina screen
+    canvasName.width = canvasWidth * ratio;
+    canvasName.height = canvasHeight * ratio;
+    canvasName.style.width = canvasWidth + 'px';
+    canvasName.style.height = canvasHeight + 'px';
+    canvasWidth = canvasName.width
+    canvasHeight = canvasName.height
+}
+
 // Canvas for displaying circRNA
 var circCanvas = document.getElementById("drawCirc");
 var circCtx = circCanvas.getContext("2d");
-circCanvas.width = 500
-circCanvas.height = 500
-var circWidth = circCanvas.width
+initializeCanvas(circCanvas)
 var circHeight = circCanvas.height
-
-// Setting Canvas to fit Retina Screen
-ratio = window.devicePixelRatio
-circCanvas.width = circWidth * ratio;
-circCanvas.height = circHeight * ratio;
-circCanvas.style.width = circWidth + 'px';
-circCanvas.style.height = circHeight + 'px';
-circWidth = circCanvas.width
-circHeight = circCanvas.height
-
+var circWidth = circCanvas.width
 var lineY = 3*circHeight/5
-
-ratioMessage = "devicePixelRatio: " + ratio
-console.log(ratioMessage)
 
 // Canvas for displaying density distribution
 var denCanvas = document.getElementById("density");
 var denCtx = denCanvas.getContext("2d")
-denCanvas.width = 500
-denCanvas.height = 500
-var denWidth = denCanvas.width
-var denHeight = denCanvas.height
-
-// Setting Canvas to fit Retina Screen
-denCanvas.width = denWidth * ratio;
-denCanvas.height = denHeight * ratio;
-denCanvas.style.width = denWidth + 'px';
-denCanvas.style.height = denHeight + 'px';
-denWidth = denCanvas.width
-denHeight = denCanvas.height
+initializeCanvas(denCanvas)
 
 // Drawing Different components on canvas
 // Draw a stright line for chromosome
@@ -273,16 +269,18 @@ $(document).ready((function(){
     .fail(function() {alert('Fail to at 254 line with file1, Please Retry.')});
 }));
 
-//Download from canvas
-document.getElementById("circDownload").onclick = function(){
-    circCanvas.toBlob(function(blob){
-        document.getElementById('circDownload').setAttribute("href", URL.createObjectURL(blob));});
-}
+//Download function
+function download(canvas_id, document_id)
+{
+document.getElementById(document_id).onclick = function(){
+    canvas_id.toBlob(function(blob){
+        document.getElementById(document_id).setAttribute("href", URL.createObjectURL(blob));});
+}};
 
-document.getElementById("denDownload").onclick = function(){
-    circCanvas.toBlob(function(blob){
-        document.getElementById('denDownload').setAttribute("href", URL.createObjectURL(blob));});
-}
+$(document).ready((function(){
+    download(circCanvas, circDownload);
+    download(denCanvas, denDownload);
+}));
 
 /*
 //=============================================================
@@ -290,18 +288,7 @@ document.getElementById("denDownload").onclick = function(){
 // circCirc Canvas setup
 var ccCanvas = document.getElementById("circCirc");
 var ccCtx = ccCanvas.getContext("2d")
-ccCanvas.width = 500
-ccCanvas.height = 500
-var ccWidth = ccCanvas.width
-var ccHeight = ccCanvas.height
-
-// Setting Canvas to fit Retina Screen
-ccCanvas.width = ccWidth * ratio;
-ccCanvas.height = ccHeight * ratio;
-ccCanvas.style.width = ccWidth + 'px';
-ccCanvas.style.height = ccHeight + 'px';
-ccWidth = ccCanvas.width
-ccHeight = ccCanvas.height
+initializeCanvas(ccCanvas)
 
 function drawCircleCirc(ctx,x,y,r)
 {
