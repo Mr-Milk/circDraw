@@ -216,7 +216,7 @@ def handle_file4(request):
 def handle_file5(request):
     if request.method == "GET":
         caseid = request.GET['case_id']
-        circobs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
+        circobs = ToolsEachobservation.objects.filter(caseid_id__exact=caseid)
         geneobs = ToolsAnnotation.objects.filter(gene_type__exact="gene")
         results = []
         densitys = 0
@@ -234,6 +234,22 @@ def handle_file5(request):
         for i in results:
             i['density'] = (i['density'] / densitys)*100
         return JsonResponse(results)
+
+def get_chr_num(chr_ci):
+    c = chr_ci.lower()[3:]
+    try:
+        return int(c)
+    except ValueError:
+        if c.lower() == 'x':
+            return 23
+        elif c.lower() == 'y':
+            return 24
+        else:
+            raise ValueError
+
+
+
+
 
 
 
