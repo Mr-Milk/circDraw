@@ -14,7 +14,7 @@ class ToolsAnnotation(models.Model):
     chr_ci = models.CharField(max_length=50)
     gene_start = models.IntegerField()
     gene_end = models.IntegerField()
-    gene_id = models.CharField(max_length=200)
+    gene_id = models.CharField(max_length=200, primary_key=True)
 
     class Meta:
         managed = False

@@ -217,12 +217,15 @@ def handle_file5(request):
     if request.method == "GET":
         caseid = request.GET['case_id']
         circobs = ToolsEachobservation.objects.filter(caseid_id__exact=caseid)
+        print("OK: ",circobs[0])
         geneobs = ToolsAnnotation.objects.filter(gene_type__exact="gene")
+
+        print("OK?: ",geneobs[0])
         results = []
         densitys = 0
         for each in geneobs:
             chr_num = get_chr_num(each.chr_ci)
-            start, end = each.gene_start, gene_end
+            start, end = each.gene_start, each.gene_end
             ret = {'chr': chr_num, 'start': start, 'end':end, 'density':0}
             count = 0
             for i in circobs:
@@ -246,6 +249,8 @@ def get_chr_num(chr_ci):
             return 24
         else:
             raise ValueError
+
+def circ_isin(geneob, circob, overlap=0.5):
 
 
 
