@@ -214,13 +214,28 @@ def handle_file4(request):
 
 # -------------handle_file5----------------------------------
 def handle_file5(request):
+    def toCHR(num):
+        if (i+1) == 23:
+            c_num = "X"
+        elif (i+1) == 24:
+            c_cum = "Y"
+        elif (i+1) == 25:
+            c_cum = "M"
+        else:
+            c_cum = str(i+1)
+        chr_ccc = "chr" + c_cum
     if request.method == "GET":
         caseid = request.GET['case_id']
         circobs = ToolsEachobservation.objects.filter(caseid_id__exact=caseid)
-        print("OK: ",circobs[0])
-        geneobs = ToolsAnnotation.objects.filter(gene_type__exact="gene")
+        print("OK: ",len(circobs))
+        # create circRNA group base on chr
+        circ_groups = [[] for _ in range(25)]
+        for i in range(25):
 
-        print("OK?: ",geneobs[0])
+            circ_groups[i] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
+
+        geneobs = ToolsAnnotation.objects.filter(gene_type__exact="gene")
+        print("OK?: ",len(geneobs))
         results = []
         densitys = 0
         for each in geneobs:
@@ -229,8 +244,12 @@ def handle_file5(request):
             ret = {'chr': chr_num, 'start': start, 'end':end, 'density':0}
             count = 0
             for i in circobs:
-                if circ_isin(each, i):
+                if i.chr_ci != each.chr_ci:
+                    print('passed')
+                    pass
+                elif circ_isin(each, i):
                     count += 1
+                    print(count)
             ret['density'] = count
             densitys += count
             results.append(ret)
@@ -250,7 +269,22 @@ def get_chr_num(chr_ci):
         else:
             raise ValueError
 
-def circ_isin(geneob, circob, overlap=0.5):
+def circ_isin(geneob, circob, overlap_rate=0.5):
+    """define how to be counted as in the gene"""
+    gene_len = geneob.gene_end - geneob.gene_start
+    circ_len = circob.circRNA_end - circob.circRNA_start
+    if circob.circRNA_start > geneob.gene_end or circob.circRNA_end < geneob.gene_start:
+        return False
+    else:
+        lst = [geneob.gene_start, geneob.gene_end, circob.circRNA_start, circob.circRNA_end]
+        sort_lst = sorted(lst)
+        over = sort_lst[2] - sort_lst[1]
+        if over >= (gene_len * overlap_rate):
+            return True
+        else:
+            return False
+
+
 
 
 
