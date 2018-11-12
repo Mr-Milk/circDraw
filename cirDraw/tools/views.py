@@ -131,6 +131,10 @@ def get_scale_se(model_name, chr_ci, start_name, end_name):
     obs = model_name.objects.filter(chr_ci__exact=chr_ci)
     max_ = obs.aggregate(Max(str(end_name)))[(end_name+'__max')]
     min_ = obs.aggregate(Min(str(start_name)))[(start_name + '__min')]
+    if max_ is None:
+        max_ = 0
+    if min_ is None:
+        min_ = 0
     return max_, min_
 
 # ---------------------handle_file1---------------------------------------
@@ -197,65 +201,83 @@ def handle_file3(request):
 def handle_file4(request):
     if request.method == 'GET':
         caseid = request.GET['case_id']
-        obs = ToolsEachobservation.objects.filter(caseid__exact=caseid).distinct('chr_ci')
+        obs = ToolsEachobservation.objects.filter(caseid__exact=caseid).values('chr_ci').distinct()
+        print([i['chr_ci'] for i in obs])
         chr_lens = []
+        max_len = 0
         for ob in obs:
-            chr_ci = ob.chr_ci
+            chr_ci = ob['chr_ci']
             model_name = ToolsAnnotation
             start_name, end_name = 'gene_start', 'gene_end'
+            print(model_name, chr_ci,start_name, end_name)
             max_end, min_start = get_scale_se(model_name, chr_ci, start_name, end_name)
             length = max_end - min_start
-            chr_len = {'chr': chr_ci, 'chrLen': length}
-            chr_lens.append(chr_len)
-        return JsonResponse(chr_lens)
+            if length > max_len:
+                max_len = length
+            if length != 0:
+                chr_len = {'chr': chr_ci, 'chrLen': length}
+                chr_lens.append(chr_len)
+        for i in chr_lens:
+            i['chrLen'] = scaling(i['chrLen'], max_len, 0, 400)
+        print(chr_lens)
+        return JsonResponse(chr_lens, safe=False)
     else:
-        print("your request for file4 is not get")
+        print("your request method for file4 is not get")
         raise Http404
 
 # -------------handle_file5----------------------------------
+
+def toCHR(num):
+    """convert a number to a chr string"""
+    assert type(num) == int, "Wrong input in toCHR"
+    if num == 23:
+        c_num = "X"
+    elif num == 24:
+        c_num = "Y"
+    elif num == 25:
+        c_num = "M"
+    else:
+        c_num = str(num)
+    return "chr" + c_num
+
 def handle_file5(request):
-    def toCHR(num):
-        if (i+1) == 23:
-            c_num = "X"
-        elif (i+1) == 24:
-            c_cum = "Y"
-        elif (i+1) == 25:
-            c_cum = "M"
-        else:
-            c_cum = str(i+1)
-        chr_ccc = "chr" + c_cum
     if request.method == "GET":
         caseid = request.GET['case_id']
         circobs = ToolsEachobservation.objects.filter(caseid_id__exact=caseid)
         print("OK: ",len(circobs))
-        # create circRNA group base on chr
-        circ_groups = [[] for _ in range(25)]
-        for i in range(25):
-
-            circ_groups[i] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
-
-        geneobs = ToolsAnnotation.objects.filter(gene_type__exact="gene")
-        print("OK?: ",len(geneobs))
+        # create circRNA and gene group based on chr
+        data_groups = [[] for _ in range(2)]
         results = []
         densitys = 0
-        for each in geneobs:
-            chr_num = get_chr_num(each.chr_ci)
-            start, end = each.gene_start, each.gene_end
-            ret = {'chr': chr_num, 'start': start, 'end':end, 'density':0}
-            count = 0
-            for i in circobs:
-                if i.chr_ci != each.chr_ci:
-                    print('passed')
-                    pass
-                elif circ_isin(each, i):
-                    count += 1
-                    print(count)
-            ret['density'] = count
-            densitys += count
-            results.append(ret)
+        for i in range(25):
+            chr_ccc = toCHR(i+1)
+            data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
+            data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ccc)
+            #print("OK: ",len(data_groups[0]))
+            for each in data_groups[1]:
+                start, end = each.gene_start, each.gene_end
+                count = 0
+                for r in data_groups[0]:
+                    if circ_isin(each, r):
+                        #print("I'm counted")
+                        count += 1
+                       # print(count)
+                #print("the count for this gene is ",count)
+                if count != 0:
+                    ret = {'chr': i, 'start': start, 'end': end, 'density': count}
+                #print("count:{0}".format(count))
+                    densitys += count
+                    results.append(ret)
+
+            #print("finish chr {} and count is {}".format(i,densitys))
+
         for i in results:
-            i['density'] = (i['density'] / densitys)*100
-        return JsonResponse(results)
+            i['density'] = (i['density'] / densitys)
+        for res in results:
+            print(res)
+        print("file5 has been handled with lens of returning list: ",len(results))
+
+        return JsonResponse(results,safe=False)
 
 def get_chr_num(chr_ci):
     c = chr_ci.lower()[3:]
@@ -278,7 +300,10 @@ def circ_isin(geneob, circob, overlap_rate=0.5):
     else:
         lst = [geneob.gene_start, geneob.gene_end, circob.circRNA_start, circob.circRNA_end]
         sort_lst = sorted(lst)
+        #print(sort_lst)
         over = sort_lst[2] - sort_lst[1]
+        #print(sort_lst, over, gene_len, over/gene_len)
+        #print(over >= (gene_len * overlap_rate))
         if over >= (gene_len * overlap_rate):
             return True
         else:
@@ -341,6 +366,7 @@ def results(request):
 
 
 def scaling(point, max_end, min_start, scale, default_start=0):
+    """scale a point to 0-400"""
     assert point <= max_end, 'Invalid scaling input'
     if type(scale) == int:
         scale = (default_start, scale)

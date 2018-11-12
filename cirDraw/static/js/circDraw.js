@@ -207,7 +207,7 @@ $(document).ready(
         })
 
         .fail( function() {alert('Fail to load the file at line171 tools_file1, Please Retry.')});
-        
+
         $.getJSON("/tools/tools_file2/",{case_id: caseid, chr: ajaxChrNum, start: ajaxStart, end: ajaxEnd})
         .done(function(geneinfo){
             for (var i=0;i<geneinfo.length;i++){
@@ -283,7 +283,7 @@ $(document).ready(function(){
             {"name": "CDN1", "start":250, "end":260},
             {"name": "MILK", "start":290, "end":295}]
         */
-        
+
         $.getJSON('file6', {case_id: caseid, chr: thisChr, start: thisStart, end: thisEnd})
         .done(function(exonList){
 
