@@ -27,7 +27,7 @@ urlpatterns = [
 	#url(r'^$', current_datetime),
     url(r'^$', toolviews.render_index_page, name = 'home'),
     url(r'^ajax/', include('ajaxtest.urls')),
-    url(r'^admin/$', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
     url(r'^tools/', include('tools.urls')),
     url(r'^download/', include('download.urls')),
     url(r'^information/', include('information.urls')),

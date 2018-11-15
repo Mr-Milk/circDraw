@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse, JsonResponse
 from .forms import UploadFileForm
-from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation
+from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome
 from .process_file import handle_uploaded_file
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
@@ -61,7 +61,7 @@ def upload_fine(request):
 
 # test display is connected
 def display_fine(request):
-    context = {'caseid':'ec04092365e64a8aa1fc6e1e9ff9822c'}
+    context = {'caseid':'2db8b80b-9e29-4967-b764-8afeb6115de5'}
     return render(request, 'tools/tools.html', context)
 
 
@@ -76,7 +76,7 @@ def upload_and_save(request):
             get_caseid() -> str;
         render_display(caseid)
     """
-    filename = 'file'
+    filename = 'myfile'
     header, results = process_upload(request, filename)
     caseid = save(header, results)
     return redirect('render_display', caseid=caseid)
@@ -110,13 +110,42 @@ def save(header, results):
     case = ToolsUploadcase()
     caseid = case.whichcase
     case.save()
+    chromosome_info = [[3492307800,0] for _ in range(25)] ## ! WARNING this number is designed to be unreachable by any gene_start point of human, careful when change the species.
+    def get_start_point(lst):
+        """get the start point of [xxx, xxx]"""
+        return lst[0]
+    def get_end_point(lst):
+        return lst[1]
+    def update_chromosome_start(lst, update_to):
+        lst[0] = update_to
+    def update_chromosome_end(lst, update_to):
+        lst[1] = update_to
+
+    chr_order = 0
     for e in results:
+        # save each observation
         ob = ToolsEachobservation(caseid = case)
         assert type(header) == list, "HEADER passed in to save is not a list"
         for each in header:
             exec('ob.' + each +' = ' + 'e["' + each +'"]', globals(), locals())
         ob.save()
-    print(ob.caseid, ob.circRNA_ID)
+
+        # update chromosome info
+        now_chr = e['chr_ci']
+        chr_num = get_chr_num(now_chr)
+        now_start = int(e['circRNA_start'])
+        now_end = int(e['circRNA_end'])
+        if chr_num >= 0:
+            if now_start < get_start_point(chromosome_info[chr_num-1]):
+                update_chromosome_start(chromosome_info[chr_num-1],now_start)
+            if now_end > get_end_point(chromosome_info[chr_num - 1]):
+                update_chromosome_end(chromosome_info[chr_num-1], now_end)
+        else:
+            print("one of Your input of chr from the handle file is crap")
+    for i,each_chr in enumerate(chromosome_info):
+        if get_start_point(each_chr) < get_end_point(each_chr):
+            ob_chr = ToolsChromosome(caseid = case, chr_ci = toCHR(i+1),chr_start = get_start_point(each_chr), chr_end = get_end_point(each_chr))
+            ob_chr.save()
     return caseid
 
 # --------------------------------------------------------------
@@ -201,6 +230,7 @@ def handle_file3(request):
 def handle_file4(request):
     if request.method == 'GET':
         caseid = request.GET['case_id']
+        """
         obs = ToolsEachobservation.objects.filter(caseid__exact=caseid).values('chr_ci').distinct()
         print([i['chr_ci'] for i in obs])
         chr_lens = []
@@ -212,6 +242,7 @@ def handle_file4(request):
             print(model_name, chr_ci,start_name, end_name)
             max_end, min_start = get_scale_se(model_name, chr_ci, start_name, end_name)
             length = max_end - min_start
+            print(length)
             if length > max_len:
                 max_len = length
             if length != 0:
@@ -220,6 +251,19 @@ def handle_file4(request):
         for i in chr_lens:
             i['chrLen'] = scaling(i['chrLen'], max_len, 0, 400)
         print(chr_lens)
+        """
+        obs = ToolsChromosome.objects.filter(caseid__exact=caseid)
+        chr_lens = []
+        max_len = 0
+        for i in obs:
+            length = i.chr_end - i.chr_start
+            if length > max_len:
+                max_len = length
+            chr_len = {'chr': i.chr_ci, 'chrLen': length}
+            chr_lens.append(chr_len)
+        for i in chr_lens:
+            new_length = scaling(i['chrLen'], max_len, 0, 400)
+            i['chrLen'] = new_length
         return JsonResponse(chr_lens, safe=False)
     else:
         print("your request method for file4 is not get")
@@ -253,7 +297,13 @@ def handle_file5(request):
             chr_ccc = toCHR(i+1)
             data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
             data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ccc)
-            #print("OK: ",len(data_groups[0]))
+
+            print("No. {0} chr's gene_len is {1} and cir_len is {2}".format(str(i+1), len(data_groups[1]), len(data_groups[0])))
+            # we want to divide the group so that the loop's runtime will be reduced.
+
+
+
+            # the loop
             for each in data_groups[1]:
                 start, end = each.gene_start, each.gene_end
                 count = 0
@@ -269,27 +319,39 @@ def handle_file5(request):
                     densitys += count
                     results.append(ret)
 
-            #print("finish chr {} and count is {}".format(i,densitys))
+            print("finish chr {} and count is {}".format(i,densitys))
 
         for i in results:
-            i['density'] = (i['density'] / densitys)
-        for res in results:
-            print(res)
-        print("file5 has been handled with lens of returning list: ",len(results))
+            i['density'] = round((i['density'] / densitys)*100000)
 
-        return JsonResponse(results,safe=False)
+        # get total chrnum
+        chromobs = ToolsChromosome.objects.filter(caseid__exact=caseid)
+        chrnum = len(chromobs)
+        results = [{'chrnum':chrnum}] + results
+        """
+    # fake data:
+    results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
+    """
+    for res in results:
+        print(res)
+    print("file5 has been handled with lens of returning list: ",len(results))
+
+    return JsonResponse(results,safe=False)
 
 def get_chr_num(chr_ci):
-    c = chr_ci.lower()[3:]
-    try:
-        return int(c)
-    except ValueError:
-        if c.lower() == 'x':
-            return 23
-        elif c.lower() == 'y':
-            return 24
-        else:
-            raise ValueError
+    if chr_ci[:3] != "chr":
+        return -1
+    else:
+        c = chr_ci.lower()[3:]
+        try:
+            return int(c)
+        except ValueError:
+            if c.lower() == 'x':
+                return 23
+            elif c.lower() == 'y':
+                return 24
+            else:
+                raise ValueError
 
 def circ_isin(geneob, circob, overlap_rate=0.5):
     """define how to be counted as in the gene"""

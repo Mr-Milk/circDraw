@@ -76,7 +76,7 @@ function drawDensityBlock(ctx,Yposition,start,end,density)
 {
     var x = start*(5*ratio-1.2)/4 + 60
     var len = (end-start)*(5*ratio-1.2)/4
-    var color = denPelatte.color[density]
+    var color = denPalette.color[density]
     grd = ctx.createLinearGradient(x,0,x+len,0);
     grd.addColorStop(0,"#E8D2CC");
     grd.addColorStop(0.5,color);
@@ -237,7 +237,9 @@ $(document).ready(
     var chrnum
     $.getJSON("/tools/tools_file4/",{case_id: caseid})
     .done(function(chrinfo){
-        chrnum = chrinfo.length
+        var chrnum = chrinfo.length
+        alert("de")
+        alert(chrnum)
         for (var i=0;i<chrinfo.length;i++){
             drawDensityBackground(denCtx,(460-15*chrnum)+15*i,chrinfo[i].chrLen,chrinfo[i].chr)
         }
@@ -245,19 +247,26 @@ $(document).ready(
 
     $.getJSON("/tools/tools_file5/",{case_id: caseid})
     .done(function(densityinfo){
-        for (var i=0;i<densityinfo.length;i++){
+        alert(typeof(densityinfo[1].end))
+        var chrnum = densityinfo[0].chrnum
+        alert("wha")
+        alert(densityinfo)
+        for (var i=1;i<densityinfo.length;i++){
             var chrindex = densityinfo[i].chr
             var yAxis = (460-15*chrnum)+15*chrindex
+            alert(chrnum)
+            //var yAxis = (460-15*23)+15*chrindex
             drawDensityBlock(denCtx,yAxis,densityinfo[i].start,densityinfo[i].end,densityinfo[i].density)
-        }});
-
+        }
+    })
+    .fail(function(){alert('file5 fail load data')});
     drawDensityLegend(denCtx);
     });
 
 
 $(document).ready((function(){
-    download(circCanvas, circDownload);
-    download(denCanvas, denDownload);
+    download("circCanvas", circDownload);
+    download("denCanvas", denDownload);
 }));
 
 $(document).ready(function(){

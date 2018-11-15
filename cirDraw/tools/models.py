@@ -8,6 +8,31 @@
 from django.db import models
 import uuid
 
+
+
+
+class ToolsChromosome(models.Model):
+    caseid = models.ForeignKey('ToolsUploadcase', models.DO_NOTHING, blank=True, null=True)
+    chr_ci = models.CharField(max_length=50)
+    chr_start = models.IntegerField()
+    chr_end = models.IntegerField()
+
+    class Meta:
+        db_table = 'tools_chromosome'
+
+class ToolsScalegenome(models.Model):
+    species = models.CharField(max_length=100)
+    chr_ci = models.CharField(max_length=30)
+    gene_min_start = models.IntegerField()
+    gene_max_end = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'tools_scalegenome'
+
+
+
+
 class ToolsAnnotation(models.Model):
     gene_type = models.CharField(max_length=50)
     gene_name = models.CharField(max_length=200)
@@ -37,7 +62,6 @@ class ToolsEachobservation(models.Model):
     caseid = models.ForeignKey('ToolsUploadcase', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'tools_eachobservation'
 
 
@@ -45,7 +69,6 @@ class ToolsUploadcase(models.Model):
     whichcase = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     class Meta:
-        managed = False
         db_table = 'tools_uploadcase'
 
 
