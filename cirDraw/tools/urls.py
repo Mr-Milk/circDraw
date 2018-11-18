@@ -6,7 +6,7 @@ from django.conf import settings
 urlpatterns = [
 	url(r'^$', views.render_upload_page, name='tools'), # render upload page
     url(r'^test_submit/$', views.upload_fine, name='test_submit'),
-    url(r'^test_display/2db8b80b-9e29-4967-b764-8afeb6115de5$', views.display_fine, name='test_display'),
+    url(r'^test_display/b87f7317-d42b-4ee7-bed0-76873d9fd41b$', views.display_fine, name='test_display'),
     url(r'^submit/$', views.upload_and_save, name='upload&save'), # upload file; sink into db and return uuid -> redirct to /display/<uuid>
     url(r'^display/(?P<caseid>[0-9a-f-]+)$', views.render_display_page, name="render_display"), # already checked
     url(r'^tools_file1/$', views.handle_file1, name="tools_file1"),

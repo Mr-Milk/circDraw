@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse, JsonResponse
 from .forms import UploadFileForm
-from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome
+from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
 from .process_file import handle_uploaded_file
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 from django.test import Client
+from math import floor
 # Create your views here.
 
 
@@ -61,7 +62,7 @@ def upload_fine(request):
 
 # test display is connected
 def display_fine(request):
-    context = {'caseid':'2db8b80b-9e29-4967-b764-8afeb6115de5'}
+    context = {'caseid':'b87f7317-d42b-4ee7-bed0-76873d9fd41b'}
     return render(request, 'tools/tools.html', context)
 
 
@@ -253,14 +254,7 @@ def handle_file4(request):
         print(chr_lens)
         """
         obs = ToolsChromosome.objects.filter(caseid__exact=caseid)
-        chr_lens = []
-        max_len = 0
-        for i in obs:
-            length = i.chr_end - i.chr_start
-            if length > max_len:
-                max_len = length
-            chr_len = {'chr': i.chr_ci, 'chrLen': length}
-            chr_lens.append(chr_len)
+        max_len, chr_lens = chr_lengths(obs)
         for i in chr_lens:
             new_length = scaling(i['chrLen'], max_len, 0, 400)
             i['chrLen'] = new_length
@@ -268,6 +262,18 @@ def handle_file4(request):
     else:
         print("your request method for file4 is not get")
         raise Http404
+
+def chr_lengths(queryset):
+    chr_lens = []
+    max_len = 0
+    for i in queryset:
+        length = i.chr_end - i.chr_start
+        if max_len < length:
+            max_len = length
+        chr_len = {'chr': i.chr_ci, 'chrLen': length}
+        chr_lens.append(chr_len)
+    return (max_len, chr_lens)
+
 
 # -------------handle_file5----------------------------------
 
@@ -284,59 +290,93 @@ def toCHR(num):
         c_num = str(num)
     return "chr" + c_num
 
+
+def half_round(fnum):
+    """return the round num by unit of 0.5"""
+    round_num = floor(fnum)
+    if fnum > (round_num + 0.5):
+        return round_num + 0.5
+    return round_num
+
 def handle_file5(request):
     if request.method == "GET":
         caseid = request.GET['case_id']
-        circobs = ToolsEachobservation.objects.filter(caseid_id__exact=caseid)
-        print("OK: ",len(circobs))
         # create circRNA and gene group based on chr
         data_groups = [[] for _ in range(2)]
         results = []
         densitys = 0
-        for i in range(25):
+        # only loop the chr the file has
+        chr_exist = ToolsChromosome.objects.filter(caseid_id__exact=caseid)
+        chrs = [get_chr_num(i.chr_ci)-1 for i in chr_exist]
+        colors = [{'chrnum': len(chrs)}]
+        pixels = 800
+        max_lens, chr_lens = chr_lengths(chr_exist)
+        for i in chr_lens:
+            new_length = round(scaling(i['chrLen'], max_lens, 0, 400))
+            i['chrLen'] = new_length
+        print("chrs are:",chrs)
+        for i in chrs:
+            # get current chr length
+            for m in chr_lens:
+                if get_chr_num(m['chr']) == (i+1):
+                    chr_len_now = m['chrLen']
+            chr_pixels = chr_len_now * 2
+            print('chr_pixels: ',chr_pixels)
+            chr_colors = []
+            for r in range(chr_pixels):
+                dic = {'chr': i+1, 'start': r/2, 'end': (1+r)/2, 'density': 0}
+                chr_colors.append(dic)
+
             chr_ccc = toCHR(i+1)
             data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
             data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ccc)
+            gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
+            min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
 
             print("No. {0} chr's gene_len is {1} and cir_len is {2}".format(str(i+1), len(data_groups[1]), len(data_groups[0])))
+
             # we want to divide the group so that the loop's runtime will be reduced.
-
-
 
             # the loop
             for each in data_groups[1]:
                 start, end = each.gene_start, each.gene_end
+                scale_start = half_round(scaling(start, max_gene_end, min_gene_start, 400))
+                scale_end = half_round(scaling(end, max_gene_end, min_gene_start, 400))
+                if scale_end > scale_start:
+                    scale_end += 0.5
+
                 count = 0
                 for r in data_groups[0]:
                     if circ_isin(each, r):
-                        #print("I'm counted")
+                        print("I'm counted")
                         count += 1
                        # print(count)
                 #print("the count for this gene is ",count)
                 if count != 0:
-                    ret = {'chr': i, 'start': start, 'end': end, 'density': count}
-                #print("count:{0}".format(count))
+                    for x in range(floor(2*scale_start), floor(2*scale_end)):
+                       chr_colors[x]['density'] += count
                     densitys += count
-                    results.append(ret)
+            colors += chr_colors
 
-            print("finish chr {} and count is {}".format(i,densitys))
+        acount = [0,0]
+        for i in colors[1:]:
+            i['density'] = round((i['density'] / densitys)*100)
 
-        for i in results:
-            i['density'] = round((i['density'] / densitys)*100000)
+            if i['chr'] == 1:
+                acount[0] += 1
+            else:
+                acount[1] += 1
+        print('count is ', acount)
 
-        # get total chrnum
-        chromobs = ToolsChromosome.objects.filter(caseid__exact=caseid)
-        chrnum = len(chromobs)
-        results = [{'chrnum':chrnum}] + results
         """
-    # fake data:
-    results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
-    """
-    for res in results:
-        print(res)
-    print("file5 has been handled with lens of returning list: ",len(results))
+        # fake data:
+        results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
+        """
+        #for res in colors[1:]:
+         #   print(res)
+        print("file5 has been handled with lens of returning list: ",len(colors))
 
-    return JsonResponse(results,safe=False)
+        return JsonResponse(colors,safe=False)
 
 def get_chr_num(chr_ci):
     if chr_ci[:3] != "chr":

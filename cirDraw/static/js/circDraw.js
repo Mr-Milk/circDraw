@@ -249,15 +249,20 @@ $(document).ready(
     .done(function(densityinfo){
         alert(typeof(densityinfo[1].end))
         var chrnum = densityinfo[0].chrnum
-        alert("wha")
-        alert(densityinfo)
+        var chr19num = 0
         for (var i=1;i<densityinfo.length;i++){
             var chrindex = densityinfo[i].chr
+            if (chrindex == 19) {chr19num++}
             var yAxis = (460-15*chrnum)+15*chrindex
-            alert(chrnum)
             //var yAxis = (460-15*23)+15*chrindex
             drawDensityBlock(denCtx,yAxis,densityinfo[i].start,densityinfo[i].end,densityinfo[i].density)
         }
+        console.log(chr19num)
+
+//        drawDensityBlock(denCtx,430,10,11,10)
+//        drawDensityBlock(denCtx,430,11,12,10)
+//        drawDensityBlock(denCtx,430,14.5,15,100)
+//        drawDensityBlock(denCtx,430,15,15.5,40)
     })
     .fail(function(){alert('file5 fail load data')});
     drawDensityLegend(denCtx);
@@ -265,8 +270,8 @@ $(document).ready(
 
 
 $(document).ready((function(){
-    download("circCanvas", circDownload);
-    download("denCanvas", denDownload);
+    download("circCanvas", "circDownload");
+    download("denCanvas", "denDownload");
 }));
 
 $(document).ready(function(){
