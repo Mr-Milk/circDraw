@@ -6,6 +6,9 @@ from .process_file import handle_uploaded_file
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 from django.test import Client
+from scipy.stats import norm
+from sklearn.neighbors import KernelDensity
+import numpy as np
 from math import floor
 # Create your views here.
 
@@ -231,34 +234,21 @@ def handle_file3(request):
 def handle_file4(request):
     if request.method == 'GET':
         caseid = request.GET['case_id']
-        """
-        obs = ToolsEachobservation.objects.filter(caseid__exact=caseid).values('chr_ci').distinct()
-        print([i['chr_ci'] for i in obs])
-        chr_lens = []
-        max_len = 0
-        for ob in obs:
-            chr_ci = ob['chr_ci']
-            model_name = ToolsAnnotation
-            start_name, end_name = 'gene_start', 'gene_end'
-            print(model_name, chr_ci,start_name, end_name)
-            max_end, min_start = get_scale_se(model_name, chr_ci, start_name, end_name)
-            length = max_end - min_start
-            print(length)
-            if length > max_len:
-                max_len = length
-            if length != 0:
-                chr_len = {'chr': chr_ci, 'chrLen': length}
-                chr_lens.append(chr_len)
-        for i in chr_lens:
-            i['chrLen'] = scaling(i['chrLen'], max_len, 0, 400)
-        print(chr_lens)
-        """
         obs = ToolsChromosome.objects.filter(caseid__exact=caseid)
-        max_len, chr_lens = chr_lengths(obs)
-        for i in chr_lens:
-            new_length = scaling(i['chrLen'], max_len, 0, 400)
-            i['chrLen'] = new_length
-        return JsonResponse(chr_lens, safe=False)
+        gene_lens = []
+        # which chr is involoed:
+        chr_inv = [i.chr_ci for i in obs]
+        max_len = 0
+        for i in chr_inv:
+            gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=i)[0]
+            lens = gene_ob.gene_max_end - gene_ob.gene_min_start
+            if lens > max_len:
+                max_len = lens
+            gene_lens.append({'chr':i, 'chrLen': lens})
+        # update scale
+        for i in gene_lens:
+            i['chrLen'] = (i['chrLen'] / max_len) * 400
+        return JsonResponse(gene_lens, safe=False)
     else:
         print("your request method for file4 is not get")
         raise Http404
@@ -291,92 +281,133 @@ def toCHR(num):
     return "chr" + c_num
 
 
-def half_round(fnum):
-    """return the round num by unit of 0.5"""
-    round_num = floor(fnum)
-    if fnum > (round_num + 0.5):
-        return round_num + 0.5
-    return round_num
 
 def handle_file5(request):
     if request.method == "GET":
         caseid = request.GET['case_id']
+        #####################################
+        ####### get basic information #######
+        #####################################
+
         # create circRNA and gene group based on chr
         data_groups = [[] for _ in range(2)]
         results = []
-        densitys = 0
-        # only loop the chr the file has
+        # chr exist in the uploaded file
         chr_exist = ToolsChromosome.objects.filter(caseid_id__exact=caseid)
-        chrs = [get_chr_num(i.chr_ci)-1 for i in chr_exist]
-        colors = [{'chrnum': len(chrs)}]
+        chrs = [get_chr_num(r.chr_ci)-1 for r in chr_exist]
+        results = [{'chrnum': len(chrs)}]
+        # max in gene:
+        max_gene_len = 0
+        for gg in chr_exist:
+            gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=gg.chr_ci)[0]
+            lens = gene_ob.gene_max_end - gene_ob.gene_min_start
+            if lens > max_gene_len:
+                max_gene_len = lens
+        # pixels
         pixels = 800
-        max_lens, chr_lens = chr_lengths(chr_exist)
+        max_chr_lens, chr_lens = chr_lengths(chr_exist)
+        # create pixels
+        pixel_num = 1000
+        x_d = np.linspace(0, 400, pixel_num)
+        ##########################
+        ########## loop ##########
+        ##########################
         for i in chr_lens:
-            new_length = round(scaling(i['chrLen'], max_lens, 0, 400))
-            i['chrLen'] = new_length
-        print("chrs are:",chrs)
-        for i in chrs:
             # get current chr length
-            for m in chr_lens:
-                if get_chr_num(m['chr']) == (i+1):
-                    chr_len_now = m['chrLen']
-            chr_pixels = chr_len_now * 2
-            print('chr_pixels: ',chr_pixels)
-            chr_colors = []
-            for r in range(chr_pixels):
-                dic = {'chr': i+1, 'start': r/2, 'end': (1+r)/2, 'density': 0}
-                chr_colors.append(dic)
-
-            chr_ccc = toCHR(i+1)
+            chr_num_now = get_chr_num(i['chr']) - 1
+            chr_len_now = i['chrLen']
+            # static info
+            densitys = 0
+            chr_results = []
+            density_box = [] # list to contain the pixels appeared
+            chr_ccc = toCHR(chr_num_now + 1)
             data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
             data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ccc)
             gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
             min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
+            gene_chr_lens = max_gene_end - min_gene_start
 
-            print("No. {0} chr's gene_len is {1} and cir_len is {2}".format(str(i+1), len(data_groups[1]), len(data_groups[0])))
+
 
             # we want to divide the group so that the loop's runtime will be reduced.
 
-            # the loop
+            # start the loop
             for each in data_groups[1]:
                 start, end = each.gene_start, each.gene_end
-                scale_start = half_round(scaling(start, max_gene_end, min_gene_start, 400))
-                scale_end = half_round(scaling(end, max_gene_end, min_gene_start, 400))
-                if scale_end > scale_start:
-                    scale_end += 0.5
-
+                # THE ACTUAL loop
                 count = 0
                 for r in data_groups[0]:
                     if circ_isin(each, r):
-                        print("I'm counted")
                         count += 1
-                       # print(count)
-                #print("the count for this gene is ",count)
                 if count != 0:
-                    for x in range(floor(2*scale_start), floor(2*scale_end)):
-                       chr_colors[x]['density'] += count
+                    ret = {'chr': chr_num_now, 'start': start, 'end': end, 'density': count}
+                    # figure out which group we are in:
+                    start_p, end_p = (start - min_gene_start) / (max_gene_end - min_gene_start), (end - min_gene_start) / (max_gene_end - min_gene_start)
+                    start_pixel, end_pixel = floor(start_p * pixel_num), floor(end_p * pixel_num)
+
+                    # assure start and end is not the same:
+                    if start_pixel == end_pixel and end_pixel < pixel_num:
+                        end_pixel += 1
+
+                    # add count to covered pixels:
+                    for e in range(start_pixel, end_pixel):
+                        density_box.append(e)
+
+                    # record total density
                     densitys += count
-            colors += chr_colors
 
-        acount = [0,0]
-        for i in colors[1:]:
-            i['density'] = round((i['density'] / densitys)*100)
+            # normalize density_box
+            #x = np.array(density_box)
+            #density = sum(norm(xi).pdf(x_d) for xi in x)
 
-            if i['chr'] == 1:
-                acount[0] += 1
-            else:
-                acount[1] += 1
-        print('count is ', acount)
+            # implement KDE for estimate the real distribution
+
+            x = np.array(density_box)
+            # instantiate and fit the KDE model
+            kde = KernelDensity(bandwidth=1.0, kernel='gaussian')
+            kde.fit(x[:,None])
+            # score_samples returns the log of the probability density
+            prob = np.exp(kde.score_samples(x_d[:, None]))
+            track = 0
+
+            for ee in prob:
+
+                ## convert to standard format and deliver:
+                number = track + 1
+                pixel_scale_start = (number / pixel_num) * 400 * (gene_chr_lens / max_gene_len)
+                number += 1
+                pixel_scale_end = (number / pixel_num) * 400 * (gene_chr_lens / max_gene_len)
+                pix = {'chr': chr_num_now + 1, 'start': pixel_scale_start, 'end': pixel_scale_end, 'density': round(ee*1000)}
+                track += 1
+                results.append(pix)
+
+
+
+            print("---------------------------")
+
 
         """
         # fake data:
         results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
         """
-        #for res in colors[1:]:
-         #   print(res)
-        print("file5 has been handled with lens of returning list: ",len(colors))
+        for res in results[1:]:
+            print(res)
+        print("file5 has been handled with lens of returning list: ",len(results))
 
-        return JsonResponse(colors,safe=False)
+        ######################################
+        ########## convert to pixel block ####
+        #####################################
+
+
+
+        return JsonResponse(results,safe=False)
+
+
+    chr_colors = []
+    for r in range(chr_pixels):
+        dic = {'chr': i+1, 'start': r/2, 'end': (1+r)/2, 'density': 0}
+        chr_colors.append(dic)
+
 
 def get_chr_num(chr_ci):
     if chr_ci[:3] != "chr":

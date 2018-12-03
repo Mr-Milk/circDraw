@@ -131,10 +131,10 @@ function drawCircLine(ctx,x1,x2)
 //Download function
 function download(canvas_id, document_id)
 {
-document.getElementById(document_id).onclick = function(){
-    canvas_id.toBlob(function(blob){
-        document.getElementById(document_id).setAttribute("href", URL.createObjectURL(blob));});
-}};
+    document.getElementById(document_id).onclick = function(){
+        canvas_id.toDataURL(function(link){
+        document.getElementById(document_id).setAttribute("href", link)})}
+};
 
 // Executing code
 // Getting caseid for following drawing
@@ -167,10 +167,12 @@ var realEnd
 $(document).ready(
     function(){
     $.getJSON("/tools/tools_file3/",{case_id: caseid, chr: "chr1", start: 0, end: 400})
-    .done(function(scaleValue){
-        realStart = scaleValue.realStart
-        realEnd = scaleValue.realEnd
-    })
+
+            .done(function(scaleValue){
+      var realStart = scaleValue.realStart
+      var realEnd = scaleValue.realEnd
+        console.log(realStart,realEnd)
+            })
     .fail(function() { alert('Fail at line131 getJSON lalala tools_file3, Please Retry.') });
 
     $("#start").val(realStart)
@@ -179,9 +181,11 @@ $(document).ready(
     $("#start,#end").on('change', function () {
         var scaleMin = parseInt($("#start").val());
         var scaleMax = parseInt($("#end").val());
+
         if (scaleMin > scaleMax) {
           $('#end').val(scaleMin);
         }
+
         $("#slider-range").slider({
           values: [scaleMin, scaleMax]
         });
@@ -219,6 +223,7 @@ $(document).ready(
 
       });
 
+
     $( "#slider-range" ).slider({
     range: true,
     min: realStart,
@@ -238,6 +243,7 @@ $(document).ready(
     $.getJSON("/tools/tools_file4/",{case_id: caseid})
     .done(function(chrinfo){
         var chrnum = chrinfo.length
+        console.log(caseid)
         alert("de")
         alert(chrnum)
         for (var i=0;i<chrinfo.length;i++){
@@ -249,20 +255,17 @@ $(document).ready(
     .done(function(densityinfo){
         alert(typeof(densityinfo[1].end))
         var chrnum = densityinfo[0].chrnum
-        var chr19num = 0
         for (var i=1;i<densityinfo.length;i++){
             var chrindex = densityinfo[i].chr
-            if (chrindex == 19) {chr19num++}
-            var yAxis = (460-15*chrnum)+15*chrindex
+            var yAxis = (460-15*chrnum)+15*(chrindex-1)
             //var yAxis = (460-15*23)+15*chrindex
             drawDensityBlock(denCtx,yAxis,densityinfo[i].start,densityinfo[i].end,densityinfo[i].density)
         }
-        console.log(chr19num)
 
-//        drawDensityBlock(denCtx,430,10,11,10)
-//        drawDensityBlock(denCtx,430,11,12,10)
-//        drawDensityBlock(denCtx,430,14.5,15,100)
-//        drawDensityBlock(denCtx,430,15,15.5,40)
+        drawDensityBlock(denCtx,430,10,11,10)
+        drawDensityBlock(denCtx,430,11,12,10)
+        drawDensityBlock(denCtx,430,14.5,15,100)
+        drawDensityBlock(denCtx,430,15,15.5,40)
     })
     .fail(function(){alert('file5 fail load data')});
     drawDensityLegend(denCtx);
