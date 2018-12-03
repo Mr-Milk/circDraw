@@ -62,15 +62,16 @@ function drawGene(ctx,start,end,name,color)
 };
 
 // Density distribution on one chromosome
-function drawDensityBackground(ctx,Yposition,chrLen,chrName)
+function drawDensityBackground(ctx,Yposition,chrLen,chrName,width)
 {
-    ctx.strokeRect(60,Yposition*ratio,chrLen*(5*ratio-1.2)/4,5*ratio)
+    ctx.strokeRect(60,Yposition*ratio,chrLen*(5*ratio-1.2)/4,width*ratio)
     ctx.fillStyle = '#E8D2CC'
-    ctx.fillRect(60,Yposition*ratio,chrLen*(5*ratio-1.2)/4,5*ratio)
+    ctx.fillRect(60,Yposition*ratio,chrLen*(5*ratio-1.2)/4,width*ratio)
     ctx.fillStyle = 'black'
-    ctx.font = '16px Arial'
-    ctx.fillText(chrName,5,(Yposition+5)*ratio)
-};
+    if(width<10){ctx.font = '16px Arial';ctx.fillText(chrName,5,(Yposition+width/2)*ratio)}
+    else{ctx.font = '20px Arial';ctx.fillText(chrName,5,(Yposition+2.5+width/2)*ratio)}
+
+}
 
 function drawDensityBlock(ctx,Yposition,start,end,density)
 {
@@ -131,10 +132,16 @@ function drawCircLine(ctx,x1,x2)
 //Download function
 function download(canvas_id, document_id)
 {
+<<<<<<< HEAD
     document.getElementById(document_id).onclick = function(){
         canvas_id.toDataURL(function(link){
         document.getElementById(document_id).setAttribute("href", link)})}
 };
+=======
+    var dataURL = canvas_id.toDataURL();
+    document.getElementById(document_id).onclick = function(){
+        document.getElementById('download').setAttribute("href", dataURL)}};
+>>>>>>> 857e280edb24b383e7d6796aa9a3f04f42f592f5
 
 // Executing code
 // Getting caseid for following drawing
@@ -195,6 +202,8 @@ $(document).ready(
         var ajaxChrNum = parseInt($('#chrSelector').val());
 
         circCtx.clearReact(0, 0, circWidth, circHeight)
+        circCtx.fillStyle = "white";
+        circCtx.fillRect(0, 0, circCanvas.width, circCanvas.height)
         drawLine(circCtx,lineY,0.75, "grey")
 
         // file_1
@@ -252,20 +261,20 @@ $(document).ready(
     });
 
     $.getJSON("/tools/tools_file5/",{case_id: caseid})
-    .done(function(densityinfo){
-        alert(typeof(densityinfo[1].end))
-        var chrnum = densityinfo[0].chrnum
-        for (var i=1;i<densityinfo.length;i++){
-            var chrindex = densityinfo[i].chr
-            var yAxis = (460-15*chrnum)+15*(chrindex-1)
-            //var yAxis = (460-15*23)+15*chrindex
-            drawDensityBlock(denCtx,yAxis,densityinfo[i].start,densityinfo[i].end,densityinfo[i].density)
-        }
+    .done(function(chrinfo){
+        var chrnum, width
+        chrnum = chrinfo[0].chrnum
+        console.log("chrnum", chrnum, "chrLen", chrinfo.length)
+        if(chrnum<11){width = 10}else{width=5}
+        denCtx.fillStyle = "white";
+        denCtx.fillRect(0, 0, denCanvas.width, denCanvas.height)
+        for (var i=1;i<chrinfo.length;i++){
+        chrY = (410/chrnum)*(i-1)+50
+        console.log(chrY)
+        drawDensityBackground(denCtx,chrY,chrinfo[i].chrLen,chrinfo[i].chr,width)
+    }
+        console.log(chr19num)
 
-        drawDensityBlock(denCtx,430,10,11,10)
-        drawDensityBlock(denCtx,430,11,12,10)
-        drawDensityBlock(denCtx,430,14.5,15,100)
-        drawDensityBlock(denCtx,430,15,15.5,40)
     })
     .fail(function(){alert('file5 fail load data')});
     drawDensityLegend(denCtx);
@@ -295,11 +304,11 @@ $(document).ready(function(){
 
         download(ccCanvas, ccDownload)
 
-        /* File 6 format
-        var exonList = [{"name": "GNS2", "start":220, "end":230},
-            {"name": "CDN1", "start":250, "end":260},
-            {"name": "MILK", "start":290, "end":295}]
-        */
+        // File 6 format
+        //var exonList = [{"name": "GNS2", "start":220, "end":230},
+        //    {"name": "CDN1", "start":250, "end":260},
+        //    {"name": "MILK", "start":290, "end":295}]
+
 
         $.getJSON('file6', {case_id: caseid, chr: thisChr, start: thisStart, end: thisEnd})
         .done(function(exonList){
