@@ -2,7 +2,7 @@
 
 An online circRNA visualization and analysis tool.
 
-Using [circDraw](www.circdraw.com)
+Using [circDraw](http://144.202.111.235:8000)
 
 ### Introduction
 
