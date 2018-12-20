@@ -1,19 +1,40 @@
-# Displaying-circRNA-isoforms-with-sashima-plot
-The script are trying to help researchers to draw visualize circRNA isoforms.
+# CircDraw
+
+An online circRNA visualization and analysis tool.
+
+Using [circDraw](http://144.202.111.235:8000)
+
+### Introduction
+
+The circDraw allow visualization circRNA analysis results of circRNA analysis tools. It's user friendly and allow you to get your picture within few clicks.
 
 
-### Example
-|chr	|start	|end	|type |draw_curve
-|:--:|:--:|:--:|:--:|:--:|
-|chr1	|74	|87	|exon|no|
-|chr1	|5	|43	|intron|yes|
-|chr1	|54	|74	|exon|no|
-|chr1	|23	|62	|3'UTR|no|
-|chr1	|85	|100	|intron|yes|
-|chr1	|23	|63	|3'UTR|no|
-|chr1	|46	|78	|intron|yes|
-|chr1	|14	|46	|exon	|no|
-|chr1	|35	|72	|3'UTR	|no|
-|chr1	|88	|93	|intron	|yes|
 
-![Example](https://github.com/Mr-Milk/Displaying-circRNA-isoforms-with-sashima-plot/blob/master/Picture1.png)
+### Manual
+
+#### File Upload
+
+Supported circRNA software
+
+- CIRI2
+
+
+
+Upload instruction
+
+
+
+#### How to read Results?
+
+
+
+
+
+### More Information
+
+- Citation: 
+
+- Contact: 
+
+
+Copyright: Qu Lab, School of Life School, Sun Yat-sen University
