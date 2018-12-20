@@ -132,16 +132,9 @@ function drawCircLine(ctx,x1,x2)
 //Download function
 function download(canvas_id, document_id)
 {
-<<<<<<< HEAD
-    document.getElementById(document_id).onclick = function(){
-        canvas_id.toDataURL(function(link){
-        document.getElementById(document_id).setAttribute("href", link)})}
-};
-=======
     var dataURL = canvas_id.toDataURL();
     document.getElementById(document_id).onclick = function(){
         document.getElementById('download').setAttribute("href", dataURL)}};
->>>>>>> 857e280edb24b383e7d6796aa9a3f04f42f592f5
 
 // Executing code
 // Getting caseid for following drawing
@@ -182,6 +175,25 @@ $(document).ready(
             })
     .fail(function() { alert('Fail at line131 getJSON lalala tools_file3, Please Retry.') });
 
+    // Drawing isoform
+
+    var ajaxStart = parseInt($("#start").val());
+    var ajaxEnd = parseInt($("#end").val());
+    var ajaxChrNum = parseInt($('#chrSelector').val());
+
+    console.log(ajaxChrNum, typeof(ajaxChrNum))
+    $.getJSON("/tools/tools_file1/",{case_id: caseid, chr: ajaxChrNum, start: ajaxStart, end: ajaxEnd})
+    .done(function(circinfo){
+        alert("hi")
+        console.log(circinfo)
+        for (var i=0;i<circinfo.length;i++){
+            drawRectangle(circCtx,circinfo[i].start,"orange")
+            drawRectangle(circCtx,circinfo[i].end,"green")
+            drawArc(circCtx,circinfo[i].start,circinfo[i].end,0.75,'red')
+        }
+    })
+    .fail(function(){alert("file1 down")});
+
     $("#start").val(realStart)
     $("#end").val(realEnd)
 
@@ -212,6 +224,8 @@ $(document).ready(
         console.log(ajaxChrNum);
         $.getJSON("/tools/tools_file1/",{case_id: caseid, chr: ajaxChrNum, start: ajaxStart, end: ajaxEnd})
         .done(function(circinfo){
+            alert("hi")
+            console.log(circinfo)
             for (var i=0;i<circinfo.length;i++){
                 drawRectangle(circCtx,circinfo[i].start,"orange")
                 drawRectangle(circCtx,circinfo[i].end,"green")
@@ -219,7 +233,7 @@ $(document).ready(
             }
         })
 
-        .fail( function() {alert('Fail to load the file at line171 tools_file1, Please Retry.')});
+        .fail( function() {alert('Fail to load the file1 at line171 tools_file1, Please Retry.')});
 
         $.getJSON("/tools/tools_file2/",{case_id: caseid, chr: ajaxChrNum, start: ajaxStart, end: ajaxEnd})
         .done(function(geneinfo){
@@ -253,13 +267,12 @@ $(document).ready(
     .done(function(chrinfo){
         var chrnum = chrinfo.length
         console.log(caseid)
-        alert("de")
-        alert(chrnum)
         for (var i=0;i<chrinfo.length;i++){
             drawDensityBackground(denCtx,(460-15*chrnum)+15*i,chrinfo[i].chrLen,chrinfo[i].chr)
         }
     });
 
+    //$.getJSON("/tools/tools_file5/",{case_id: caseid}//)
     $.getJSON("/tools/tools_file5/",{case_id: caseid})
     .done(function(chrinfo){
         var chrnum, width
@@ -276,7 +289,7 @@ $(document).ready(
         console.log(chr19num)
 
     })
-    .fail(function(){alert('file5 fail load data')});
+    //.fail(function(){alert('file5 fail load data')});
     drawDensityLegend(denCtx);
     });
 

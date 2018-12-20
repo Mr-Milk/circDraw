@@ -81,7 +81,7 @@ def upload_and_save(request):
         render_display(caseid)
     """
     filename = 'myfile'
-    header, results = process_upload(request, filename)
+    header, results, file_type, species = process_upload(request, filename)
     caseid = save(header, results)
     return redirect('render_display', caseid=caseid)
 
@@ -95,7 +95,9 @@ def process_upload(request, filename):
         if form.is_valid():
             data_raw_file = request.FILES[filename]
             header, result = handle_uploaded_file(data_raw_file)
-            return header, result
+            file_type = detect_filetype(data_raw_file)
+            species = detect_species(data_raw_file)
+            return header, result, file_type, species
         else:
             print('upload file form is not valid')
             raise Http404
@@ -105,11 +107,10 @@ def process_upload(request, filename):
 
 
 
-def save(header, results):
+def save(header, results, file_type, species):
     """
     >>> header = ['circRNA_ID', 'chr_ci', 'circRNA_start', 'circRNA_end']
     >>> results = [{'chr_ci': 'KI270792.1', 'circRNA_ID': 'KI270792.1:75980|83617','circRNA_end': '83617', 'circRNA_start': '75980'}, {'chr_ci': 'KI270850.1','circRNA_ID': 'KI270850.1:171308|171975','circRNA_end': '171975','circRNA_start': '171308'}]
-    >>> save(header, results)
     """
     case = ToolsUploadcase()
     caseid = case.whichcase
@@ -175,21 +176,30 @@ def get_scale_se(model_name, chr_ci, start_name, end_name):
 def handle_file1(request):
     if request.method == 'GET':
         case_id = request.GET['case_id']
-        chr_ci = request.GET['chr']
-        start = request.GET['start']
-        end = request.GET['end']
+        chr_ci = toCHR(int(request.GET['chr']))
+        scale_start = int(request.GET['start'])
+        scale_end = int(request.GET['end'])
+        chr_max_min = ToolsChromosome.objects.filter(caseid__exact=case_id).get(chr_ci__exact=chr_ci)
+        max_end, min_start = chr_max_min.chr_end, chr_max_min.chr_start
+        # descaling the start and end
+        start = descaling(scale_start, max_end, min_start, 400)
+        end = descaling(scale_end, max_end, min_start, 400)
+        print(start, end)
         obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
-        #max_end, min_start = obs.aggregate(Max('circRNA_end'))['circRNA_end__max'], obs.aggregate(Min('circRNA_start'))['circRNA_start__min']
-        max_end, min_start = get_scale_se(ToolsAnnotation, chr_ci, 'circRNA_start', 'circRNA_end')
+        print(len(obs))
+        # max_end, min_start = obs.aggregate(Max('circRNA_end'))['circRNA_end__max'], obs.aggregate(Min('circRNA_start'))['circRNA_start__min']
+
         results = []
-        for ob in obs:
+        for ob in obs[:1]:
             result_draw = {
-                'start': scaling(ob.circRNA_start, max_end, min_start, 400),
-                'end': scaling(ob.circRNA_end, max_end, min_start, 400),
+                #'start': scaling(ob.circRNA_start, max_end, min_start, 400),
+                #'end': scaling(ob.circRNA_end, max_end, min_start, 400),
+                'start': 0,
+                'end': 400,
                 'obid': ob.pk,
             }
-            results.append(result_Draw)
-        return JsonResponse(results)
+            results.append(result_draw)
+        return JsonResponse(results, safe=False)
     else:
         print("your request for file1 is not get")
         raise Http404
@@ -309,6 +319,9 @@ def handle_file5(request):
         # create pixels
         pixel_num = 1000
         x_d = np.linspace(0, 400, pixel_num)
+
+        # create gene_box
+        gene_box = []
         ##########################
         ########## loop ##########
         ##########################
@@ -326,8 +339,6 @@ def handle_file5(request):
             gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
             min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
             gene_chr_lens = max_gene_end - min_gene_start
-
-
 
             # we want to divide the group so that the loop's runtime will be reduced.
 
@@ -356,9 +367,24 @@ def handle_file5(request):
                     # record total density
                     densitys += count
 
-            # normalize density_box
-            #x = np.array(density_box)
-            #density = sum(norm(xi).pdf(x_d) for xi in x)
+                    # retrieve the gene information from annotion
+                    """
+                    gene_chromosome = each.chr_ci
+                    gene_species = each.species
+                    gene_name = each.gene_name
+                    gene_id = each.gene_id
+                    gene_type = each.gene_type
+                    gene_start = start
+                    gene_end = end
+                    gene_density = count
+                    gene = {'chromosome': gene_chromosome, 'speices': gene_species, 'name':gene_name, 'type': gene_type, 'density':gene_density, 'start': gene_start, 'end': gene_end}
+                    gene_box.append(gene)
+
+
+            # calculate density
+            for i in gene_box:
+                i['density'] = i['density'] / densitys
+            """
 
             # implement KDE for estimate the real distribution
 
@@ -399,8 +425,10 @@ def handle_file5(request):
         #####################################
 
 
+        #final_out = [results, gene_box]
+        print('check gene_box', gene_box[:20])
 
-        return JsonResponse(results,safe=False)
+        return JsonResponse(results, safe=False)
 
 
     chr_colors = []

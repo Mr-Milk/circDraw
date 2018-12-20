@@ -9,8 +9,6 @@ from django.db import models
 import uuid
 
 
-
-
 class ToolsChromosome(models.Model):
     caseid = models.ForeignKey('ToolsUploadcase', models.DO_NOTHING, blank=True, null=True)
     chr_ci = models.CharField(max_length=50)
@@ -31,8 +29,6 @@ class ToolsScalegenome(models.Model):
         db_table = 'tools_scalegenome'
 
 
-
-
 class ToolsAnnotation(models.Model):
     gene_type = models.CharField(max_length=50)
     gene_name = models.CharField(max_length=200)
@@ -40,6 +36,7 @@ class ToolsAnnotation(models.Model):
     gene_start = models.IntegerField()
     gene_end = models.IntegerField()
     gene_id = models.CharField(max_length=200, primary_key=True)
+    species = models.CharField(max_length=200)
 
     class Meta:
         managed = False

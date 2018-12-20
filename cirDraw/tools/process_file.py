@@ -1,5 +1,11 @@
 info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
 
+def detect_filetype(f):
+    return "CIRI2.0"
+
+def detect_species(f):
+    return "human"
+
 def handle_uploaded_file(f, filter_lst=info_needed):
 	lines = []
 	f_iter = iter(f)

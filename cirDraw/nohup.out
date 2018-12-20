@@ -1,0 +1,164 @@
+/usr/local/lib/python3.6/dist-packages/sklearn/externals/joblib/externals/cloudpickle/cloudpickle.py:47: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+[17/Dec/2018 09:04:25] "GET /tools/ HTTP/1.1" 200 6509
+[17/Dec/2018 09:04:30] "GET / HTTP/1.1" 200 7221
+[17/Dec/2018 09:04:43] "GET /tools/ HTTP/1.1" 200 6509
+[17/Dec/2018 09:04:45] "POST /tools/test_display/914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 200 10998
+Not Found: /tools/test_display/lenChart_URL
+[17/Dec/2018 09:04:45] "GET /tools/test_display/lenChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4754
+Not Found: /tools/test_display/isoChart_URL
+[17/Dec/2018 09:04:45] "GET /tools/test_display/isoChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4754
+Not Found: /tools/test_display/exonChart_URL
+[17/Dec/2018 09:04:45] "GET /tools/test_display/exonChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4757
+[17/Dec/2018 09:04:45] "GET /tools/tools_file4/?case_id=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 200 1072
+[17/Dec/2018 09:04:46] "GET /tools/tools_file1/?case_id=914cfa25acee400aa41a95e9a66899e0&chr=1&start=0&end=400 HTTP/1.1" 200 88866
+Not Found: /tools/tools_nofile5/
+[17/Dec/2018 09:04:46] "GET /tools/tools_nofile5/?case_id=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4722
+[17/Dec/2018 09:04:47] "GET /tools/tools_file3/?case_id=914cfa25acee400aa41a95e9a66899e0&chr=chr1&start=0&end=400 HTTP/1.1" 200 46
+[17/Dec/2018 09:04:55] "GET /download/ HTTP/1.1" 200 5612
+[17/Dec/2018 09:04:58] "GET /tools/ HTTP/1.1" 200 6509
+[17/Dec/2018 09:08:15] "POST /tools/test_display/914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 200 10998
+Not Found: /tools/test_display/lenChart_URL
+[17/Dec/2018 09:08:16] "GET /tools/test_display/lenChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4754
+Not Found: /tools/test_display/exonChart_URL
+[17/Dec/2018 09:08:16] "GET /tools/test_display/exonChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4757
+Not Found: /tools/test_display/isoChart_URL
+[17/Dec/2018 09:08:16] "GET /tools/test_display/isoChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4754
+[17/Dec/2018 09:08:16] "GET /tools/tools_file4/?case_id=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 200 1072
+[17/Dec/2018 09:08:16] "GET /tools/tools_file1/?case_id=914cfa25acee400aa41a95e9a66899e0&chr=1&start=0&end=400 HTTP/1.1" 200 88866
+Not Found: /tools/tools_nofile5/
+[17/Dec/2018 09:08:16] "GET /tools/tools_nofile5/?case_id=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4722
+[17/Dec/2018 09:08:17] "GET /tools/tools_file3/?case_id=914cfa25acee400aa41a95e9a66899e0&chr=chr1&start=0&end=400 HTTP/1.1" 200 46
+[17/Dec/2018 09:08:46] "POST /tools/test_display/914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 200 10998
+Not Found: /tools/test_display/isoChart_URL
+[17/Dec/2018 09:08:47] "GET /tools/test_display/isoChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4754
+Not Found: /tools/test_display/lenChart_URL
+[17/Dec/2018 09:08:47] "GET /tools/test_display/lenChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4754
+Not Found: /tools/test_display/exonChart_URL
+[17/Dec/2018 09:08:47] "GET /tools/test_display/exonChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4757
+[17/Dec/2018 09:08:47] "GET /tools/tools_file1/?case_id=914cfa25acee400aa41a95e9a66899e0&chr=1&start=0&end=400 HTTP/1.1" 200 88866
+[17/Dec/2018 09:08:47] "GET /tools/tools_file4/?case_id=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 200 1072
+Not Found: /tools/tools_nofile5/
+[17/Dec/2018 09:08:47] "GET /tools/tools_nofile5/?case_id=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4722
+[17/Dec/2018 09:08:48] "GET /tools/tools_file3/?case_id=914cfa25acee400aa41a95e9a66899e0&chr=chr1&start=0&end=400 HTTP/1.1" 200 46
+Performing system checks...
+
+System check identified no issues (0 silenced).
+December 17, 2018 - 09:04:20
+Django version 2.1.1, using settings 'cirDraw.settings'
+Starting development server at http://144.202.111.235:8000/
+Quit the server with CONTROL-C.
+746695.0 247310456.0
+971
+746695.0 247310456.0
+971
+746695.0 247310456.0
+971
+/usr/local/lib/python3.6/dist-packages/sklearn/externals/joblib/externals/cloudpickle/cloudpickle.py:47: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+[17/Dec/2018 09:10:40] "POST /tools/test_display/914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 200 10998
+Not Found: /tools/test_display/lenChart_URL
+[17/Dec/2018 09:10:41] "GET /tools/test_display/lenChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4754
+Not Found: /tools/test_display/isoChart_URL
+[17/Dec/2018 09:10:41] "GET /tools/test_display/isoChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4754
+Not Found: /tools/test_display/exonChart_URL
+[17/Dec/2018 09:10:41] "GET /tools/test_display/exonChart_URL?caseid=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4757
+[17/Dec/2018 09:10:42] "GET /tools/tools_file4/?case_id=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 200 1072
+[17/Dec/2018 09:10:42] "GET /tools/tools_file1/?case_id=914cfa25acee400aa41a95e9a66899e0&chr=1&start=0&end=400 HTTP/1.1" 200 94
+Not Found: /tools/tools_nofile5/
+[17/Dec/2018 09:10:42] "GET /tools/tools_nofile5/?case_id=914cfa25acee400aa41a95e9a66899e0 HTTP/1.1" 404 4722
+[17/Dec/2018 09:10:43] "GET /tools/tools_file3/?case_id=914cfa25acee400aa41a95e9a66899e0&chr=chr1&start=0&end=400 HTTP/1.1" 200 46
+Performing system checks...
+
+System check identified no issues (0 silenced).
+December 17, 2018 - 09:10:38
+Django version 2.1.1, using settings 'cirDraw.settings'
+Starting development server at http://144.202.111.235:8000/
+Quit the server with CONTROL-C.
+746695.0 247310456.0
+971
+/usr/local/lib/python3.6/dist-packages/sklearn/externals/joblib/externals/cloudpickle/cloudpickle.py:47: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Performing system checks...
+
+System check identified no issues (0 silenced).
+December 17, 2018 - 09:26:14
+Django version 2.1.1, using settings 'cirDraw.settings'
+Starting development server at http://144.202.111.235:8000/
+Quit the server with CONTROL-C.
+/usr/local/lib/python3.6/dist-packages/sklearn/externals/joblib/externals/cloudpickle/cloudpickle.py:47: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Performing system checks...
+
+System check identified no issues (0 silenced).
+December 17, 2018 - 09:32:46
+Django version 2.1.1, using settings 'cirDraw.settings'
+Starting development server at http://144.202.111.235:8000/
+Quit the server with CONTROL-C.
+/usr/local/lib/python3.6/dist-packages/sklearn/externals/joblib/externals/cloudpickle/cloudpickle.py:47: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Performing system checks...
+
+System check identified no issues (0 silenced).
+December 17, 2018 - 09:33:15
+Django version 2.1.1, using settings 'cirDraw.settings'
+Starting development server at http://144.202.111.235:8000/
+Quit the server with CONTROL-C.
+/usr/local/lib/python3.6/dist-packages/sklearn/externals/joblib/externals/cloudpickle/cloudpickle.py:47: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Performing system checks...
+
+System check identified no issues (0 silenced).
+December 17, 2018 - 09:34:36
+Django version 2.1.1, using settings 'cirDraw.settings'
+Starting development server at http://144.202.111.235:8000/
+Quit the server with CONTROL-C.
+/usr/local/lib/python3.6/dist-packages/sklearn/externals/joblib/externals/cloudpickle/cloudpickle.py:47: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Performing system checks...
+
+System check identified no issues (0 silenced).
+December 17, 2018 - 09:35:31
+Django version 2.1.1, using settings 'cirDraw.settings'
+Starting development server at http://144.202.111.235:8000/
+Quit the server with CONTROL-C.
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7fe7b5c128c8>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/django/core/management/commands/runserver.py", line 117, in inner_run
+    self.check(display_num_errors=True)
+  File "/usr/local/lib/python3.6/dist-packages/django/core/management/base.py", line 379, in check
+    include_deployment_checks=include_deployment_checks,
+  File "/usr/local/lib/python3.6/dist-packages/django/core/management/base.py", line 366, in _run_checks
+    return checks.run_checks(**kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/django/core/checks/registry.py", line 71, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File "/usr/local/lib/python3.6/dist-packages/django/core/checks/urls.py", line 40, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File "/usr/local/lib/python3.6/dist-packages/django/core/checks/urls.py", line 57, in _load_all_namespaces
+    url_patterns = getattr(resolver, 'url_patterns', [])
+  File "/usr/local/lib/python3.6/dist-packages/django/utils/functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.6/dist-packages/django/urls/resolvers.py", line 533, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "/usr/local/lib/python3.6/dist-packages/django/utils/functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.6/dist-packages/django/urls/resolvers.py", line 526, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/usr/lib/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/root/noway/cirDraw/cirDraw/urls.py", line 21, in <module>
+    from tools import views as toolviews
+  File "/root/noway/cirDraw/tools/views.py", line 426
+    print('check gene_box': gene_box[:20])
+                          ^
+SyntaxError: invalid syntax
+Performing system checks...
+
