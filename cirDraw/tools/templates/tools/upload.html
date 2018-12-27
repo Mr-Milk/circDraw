@@ -9,7 +9,7 @@
     <div class="container">
           <div class="form-group">
                 <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
-                <form id="fileform" method="POST" action="{% url 'test_display' %}" enctype="multipart/form-data">
+                <form id="fileform" method="POST" action="{% url 'upload&save' %}" enctype="multipart/form-data">
                 {% csrf_token %}
                   <label class="btn btn-primary btn-sm" for="fileupload">
                     + Select File 

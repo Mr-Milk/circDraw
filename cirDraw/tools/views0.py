@@ -1,16 +1,36 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse, JsonResponse
 from .forms import UploadFileForm
-# from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
-from .data import circles_file1, genes_file2, chromosome_file4
-from .process_file import handle_uploaded_file, detect_filetype, detect_species
+from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
+from .process_file import handle_uploaded_file
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 from django.test import Client
+from scipy.stats import norm
 from sklearn.neighbors import KernelDensity
 import numpy as np
 from math import floor
 # Create your views here.
+
+
+"""
+what should be included in this view.py??
+
+>1) render_index_page -> HttpResponse of the index.html
+>2) upload and save :
+    >handle uploaded file and sink it to database;
+    >get back the case_id and attach it to the url;
+    >attach the overlap rate to url;
+>3) get_density_data:
+        >read_window_url->get_caseid & overlap rate;
+        >request_data_with_caseid and overlap_rate;
+        >compute density and return [{‘chr’: 1, ‘start’: 20, ‘end’: 50, ‘density’: 30}...]
+>4) render_gene_info(chromesome);
+    updata the corresponding column in
+
+>5) draw(request[caseid, chromesome, start/end]) -> return [{'start': 0, 'end':200}...]
+>6) view(request[caseid, chrome, whichgene(start, end)]) -> return [{'start': 0, 'end':200}...]
+"""
 
 # ----------------render index and upload page -----------------------
 def render_index_page(request):
@@ -45,12 +65,12 @@ def upload_fine(request):
 
 # test display is connected
 def display_fine(request):
-    context = {'caseid':'914cfa25acee400aa41a95e9a66899e0'}
+    context = {'caseid':'b87f7317-d42b-4ee7-bed0-76873d9fd41b'}
     return render(request, 'tools/tools.html', context)
 
 
 
-#--------------- from 'upload&save' ------------------------------
+#---------------
 def upload_and_save(request):
     """
     main function in this section. handle data-save_to_database-getid-jump_to_display_page
@@ -62,7 +82,7 @@ def upload_and_save(request):
     """
     filename = 'myfile'
     header, results, file_type, species = process_upload(request, filename)
-    caseid = "914cfa25acee400aa41a95e9a66899e0"
+    caseid = save(header, results)
     return redirect('render_display', caseid=caseid)
 
 
@@ -75,8 +95,8 @@ def process_upload(request, filename):
         if form.is_valid():
             data_raw_file = request.FILES[filename]
             header, result = handle_uploaded_file(data_raw_file)
-            # file_type = detect_filetype(data_raw_file)
-            # species = detect_species(data_raw_file)
+            file_type = detect_filetype(data_raw_file)
+            species = detect_species(data_raw_file)
             return header, result, file_type, species
         else:
             print('upload file form is not valid')
@@ -159,14 +179,23 @@ def handle_file1(request):
         chr_ci = toCHR(int(request.GET['chr']))
         scale_start = int(request.GET['start'])
         scale_end = int(request.GET['end'])
-        max_end, min_start = 247323230, 75980
+        chr_max_min = ToolsChromosome.objects.filter(caseid__exact=case_id).get(chr_ci__exact=chr_ci)
+        max_end, min_start = chr_max_min.chr_end, chr_max_min.chr_start
+        # descaling the start and end
+        start = descaling(scale_start, max_end, min_start, 400)
+        end = descaling(scale_end, max_end, min_start, 400)
+        print(start, end)
+        obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
+        print(len(obs))
+        # max_end, min_start = obs.aggregate(Max('circRNA_end'))['circRNA_end__max'], obs.aggregate(Min('circRNA_start'))['circRNA_start__min']
 
         results = []
-        obs = [a for a in circles_file1 if a.chr_ci == chr_ci]
-        for ob in obs:
+        for ob in obs[:1]:
             result_draw = {
-                'start': ob.start,
-                'end': ob.end,
+                #'start': scaling(ob.circRNA_start, max_end, min_start, 400),
+                #'end': scaling(ob.circRNA_end, max_end, min_start, 400),
+                'start': 0,
+                'end': 400,
                 'obid': ob.pk,
             }
             results.append(result_draw)
@@ -182,15 +211,15 @@ def handle_file2(request):
         chr_ci = request.GET['chr']
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        obs = [a for a in genes_file2 if a.chr_ci == chr_ci]
-        max_end, min_start = 247323230, 75980
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
+        max_end, min_start = get_scale_se(ToolsAnnotation, chr_ci, 'gene_start', 'gene_end')
         results = []
         for ob in obs:
             result = {
-                    'name': ob.name,
-                    'start': ob.start,
-                    'end': ob.end,
-                    'geneid': ob.pk
+                    'name': ob.gene_name,
+                    'start': scaling(ob.gene_start, max_end, min_start, 400),
+                    'end': scaling(ob.gene_end, max_end, min_start, 400),
+                    'geneid': ob.gene_id
                     }
             results.append(result)
         return JsonResponse(results)
@@ -203,7 +232,7 @@ def handle_file3(request):
         chr_ci = request.GET['chr']
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        max_end, min_start = 247323230, 75980
+        max_end, min_start = get_scale_se(ToolsAnnotation, chr_ci, 'gene_start', 'gene_end')
         real_start = descaling(start, max_end, min_start, 400)
         real_end = descaling(end, max_end, min_start, 400)
         result = {'realStart': real_start, 'realEnd': real_end}
@@ -215,14 +244,14 @@ def handle_file3(request):
 def handle_file4(request):
     if request.method == 'GET':
         caseid = request.GET['case_id']
-        obs = chromosome_file4
+        obs = ToolsChromosome.objects.filter(caseid__exact=caseid)
         gene_lens = []
         # which chr is involoed:
         chr_inv = [i.chr_ci for i in obs]
         max_len = 0
         for i in chr_inv:
-            gene_ob = [a for a in gene_genome_file4 if a.chr_ci==i][0]
-            lens = gene_ob.max_end - gene_ob.min_start
+            gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=i)[0]
+            lens = gene_ob.gene_max_end - gene_ob.gene_min_start
             if lens > max_len:
                 max_len = lens
             gene_lens.append({'chr':i, 'chrLen': lens})
@@ -238,7 +267,7 @@ def chr_lengths(queryset):
     chr_lens = []
     max_len = 0
     for i in queryset:
-        length = i.end - i.start
+        length = i.chr_end - i.chr_start
         if max_len < length:
             max_len = length
         chr_len = {'chr': i.chr_ci, 'chrLen': length}
@@ -274,18 +303,17 @@ def handle_file5(request):
         data_groups = [[] for _ in range(2)]
         results = []
         # chr exist in the uploaded file
-        chr_exist = [a for a in chromosome_file4 if a.caseid == caseid]
+        chr_exist = ToolsChromosome.objects.filter(caseid_id__exact=caseid)
         chrs = [get_chr_num(r.chr_ci)-1 for r in chr_exist]
         results = [{'chrnum': len(chrs)}]
         # max in gene:
         max_gene_len = 0
         for gg in chr_exist:
-            gene_ob = [a for a in gene_genome_file4 if a.chr_ci==gg.chr_ci][0]
-            lens = gene_ob.max_end - gene_ob.min_start
+            gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=gg.chr_ci)[0]
+            lens = gene_ob.gene_max_end - gene_ob.gene_min_start
             if lens > max_gene_len:
                 max_gene_len = lens
         # pixels
-        """
         pixels = 800
         max_chr_lens, chr_lens = chr_lengths(chr_exist)
         # create pixels
@@ -306,8 +334,8 @@ def handle_file5(request):
             chr_results = []
             density_box = [] # list to contain the pixels appeared
             chr_ccc = toCHR(chr_num_now + 1)
-            data_groups[0] = [a for a in circles_file1 if a.chr_co==chr_ccc]
-            data_groups[1] = []
+            data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
+            data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ccc)
             gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
             min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
             gene_chr_lens = max_gene_end - min_gene_start
@@ -340,7 +368,7 @@ def handle_file5(request):
                     densitys += count
 
                     # retrieve the gene information from annotion
-                   
+                    """
                     gene_chromosome = each.chr_ci
                     gene_species = each.species
                     gene_name = each.gene_name
@@ -356,7 +384,7 @@ def handle_file5(request):
             # calculate density
             for i in gene_box:
                 i['density'] = i['density'] / densitys
-            
+            """
 
             # implement KDE for estimate the real distribution
 
@@ -387,7 +415,7 @@ def handle_file5(request):
         """
         # fake data:
         results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
-
+        """
         for res in results[1:]:
             print(res)
         print("file5 has been handled with lens of returning list: ",len(results))
@@ -398,9 +426,15 @@ def handle_file5(request):
 
 
         #final_out = [results, gene_box]
-        #print('check gene_box', gene_box[:20])
+        print('check gene_box', gene_box[:20])
 
         return JsonResponse(results, safe=False)
+
+
+    chr_colors = []
+    for r in range(chr_pixels):
+        dic = {'chr': i+1, 'start': r/2, 'end': (1+r)/2, 'density': 0}
+        chr_colors.append(dic)
 
 
 def get_chr_num(chr_ci):
