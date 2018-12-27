@@ -2,13 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse, JsonResponse
 from .forms import UploadFileForm
 # from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
-from .data import circles_file1, genes_file2, chromosome_file4
+from .data import circles_file1, genes_file2, chromosome_file4, gene_genome_file4
 from .process_file import handle_uploaded_file, detect_filetype, detect_species
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 from django.test import Client
-from sklearn.neighbors import KernelDensity
-import numpy as np
 from math import floor
 # Create your views here.
 
@@ -75,8 +73,8 @@ def process_upload(request, filename):
         if form.is_valid():
             data_raw_file = request.FILES[filename]
             header, result = handle_uploaded_file(data_raw_file)
-            # file_type = detect_filetype(data_raw_file)
-            # species = detect_species(data_raw_file)
+            file_type = detect_filetype(data_raw_file)
+            species = detect_species(data_raw_file)
             return header, result, file_type, species
         else:
             print('upload file form is not valid')
@@ -226,6 +224,7 @@ def handle_file4(request):
             if lens > max_len:
                 max_len = lens
             gene_lens.append({'chr':i, 'chrLen': lens})
+
         # update scale
         for i in gene_lens:
             i['chrLen'] = (i['chrLen'] / max_len) * 400

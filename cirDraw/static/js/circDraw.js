@@ -266,7 +266,6 @@ $(document).ready(
     $.getJSON("/tools/tools_file4/",{case_id: caseid})
     .done(function(chrinfo){
         var chrnum = chrinfo.length
-        console.log(caseid)
         for (var i=0;i<chrinfo.length;i++){
             drawDensityBackground(denCtx,(460-15*chrnum)+15*i,chrinfo[i].chrLen,chrinfo[i].chr)
         }
