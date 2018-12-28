@@ -83,15 +83,7 @@ WSGI_APPLICATION = 'cirDraw.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cirDraw',
-        'USER': 'root',
-        'PASSWORD': '12345678',
-        'HOST': '127.0.0.1',
-    }
-}
+DATABASES = {}
 
 
 # Password validation

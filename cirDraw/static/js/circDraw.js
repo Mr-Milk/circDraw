@@ -271,7 +271,6 @@ $(document).ready(
         }
     });
 
-    //$.getJSON("/tools/tools_file5/",{case_id: caseid}//)
     $.getJSON("/tools/tools_file5/",{case_id: caseid})
     .done(function(chrinfo){
         var chrnum, width
