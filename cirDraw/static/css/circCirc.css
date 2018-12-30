@@ -25,3 +25,31 @@
             filter: alpha(opacity=88);
         }
 .x:hover {cursor: pointer;color: rgb(55,198,192);}
+
+.textarea {
+        height: 200px;
+        width: 500px;
+        padding: 20px;
+        border: 1px solid #888;
+        resize: vertical;
+        overflow: auto;
+        margin-bottom: 20px;
+        display: inline-block;
+        vertical-align:middle;
+      }
+      
+.textarea:empty:before {
+        color: #fed136;
+}
+
+#example {
+        margin-left:20px;
+        display: inline-block;
+        vertical-align:middle;
+        background-color: #fed136;
+}
+
+.download {
+        margin-top: 20px;
+        margin-bottom: 20px;
+}

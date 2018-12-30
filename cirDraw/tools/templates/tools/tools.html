@@ -6,58 +6,40 @@
     
     <!-- No container -->
 
-     <section id="Tools" style="padding: 0;">
+     <section id="Tools" style="margin-top: 30px;">
             <div class="container">
                 <div class="col-lg-12 text-center">
-                    <div id='denCanvas'>
+                    <div id='denCanvas' class="text-center">
                       <h5>circRNA density distribution on chromosome</h5>
-                        <canvas id="density" style="border:3px solid #fed136;">
-                            Please update your Browser to use this feature.
-                        </canvas>
-                        <br>
-                        <label class="btn btn-primary btn-sm text-center" for="denDownload">
-                            <input id="denDownload" style="display:none" onClick="download()">
-                            Download
-                        </label>
-                      </div>
-                <div id='circCanvas'>
-                  <h5>circRNA isoforms on chromosome region</h5>
-                  <div class="Ids-ring"></div>
-                  <canvas id="drawCirc" style="border:3px solid #fed136;">
-                    Please update your Browser to use this feature.
-                </canvas>
-                <br>
-                <!--
-                <label class="btn btn-primary btn-sm text-center" for="draw">
-                    <input id="draw" style="display:none">
-                    Draw
-                </label>
-            -->
-                <label class="btn btn-primary btn-sm text-center" for="circDownload">
-                    <input id="circDownload" style="display:none">
-                    Download
-                </label>
-                <br>
+                        <svg id="svg2" width="800" height="500" class="svg" style="border:3px solid #fed136;"></svg>
+                        <div class="download text-center">
+                            <button class="btn btn-primary btn-sm text-center" id="denDownload">Download</button>
+                        </div>
+                    </div>
+                    <div id='circCanvas'>
+                    <h5>circRNA isoforms on chromosome region</h5>
+                    <div class="Ids-ring"></div>
+                    <svg id="svg" width="800" height="500" class="svg" style="border:3px solid #fed136;"></svg>
+
+                    <div class="download text-center">
+                        <button class="btn btn-primary btn-sm text-center" id="drawDownload">Download</button>
+                    </div>
                 <!-- Choose to view which chromosome -->
-                <p> Chromosome
-                    <select id='chrSelector'>
-                      <option>1</option>
-                      <option>2</option>
-                    </select>
+                    <p> Chromosome
+                        <select id='chrSelector'>
+                            <option>1</option>
+                            <option>2</option>
+                        </select>
                     </p>
                     <!-- End of the chromosome option -->
-                    <p class='inputbox'>
-                        Start
-                        <input type="number" id='start' class='scale-input' value="0">
-                      </p>
-                      <p class='inputbox'>
-                          End
-                          <input type="number" id="end" class='scale-input' value="400">
-                        </p>
-                      <div id="slider-range"></div>
-                      <br><br>
-              </div>
-                <br>
+                    <div class="range-slider">
+                        <input id="region-selector" type="text" class="js-range-slider" value="" />
+                        <input id="view-selector" type="text" class="js-range-slider" value="" />
+                    </div>
+                    <div class="extra-controls">
+                        <input type="text" class="js-input-from" value="0" />
+                        <input type="text" class="js-input-to" value="0" />
+                    </div>
                 </div>
             </div>
 
@@ -151,14 +133,17 @@
 
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" type="text/javascript"></script>
         <script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts-en.common.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" type="text/javascript"></script>
 
         <!-- Enbed varibles -->
       
         <!-- Custom js for this template -->
-        <script src="{% static 'js/circDraw.js' %}" type="text/javascript"></script>
+        <script src="{% static 'js/denChrPlot.js' %}" type="text/javascript"></script>
         <script src="{% static 'js/agency.min.js' %}" type="text/javascript"></script>
         <script src="{% static 'js/linechart.js' %}" type="text/javascript"></script>
         <script src="{% static 'js/upload.js' %}" type="text/javascript"></script>
+        <script src="{% static 'js/ion.rangeSlider.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'js/slider.js' %}" type="text/javascript"></script>
 
 
         <script>
