@@ -42,6 +42,49 @@ $(document).ready(function(){
         });
 });
 
+console.log("running")
 
+$('#cancel').hide()
 
+$('#myfile').change(function () {
+    var a = $('#myfile').val().toString().split('\\');
+    console.log(a)
+    $('#filename').text(a[a.length -1])
+    $('#cancel').show().click(function(){
+        $('#filename').text('');
+        $('#cancel').hide()
+    })
+    $('#myfile').val() = ''
+});
+
+$('#aftersubmit').hide()
+$('#submit').click(function(){
+    var sec = 0;
+    var timer = setInterval(function(){
+    $('#aftersubmit').innerHTML('Processing time: '+ sec + 's')
+    sec++;
+    if (sec < 0) {
+        clearInterval(timer);
+    }
+}, 1000);
+})
+
+$.ajax({
+    url: 'check if the file is finished uploaded',
+    method: get,
+    success: function(){
+        $('#submitstatus').innerHTML('sumbitted')
+    }
+})
+
+$.ajax({
+    url: 'check if the file is finished processing',
+    method: get,
+    success: function(){
+        $('#aftersubmit').innerHTML('Completed!')
+        $('#result').attr({
+            'href': 'where to go?'
+        })
+    }
+})
 

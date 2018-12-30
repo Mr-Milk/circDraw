@@ -1,3 +1,5 @@
+var url = $(location).attr('href').split("/")
+var caseid = url[url.length -1]
 $.getJSON('lenChart_URL', {'caseid': caseid})
 .done(function(lenChartData){
     var x = lenChartData.x
