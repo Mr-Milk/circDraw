@@ -1,3 +1,10 @@
+// Get URL and split to caseid
+var url = $(location).attr('href').split("/")
+var caseid = url[url.length -1]
+
+var $inputFrom = $(".js-input-from"),
+    $inputTo = $(".js-input-to"),
+
 // draw a block
 function chr_block(y, len, name){
     var chr_block = den.paper.rect(50, y, len, 10).attr({
@@ -35,7 +42,9 @@ function density_block(x, y, len, chr, start, end, density_value){
         den_value.remove()
         position.remove()
     }).click(function(){
-        /* change value of the slider, set the start and end*/
+        $inputFrom.prop("value", start);
+        $inputTo.prop("value", end);
+        $('#go').click()
     })
 
     return denBlock
