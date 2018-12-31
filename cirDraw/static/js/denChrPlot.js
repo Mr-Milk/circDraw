@@ -1,3 +1,7 @@
+// Get URL and split to caseid
+var url = $(location).attr('href').split("/")
+var caseid = url[url.length -1]
+
 // draw a block
 function chr_block(y, len, name){
     var chr_block = den.paper.rect(50, y, len, 10).attr({
@@ -50,7 +54,7 @@ function normChr(chrJSON){ //The function will organize chromosome transcending
     };
     console.log(max)
     for (i=0; i<chrJSON.length; i++) {
-        normChr.push({"chr": chrJSON[i].chr, "len": 640*chrJSON[i].chrLen/max})
+        normChr.push({"chr": chrJSON[i].chr_ci, "len": 640*chrJSON[i].chrLen/max})
     }
 
     console.log(normChr)
@@ -182,11 +186,11 @@ var tipInfo = den.paper.text(700, 30, "Density: ").attr({
 })
 
 var chrMaxLen
-$.getJSON('file1.URL', {'caseid': caseid}).done(function(chrJSON){
+$.getJSON('/tools/tools_file4', {'case_id': caseid}).done(function(chrJSON){
     
     chrMaxLen = normChr(chrJSON)
 
-    $.getJSON('file2.URL', function(densityJSON){
+    $.getJSON('/tools/tools_file5', function(densityJSON){
         denPlot(chrMaxLen, densityJSON)
     })
 

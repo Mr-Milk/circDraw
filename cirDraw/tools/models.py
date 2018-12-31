@@ -1,4 +1,3 @@
-"""
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
@@ -15,12 +14,14 @@ class ToolsChromosome(models.Model):
     chr_ci = models.CharField(max_length=50)
     chr_start = models.IntegerField()
     chr_end = models.IntegerField()
+    max_length_circ = models.IntegerField()
+    min_length_circ = models.IntegerField()
 
     class Meta:
         db_table = 'tools_chromosome'
 
 class ToolsScalegenome(models.Model):
-    species = models.CharField(max_length=100)
+    species = models.CharField(max_length=300)
     chr_ci = models.CharField(max_length=30)
     gene_min_start = models.IntegerField()
     gene_max_end = models.IntegerField()
@@ -70,4 +71,4 @@ class ToolsUploadcase(models.Model):
         db_table = 'tools_uploadcase'
 
 
-"""
+

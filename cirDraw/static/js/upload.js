@@ -71,7 +71,7 @@ $('#submit').click(function(){
 
 $.ajax({
     url: 'check if the file is finished uploaded',
-    method: get,
+    method: 'get',
     success: function(){
         $('#submitstatus').innerHTML('sumbitted')
     }
@@ -79,7 +79,7 @@ $.ajax({
 
 $.ajax({
     url: 'check if the file is finished processing',
-    method: get,
+    method: 'get',
     success: function(){
         $('#aftersubmit').innerHTML('Completed!')
         $('#result').attr({
