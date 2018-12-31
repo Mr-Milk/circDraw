@@ -14,6 +14,7 @@ def handle_uploaded_file(f, filter_lst=info_needed):
 		line_sep = line.decode().split('\t')
 		line_sep, head = fil_lst(line_sep, header, filter_lst)
 		lines.append(RNAob(head, line_sep))
+	#header_ob = Header(head)
 	return head, lines
 
 
@@ -61,6 +62,8 @@ def noslash(str):
 		return ''.join([str[0], noslash(str[1:])])
 
 
+
+
 class Header:
 	def __init__(self, lst):
 		name = "-".join(lst)
@@ -68,4 +71,6 @@ class Header:
 		self.name = name
 	def __repr__(self):
 		return self.name
+
+
 
