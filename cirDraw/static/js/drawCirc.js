@@ -20,10 +20,10 @@ $('#go').click(function(){
 
     $.getJSON("tools_file2/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(exon){
         exonList = exon;
-        console.log(exon[0].start)
+        console.log("exon number: ", exon.length)
         $.getJSON("tools_file1/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(arc){
             arcList = arc;
-            console.log(arc[0].start)
+            console.log("circ number: ", arc.length)
             backSplicing(exonList, arcList)
         });
     });
@@ -61,14 +61,12 @@ function exon_block(x, len, color, name){
     }).click(function(){
         if (display == true) {
             gene_name.remove();
-            display = false ;
-            console.log(display)}
+            display = false ;}
         else if (display == false) {
             gene_name = svg.paper.text(x, 465, name).attr({
                 'font-family': 'arial',
                 'font-size': 10}); 
-            display = true;
-            console.log(display)}
+            display = true;}
         }).mouseover(function(){
             exon_block.attr({
                 fill: color,
@@ -152,7 +150,6 @@ function arc(start, end, exonJSON){
     var display = false, legend
     var junction_point1, junction_point2
     var range = getRange(exonJSON)
-    console.log(range)
     var realStart = getMinMax(exonJSON)[0]
     var realEnd = getMinMax(exonJSON)[1]
     var startAngle = 180, endAngle = 180, centerX = start+rx+1, centerY = 283-ry
@@ -170,7 +167,6 @@ function arc(start, end, exonJSON){
                 modCirc[i] = 'modCirc' + i;
                 modCirc[i] = []
                 endAngle += 360*(exonJSON[i].end - exonJSON[i].start)/range
-                console.log(centerX, centerY, startAngle, endAngle)
                 for (t=0;t<exonJSON[i]['mod'].length;t++) {
                     modCirc[i][t] += "mod" + t;
                     modStartAngle = startAngle + 360*(exonJSON[i]['mod'][t].start - exonJSON[i].start)/range
@@ -264,7 +260,6 @@ function arc(start, end, exonJSON){
                     strokeWidth: 10,
                     fill: 'none'
                 })
-                console.log(circle)
             }
 
             legend = drawLegend()
@@ -361,44 +356,43 @@ function backSplicing(exonJSON, arcJSON){
     var exonList = [], drawArc = []
     var mm = getMinMax(exonJSON)
     var range = mm[1] - mm[0]
-    console.log("exonJSON: ", range, mm[0], mm[1])
     var colorIndex = 0
     for (i=0;i<exonJSON.length;i++){
         scaleStart = 50+700*(exonJSON[i].start-mm[0])/range
         scaleEnd = 50+700*(exonJSON[i].end-mm[0])/range
         scaleLen = scaleEnd - scaleStart
-        console.log("scale start: ", scaleStart, ", scale end: ", scaleEnd, ", scale len: ", scaleLen)
-        colorIndex += 1
         if (colorIndex<7) {
-            console.log("colorIndex: ", colorIndex)
             exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
             exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
+            colorIndex += 1    
         }
         else {
-            console.log("else colorIndex: ", colorIndex)
             colorIndex = 0
             exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
             exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
+            colorIndex += 1
         }
     }
 
-    console.log(exonList[0], exonList[6], exonList[13])
+    console.log("arc num: ", arcJSON.length)
 
-    for (i=0;i<arcJSON.length;i++) {
+    /*for (i=0;i<arcJSON.length;i++) {
         arcStart = arcJSON[i].start
         arcEnd = arcJSON[i].end
         console.log("exonlist len: ", exonList.length)
         for (i=0;i<exonList.length;i++) {
-            console.log(exonList[i])
-            if (exonList[i].start >= arcStart & exonList[i].end <= arcEnd) {
+            if (exonList[i].start >= arcStart && exonList[i].end <= arcEnd) {
                 drawArc.push(exonList[i])
             }
         }
-    }
+    }*/
+
+    console.log(drawArc)
 
     for (i=0;i<arcJSON.length;i++) {
         scaleArcStart = 50+700*(arcStart-mm[0])/range
         scaleArcEnd = 50+700*(arcEnd-mm[0])/range
-        arc(scaleArcStart, scaleArcEnd, drawArc)
+        console.log(1)
+        // arc(scaleArcStart, scaleArcEnd, drawArc)
     }
 };
