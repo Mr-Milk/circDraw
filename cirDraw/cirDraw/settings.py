@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'download',
     'information',
     'tools',
-    'ajaxtest',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
