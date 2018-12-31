@@ -354,7 +354,30 @@ def handle_file5(request):
 
 
 
+def lenChart(request):
+    if request.method == 'GET':
+        caseid = request.GET['case_id']
+        partitions = 7
+        circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid)
+        max_circ_len = max([i.max_length_circ for i in circ_info])
+        min_circ_len = min([i.min_length_circ for i in circ_info])
+        step = max_circ_len - min_circ_len) // partitions
+        points = [i * step for i in range(1, partitions+1)]
+        results = [0]*partitions
+        
+
+    else:
+        raise Http404
+
+
 def exonChart(request):
+    if request.method == 'GET':
+        pass
+    else:
+        raise Http404
+
+
+def isoChart(request):
     if request.method == 'GET':
         pass
     else:
