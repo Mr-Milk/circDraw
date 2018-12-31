@@ -54,6 +54,7 @@ def write_from_process(f, write_file_name, write_file_length_name, maxread):
                     num += 1
                     real_len += 1
                 else:
+                    f1.write(',\n')
                     f1.write(result_json)
                     f1.write('\n]')
                     print('line '+str(num + 1) + ' has finished.-- '+str(round((num+1)/maxread, 3)*100) + '% -last')
@@ -169,6 +170,7 @@ def remove_null(lst):
 
 def main():
     filename = 'gencode.v19.annotation.gtf'
+    # filename = 'test_a.gtf'
     write_file_length_name = 'gencode_length_annotation.json'
     maxread = None
     write_file_name = 'gencode_annotation.json'

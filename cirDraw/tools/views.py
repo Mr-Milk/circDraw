@@ -2,13 +2,12 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse, JsonResponse
 from .forms import UploadFileForm
 from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
-from .process_file import handle_uploaded_file, detect_filetype, detect_species
+from .process_file import handle_uploaded_file
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 from sklearn.neighbors import KernelDensity
 import numpy as np
 from math import floor
-import sys
 
 # ========================= RENDER PAGES ==============================
 def render_index_page(request):
@@ -393,6 +392,13 @@ def handle_file5(request):
 
         #final_out = [results, gene_box]
         return JsonResponse(results, safe=False)
+
+
+    chr_colors = []
+    for r in range(chr_pixels):
+        dic = {'chr': i+1, 'start': r/2, 'end': (1+r)/2, 'density': 0}
+        chr_colors.append(dic)
+
 
 
 def exonChart(request):

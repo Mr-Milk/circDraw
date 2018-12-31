@@ -25,8 +25,7 @@ def ijson_line(line_num, data_file_name):
                 break
 
 
-def load_and_insert(login_file_name, data_file_name, table_columns, table_name, length_info_name):
-    cnx, cursor = connect_to_db(login_file_name)
+def load_and_insert(cnx, cursor, data_file_name, table_columns, table_name, length_info_name):
     create_table_core(cursor, table_name, table_columns)
     length = get_length_info(length_info_name)
     with open(data_file_name) as f:
@@ -44,6 +43,8 @@ def load_and_insert(login_file_name, data_file_name, table_columns, table_name, 
             except:
                 print(line)
                 break
+  
+
 
 
 # connect to database
@@ -69,8 +70,8 @@ def db_login(login_file_name):
 def connect_to_db(login_file_name):
     login = db_login(login_file_name)
     user, password, host, database = login['user'], login['password'], login['host'], login['database']
-    cnx = mysql.connector.connect(user=user, password=password, host=host, database=database)
-    cursor = cnx.cursor()
+    cnx = mysql.connector.connect(user=user, password=password, host=host, database=database, auth_plugin='mysql_native_password')
+    cursor = cnx.cursor(buffered=True)
     return cnx, cursor
 
 
@@ -120,6 +121,7 @@ def create_table_core(cursor, table_name, table_columns):
             data_create_table = (table_name,) + table_columns
             command = create_table_syntax.format(*data_create_table)
             cursor.execute(command)
+            print("{} table has been created!".format(table_name))
         except mysql.connector.Error as err:
             print("Fail: {}".format(err))
     else:
@@ -230,17 +232,130 @@ def insert_one(cursor, table_name, table_columns, ob):
         print('Insert One line failded: {}'.format(err))
 
 
-# attribute in database table:
-"""
-chr_ci
-species
-gene_name
-gene_id
-gene_type
-gene_start
-gene_end
-density(to be updataed by uploaded file)
-"""
+
+def insert_select(cursor, table_name, table_columns, select_sql):
+    # insert into action with select method
+    names = []
+    for i in table_columns:
+        name = i.split(' ')[0]
+        names.append(name)
+    
+    select_column_lens = len(select_sql.split(",")) 
+
+    assert select_column_lens == len(names), "columns of select method should match the table columns inserted"
+
+    assert select_sql[-1] == ";", "select sql must end with ';'"
+    insert_sql = """INSERT INTO `""" + str(table_name) + """` ("""  + """{}, """*(len(table_columns)-1) + """{}) """ + select_sql
+    insert_sql = insert_sql.format(*names)
+
+    try:
+        cursor.execute(insert_sql)
+    except mysql.connector.Error as err:
+        print('Insert with select failded: {}'.format(err)) 
+
+
+
+
+
+
+
+def add_column(cnx, cursor, table_name, table_columns_setting,  union_value):
+    # table_columns_setting is a tuples like ("...", "...")
+
+    assert is_exist_table(cursor, table_name), "No such table when adding columns"
+
+    for i in range(len(table_columns_setting)): 
+        name = table_columns_setting[i].split(' ')[0]
+        if is_exist_column(cursor, table_name, name):
+            drop_column(cursor, table_name, name)
+
+
+    # add blank column
+    add_sql = """ALTER TABLE `""" + str(table_name) + """` """
+    for i in range(len(table_columns_setting)):
+        if i == len(table_columns_setting) - 1 or len(table_columns_setting) ==  1:
+            add_sql += """ADD {}; """
+        else:
+            add_sql += """ADD {}, """
+
+    try:
+        add_sql = add_sql.format(*table_columns_setting)
+        cursor.execute(add_sql)
+    except mysql.connector.Error as err:
+        print('Add column failded: {}'.format(err)) 
+
+
+    # update the value of that column
+    update_sql = """UPDATE `""" + str(table_name) + """` SET """
+    for i in range(len(table_columns_setting)):
+        name = table_columns_setting[i].split(' ')[0]
+        value = union_value[i]
+        if i == len(table_columns_setting) - 1 or len(table_columns_setting) == 1:
+           update_sql += str(name) + """ = {};""" 
+        else:
+            update_sql += str(name) + """ = {},"""
+    final_sql = update_sql.format(*union_value) 
+    try:
+        cursor.execute(final_sql)
+    except mysql.connector.Error as err:
+        print('update column failded: {}'.format(err))  
+
+    
+
+def toos_scale(cnx, cursor, table_name, table_name_origin, table_columns, group_by, max_column=False, min_column=False, species = "'human'"):
+    # function of generating tools_scalegenome
+    # table_columns = ["species VARCHAR(300) NOT NULL", "chr_ci VARCHAR(30) NOT NULL", "gene_min_start INT NOT NULL", "gene_max_end INT NOT NULL"]
+    
+    assert max_column or min_column, "Must specific a column to max or min"
+    # get names
+    names = []
+    for i in range(len(table_columns)):
+        name = table_columns[i].split(' ')[0]
+        names.append(name)
+
+    # create table
+    create_table_core(cursor, table_name, table_columns)
+    cnx.commit()
+
+    def max_column_value(max_column):
+        return max_column[0]
+    
+    def max_column_name(max_column):
+        return max_column[1]
+
+    def min_column_value(min_column):
+        return min_column[0]
+    
+    def min_column_name(min_column):
+        return min_column[1]
+
+    # select sql
+    select_sql = """SELECT """ + """{} """ + """,{}"""*(len(table_columns) - 3)
+    select_sql += """, MIN(""" + str(min_column_value(min_column)) +  """) AS """ + str(min_column_name(min_column))
+    select_sql += """, MAX(""" + str(max_column_value(max_column)) + """) AS """ + str(max_column_name(max_column))
+    select_sql += """ FROM `""" + str(table_name_origin) + """` WHERE species = """ + str(species) + """ GROUP BY """ + str(group_by)
+    select_sql +=  ";"
+
+    final_select_sql = select_sql.format(*names[:-2])
+
+    # insert into table sql
+
+    insert_select(cursor, table_name, table_columns, final_select_sql)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # check functions
 def is_having_data(cursor, table_name):
@@ -269,10 +384,51 @@ def is_exist_table(cursor, table_name):
         else:
             return False
     except mysql.connector.Error as err:
-        print('Fail: {}'.format(err))
+        print('is_exist_table Fail: {}'.format(err))
 
+def is_exist_column(cursor, table_name, column_name):
+    """ check if specific column name has existed """
+    try:
+        query_sql = """SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '""" + str(table_name) + """' and column_name = '"""  + str(column_name) + """';"""
+        cursor.execute(query_sql)
+        result = cursor.fetchone()
+        if result:
+            return True
+        else:
+            return False
+    except mysql.connector.Error as err:
+        print('is_exist_column fail: {}'.format(err))
 
+def is_exist_species(cursor, table_name, column_name, value):
+    """ Check if a specific value is contained in a specific column"""
+    try: 
+        assert is_exist_column(cursor, table_name, column_name), "Column name doesn't existed"
+        query_sql = """ SELECT """ + str(column_name) + """ FROM `"""  + str(table_name) + """` WHERE """ + str(column_name) +  """ = {};"""
+        final_sql = query_sql.format(value)
+        cursor.execute(query_sql)
+        result = cursor.fetchone()
+        if result:
+            return True
+        else:
+            return False
+    except mysql.connector.Error as err:
+        print('is_exist_species fail: {}'.format(err))
 
+# drop function 
+
+def drop_column(cursor, table_name, column_name):
+    """ function to drop one column inside a table"""
+    # ask
+    if is_exist_column(cursor, table_name, column_name):
+        print("Column ({}) in table ({}) is exist".format(column_name, table_name))
+        delete = input('PRESS y/Y to drop and any other keys to abort: ').lower()
+        if delete == 'y':
+            drop_sql = """ALTER TABLE `""" + str(table_name) + """` DROP """ + str(column_name)
+            cursor.execute(drop_sql)
+        else:
+            raise Exception("Refuse to drop column ({}) in ({})".format(column_name, table_name))
+
+    
 
 
 # commit in database
@@ -283,11 +439,38 @@ def commit_db(cnx, cursor):
 
 def main():
     login_file_name = 'admin_login.json'
-    data_file_name = 'gencode_annotation.json'
-    length_info_name = 'gencode_length_annotation.json'
-    table_columns = ("gene_type VARCHAR(50) NOT NULL","gene_name VARCHAR(200) NOT NULL","chr_ci VARCHAR(50) NOT NULL", "gene_start INT NOT NULL", "gene_end INT NOT NULL", "gene_id VARCHAR(200) NOT NULL")
-    table_name = "species_human_large_1"
-    load_and_insert(login_file_name, data_file_name, table_columns, table_name, length_info_name)
+    annotation = True
+    add = True
+    scale = True
+    
 
+    # initial connection
+    cnx, cursor = connect_to_db(login_file_name)
+
+
+    # insert
+    # data_file_name_annotation = 'test.json'
+    data_file_name_annotation = 'gencode_annotation.json'
+    length_info_name_annotation = 'gencode_length_annotation.json'
+    table_columns_annotation = ("gene_type VARCHAR(50) NOT NULL","gene_name VARCHAR(200) NOT NULL","chr_ci VARCHAR(50) NOT NULL", "gene_start INT NOT NULL", "gene_end INT NOT NULL", "gene_id VARCHAR(200) NOT NULL")
+    table_name_annotation = "tools_annotation"
+    if annotation:
+        load_and_insert(cnx, cursor, data_file_name_annotation, table_columns_annotation, table_name_annotation, length_info_name_annotation)
+        cnx.commit()
+
+    # add species info
+    if add:
+        add_column(cnx, cursor, table_name_annotation, ["species VARCHAR(300) NOT NULL"], ["'human'"])
+        cnx.commit()
+    # create scale(min start, max end) table
+    table_name_scale = "tools_scalegenome"
+    table_columns_scale = ("species VARCHAR(300) NOT NULL", "chr_ci VARCHAR(30) NOT NULL", "gene_min_start INT NOT NULL", "gene_max_end INT NOT NULL")
+    if scale:
+        toos_scale(cnx, cursor, table_name_scale, table_name_annotation, table_columns_scale, "chr_ci", ["gene_end", "gene_max_end"], ["gene_start", "gene_min_start"])
+        cnx.commit()
+
+    commit_db(cnx, cursor)
+
+        
 if __name__ == '__main__':
    main()
