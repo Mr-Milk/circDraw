@@ -1,6 +1,6 @@
 // Get URL and split to caseid
 var url = $(location).attr('href').split("/")
-var caseid = url[url.length -1]
+var case_id = url[url.length -1]
 
 var $inputFrom = $(".js-input-from"),
     $inputTo = $(".js-input-to"),
@@ -191,7 +191,7 @@ var tipInfo = den.paper.text(700, 30, "Density: ").attr({
 })
 
 var chrMaxLen
-$.getJSON('file1.URL', {'caseid': caseid}).done(function(chrJSON){
+$.getJSON('file1.URL', {'caseid': case_id}).done(function(chrJSON){
     
     chrMaxLen = normChr(chrJSON)
 

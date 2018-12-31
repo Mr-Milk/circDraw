@@ -3,7 +3,7 @@ var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2
 
 // Get URL and split to caseid
 var url = $(location).attr('href').split("/")
-var caseid = url[url.length -1]
+var case_id = url[url.length -1]
 
 // Get which region the user want to draw
 var start, end
@@ -16,9 +16,9 @@ $('#go').click(function(){
 
     // Call Ajax
 
-    $.getJSON("file1.URL", {"caseid": caseid, "start": start, "end": end}).done(function(exon){
+    $.getJSON("file1.URL", {"caseid": case_id, "start": start, "end": end}).done(function(exon){
         exonList = exon;
-        $.getJSON("file2.URL", {"caseid": caseid, "start": start, "end": end}).done(function(arc){
+        $.getJSON("file2.URL", {"caseid": case_id, "start": start, "end": end}).done(function(arc){
             arcList = arc;
             backSplicing(exonList, arcList)
         });
