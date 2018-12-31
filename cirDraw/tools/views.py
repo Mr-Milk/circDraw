@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse, JsonResponse
 from .forms import UploadFileForm
 from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
-from .process_file import handle_uploaded_file
+from .process_file import handle_uploaded_file, detect_filetype, detect_species
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 from sklearn.neighbors import KernelDensity
 import numpy as np
 from math import floor
+import sys
 
 # ========================= RENDER PAGES ==============================
 def render_index_page(request):
@@ -304,15 +305,25 @@ def handle_file5(request):
             gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
             min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
             gene_chr_lens = max_gene_end - min_gene_start
+            
+            # max circle len in this chr
+            overlap = 0.5
+            circ_info = ToolsChromosome.objects.filter(chr_ci__exact = chr_ccc)
+            max_circ_len = circ_info.max_length_circ
+            
 
             # we want to divide the group so that the loop's runtime will be reduced.
 
             # start the loop
             for each in data_groups[1]:
                 start, end = each.gene_start, each.gene_end
+                gene_len = end - start
+                search_margin = max_circ_len - gene_len * overlap 
+                circ_start = start - search_margin
+                circ_end = end + search_margin
                 # THE ACTUAL loop
                 count = 0
-                for r in data_groups[0]:
+                for r in data_groups[0].filter(circRNA_start__gt = circ_start).filter(circRNA_end__lt = circ_end):
                     if circ_isin(each, r):
                         count += 1
                 if count != 0:
@@ -332,25 +343,7 @@ def handle_file5(request):
                     # record total density
                     densitys += count
 
-                    # retrieve the gene information from annotion
-                    """
-                    gene_chromosome = each.chr_ci
-                    gene_species = each.species
-                    gene_name = each.gene_name
-                    gene_id = each.gene_id
-                    gene_type = each.gene_type
-                    gene_start = start
-                    gene_end = end
-                    gene_density = count
-                    gene = {'chromosome': gene_chromosome, 'speices': gene_species, 'name':gene_name, 'type': gene_type, 'density':gene_density, 'start': gene_start, 'end': gene_end}
-                    gene_box.append(gene)
-
-
-            # calculate density
-            for i in gene_box:
-                i['density'] = i['density'] / densitys
-            """
-
+                   
             # implement KDE for estimate the real distribution
             x = np.array(density_box)
             # instantiate and fit the KDE model
