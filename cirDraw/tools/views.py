@@ -328,45 +328,9 @@ def handle_file5(request):
                         count += 1
                 if count != 0:
                     ret = {'chr': chr_num_now, 'start': start, 'end': end, 'density': count}
-                    # figure out which group we are in:
-                    start_p, end_p = (start - min_gene_start) / (max_gene_end - min_gene_start), (end - min_gene_start) / (max_gene_end - min_gene_start)
-                    start_pixel, end_pixel = floor(start_p * pixel_num), floor(end_p * pixel_num)
-
-                    # assure start and end is not the same:
-                    if start_pixel == end_pixel and end_pixel < pixel_num:
-                        end_pixel += 1
-
-                    # add count to covered pixels:
-                    for e in range(start_pixel, end_pixel):
-                        density_box.append(e)
-
                     # record total density
                     densitys += count
-
-                   
-            # implement KDE for estimate the real distribution
-            x = np.array(density_box)
-            # instantiate and fit the KDE model
-            kde = KernelDensity(bandwidth=1.0, kernel='gaussian')
-            kde.fit(x[:,None])
-            # score_samples returns the probability density
-            prob = np.exp(kde.score_samples(x_d[:, None]))
-
-            
-            track = 0
-            for ee in prob:
-
-                ## convert to standard format and deliver:
-                number = track + 1
-                pixel_scale_start = (number / pixel_num) * 400 * (gene_chr_lens / max_gene_len)
-                number += 1
-                pixel_scale_end = (number / pixel_num) * 400 * (gene_chr_lens / max_gene_len)
-                pix = {'chr': chr_num_now + 1, 'start': pixel_scale_start, 'end': pixel_scale_end, 'density': round(ee*1000)}
-                track += 1
-                results.append(pix)
-
-
-
+                    results.append(ret)
             print("---------------------------")
 
 
@@ -375,7 +339,9 @@ def handle_file5(request):
         results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
         """
         for res in results[1:]:
-            print(res)
+            res['density'] = res['density'] / densitys
+            if res['density'] > 20:
+                print(res)
         print("file5 has been handled with lens of returning list: ",len(results))
 
         ######################################
@@ -385,12 +351,6 @@ def handle_file5(request):
 
         #final_out = [results, gene_box]
         return JsonResponse(results, safe=False)
-
-
-    chr_colors = []
-    for r in range(chr_pixels):
-        dic = {'chr': i+1, 'start': r/2, 'end': (1+r)/2, 'density': 0}
-        chr_colors.append(dic)
 
 
 

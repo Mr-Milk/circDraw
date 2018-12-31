@@ -1,3 +1,8 @@
+// Get URL and split to caseid
+var url = $(location).attr('href').split("/")
+var caseid = url[url.length -1]
+
+
 // draw a block
 function chr_block(y, len, name){
     var chr_block = den.paper.rect(50, y, len, 10).attr({
@@ -50,7 +55,7 @@ function normChr(chrJSON){ //The function will organize chromosome transcending
     };
     console.log(max)
     for (i=0; i<chrJSON.length; i++) {
-        normChr.push({"chr": chrJSON[i].chr, "len": 640*chrJSON[i].chrLen/max})
+        normChr.push({"chr": chrJSON[i].chr_ci, "len": 640*chrJSON[i].chrLen/max})
     }
 
     console.log(normChr)
@@ -59,8 +64,8 @@ function normChr(chrJSON){ //The function will organize chromosome transcending
     var svgHeight = 60 + len*20
         $("#svg2").attr("height", svgHeight)
         for (i=0; i<normChr.length ; i++) {
-            console.log(20+20*normChr[i].chr)
-            chr = chr_block(20+20*normChr[i].chr, normChr[i].len, "chr" + normChr[i].chr)
+            console.log(20+20*normChr[i].chr_ci)
+            chr = chr_block(20+20*normChr[i].chr_ci, normChr[i].len, "chr" + normChr[i].chr_ci)
         }
     return max
     };
@@ -71,7 +76,7 @@ function denPlot(chrMaxLen, densityJSON){
         console.log(xAxis)
         var len = 640*(densityJSON[i].end - densityJSON[i].start)/chrMaxLen
         console.log(len)
-        density_block(xAxis, 20+20*densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density)
+        density_block(xAxis, 20+20*densityJSON[i].chr_ci, len, densityJSON[i].chr_ci, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density)
     }
 }
 
@@ -182,11 +187,11 @@ var tipInfo = den.paper.text(700, 30, "Density: ").attr({
 })
 
 var chrMaxLen
-$.getJSON('file1.URL', {'caseid': caseid}).done(function(chrJSON){
+$.getJSON('/tools/tools_file1', {'case_id': caseid}).done(function(chrJSON){
     
     chrMaxLen = normChr(chrJSON)
 
-    $.getJSON('file2.URL', function(densityJSON){
+    $.getJSON('/tools/tools_file2', function(densityJSON){
         denPlot(chrMaxLen, densityJSON)
     })
 
