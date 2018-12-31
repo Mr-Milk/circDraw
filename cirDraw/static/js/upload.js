@@ -53,8 +53,7 @@ $('#myfile').change(function () {
     $('#cancel').show().click(function(){
         $('#filename').text('');
         $('#cancel').hide()
-    })
-    $('#myfile').val() = a[2].toString();
+    });
 });
 
 $('#aftersubmit').hide()

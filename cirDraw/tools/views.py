@@ -186,8 +186,8 @@ def handle_file4(request):
         chr_inv = [i.chr_ci for i in obs]
         for i in chr_inv:
             gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=i)[0]
-            lens = gene_ob.gene_max_end - gene_ob.gene_min_start
-            result = {'chr':get_chr_num(i), 'chrLen': gene_ob.gene_max_end}
+            lens = gene_ob.genelens_wiki
+            result = {'chr':get_chr_num(i), 'chrLen': lens}
             print(lens)
             gene_lens.append(result)
 

@@ -16,9 +16,9 @@ $('#go').click(function(){
 
     // Call Ajax
 
-    $.getJSON("file1.URL", {"caseid": case_id, "start": start, "end": end}).done(function(exon){
+    $.getJSON("tools/tools_file1/", {"caseid": case_id, "start": start, "end": end}).done(function(exon){
         exonList = exon;
-        $.getJSON("file2.URL", {"caseid": case_id, "start": start, "end": end}).done(function(arc){
+        $.getJSON("tools/tools_file2/", {"caseid": case_id, "start": start, "end": end}).done(function(arc){
             arcList = arc;
             backSplicing(exonList, arcList)
         });
