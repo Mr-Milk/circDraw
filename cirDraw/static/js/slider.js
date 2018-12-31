@@ -7,7 +7,9 @@ var $range = $("#view-selector"),
     from = 0,
     to = 0,
     chrmin = 0,
-    chrmax = 248956422;
+    chrmax = 248956422,
+    start = 0,
+    end = 0;
 
 $region.ionRangeSlider({
     skin:"flat",
@@ -61,6 +63,37 @@ function updateInputs (data) {
     $inputTo.prop("value", to);	
 }
 
+$('#go').click(function(){
+    var val1 = $inputFrom.prop("value")
+    var val2 = $inputTo.prop("value")
+
+    if (val1 < from) {
+        val1 = from;
+    } else if (val1 > to) {
+        val1 = to;
+    }
+
+    if (val2 < from) {
+        val2 = from;
+    } else if (val2 > to) {
+        val2 = to;
+    }
+
+    instance1.update({
+        from: val1,
+        to: val2
+    });
+
+    $inputFrom.prop("value", val1);
+    $inputTo.prop("value", val2);
+
+    start = val1
+    end = val2
+    console.log("start_input: ", start)
+    console.log("end_input: ", end)
+})
+
+/*
 $inputFrom.on("input", function () {
     var val = $(this).prop("value");
     
@@ -89,4 +122,4 @@ $inputTo.on("input", function () {
     instance1.update({
         to: val
     });
-});
+});*/

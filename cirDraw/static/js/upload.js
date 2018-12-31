@@ -54,24 +54,21 @@ $('#myfile').change(function () {
         $('#filename').text('');
         $('#cancel').hide()
     })
-    $('#myfile').val() = ''
+    $('#myfile').val() = a[2].toString();
 });
 
 $('#aftersubmit').hide()
 $('#submit').click(function(){
     var sec = 0;
-    var timer = setInterval(function(){
-    $('#aftersubmit').innerHTML('Processing time: '+ sec + 's')
+    setInterval(function(){
+    $('#aftersubmit').text('Processing time: '+ sec + 's')
     sec++;
-    if (sec < 0) {
-        clearInterval(timer);
-    }
 }, 1000);
 })
 
 $.ajax({
     url: 'check if the file is finished uploaded',
-    method: 'get',
+    method: "get",
     success: function(){
         $('#submitstatus').innerHTML('sumbitted')
     }
@@ -79,7 +76,7 @@ $.ajax({
 
 $.ajax({
     url: 'check if the file is finished processing',
-    method: 'get',
+    method: "get",
     success: function(){
         $('#aftersubmit').innerHTML('Completed!')
         $('#result').attr({

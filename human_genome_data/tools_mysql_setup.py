@@ -284,14 +284,13 @@ def add_column(cnx, cursor, table_name, table_columns_setting,  union_value):
     except mysql.connector.Error as err:
         print('Add column failded: {}'.format(err)) 
 
-
     # update the value of that column
     update_sql = """UPDATE `""" + str(table_name) + """` SET """
     for i in range(len(table_columns_setting)):
         name = table_columns_setting[i].split(' ')[0]
         value = union_value[i]
         if i == len(table_columns_setting) - 1 or len(table_columns_setting) == 1:
-           update_sql += str(name) + """ = {};""" 
+            update_sql += str(name) + """ = {};""" 
         else:
             update_sql += str(name) + """ = {},"""
     final_sql = update_sql.format(*union_value) 
@@ -299,7 +298,7 @@ def add_column(cnx, cursor, table_name, table_columns_setting,  union_value):
         cursor.execute(final_sql)
     except mysql.connector.Error as err:
         print('update column failded: {}'.format(err))  
-
+   
     
 
 def toos_scale(cnx, cursor, table_name, table_name_origin, table_columns, group_by, max_column=False, min_column=False, species = "'human'"):
@@ -344,7 +343,24 @@ def toos_scale(cnx, cursor, table_name, table_name_origin, table_columns, group_
     
 
 
+def add_one_column_update(cnx, cursor, table_name, column, value_pairs):
+    # value_pairs = [["'chr1'", 20102020].....]
+    add_one_column(cnx, cursor, table_name, column)
+    name = column.split(' ')[0]
+    update_o = """UPDATE `""" + str(table_name)  + """` SET """ + str(name) + """ = """
+    for i in value_pairs:
+        update = update_o + str(i[1]) + """ WHERE chr_ci = """ + str(i[0]) + """;"""
+        cursor.execute(update)
+    cnx.commit()
 
+def add_one_column(cnx, cursor, table_name, column):
+    name = column.split(' ')[0]
+    if is_exist_column(cursor, table_name, name):
+        drop_column(cursor, table_name, name)
+
+    sql = """ALTER TABLE `""" + str(table_name) + """` ADD """ + str(column) + """;"""
+    cursor.execute(sql)
+    cnx.commit()
 
 
 
@@ -428,7 +444,7 @@ def drop_column(cursor, table_name, column_name):
         else:
             raise Exception("Refuse to drop column ({}) in ({})".format(column_name, table_name))
 
-    
+
 
 
 # commit in database
@@ -439,10 +455,10 @@ def commit_db(cnx, cursor):
 
 def main():
     login_file_name = 'admin_login.json'
-    annotation = True
-    add = True
+    annotation = False
+    add = False
     scale = True
-    
+    gene_wiki = True
 
     # initial connection
     cnx, cursor = connect_to_db(login_file_name)
@@ -468,6 +484,37 @@ def main():
     if scale:
         toos_scale(cnx, cursor, table_name_scale, table_name_annotation, table_columns_scale, "chr_ci", ["gene_end", "gene_max_end"], ["gene_start", "gene_min_start"])
         cnx.commit()
+    if gene_wiki:
+        value_pairs = [
+            ["'chr1'",  249250621],
+            ["'chr2'",  243199373],
+            ["'chr3'", 198022430],
+            ["'chr4'",  191154276],
+            ["'chr5'", 180915260],
+            ["'chr6'", 171115067],
+            ["'chr7'", 159138663],
+            ["'chr8'", 146364022],
+            ["'chr9'", 141213431],
+            ["'chr10'", 135534747],
+            ["'chr11'", 135006516],
+            ["'chr12'", 133851895],
+            ["'chr13'", 115169878],
+            ["'chr14'", 107349540], 
+            ["'chr15'", 102531392], 
+            ["'chr16'",  90354753], 
+            ["'chr17'", 81195210],
+            ["'chr18'", 78077248], 
+            ["'chr19'", 59128983],
+            ["'chr20'", 63025520],
+            ["'chr21'", 48129895],
+            ["'chr22'", 51304566],
+            ["'chrX'", 155270560],
+            ["'chrY'", 59373566],
+            ["'chrM'", 16023]
+        ]
+        add_one_column_update(cnx, cursor, table_name_scale, "genelens_wiki INT", value_pairs)
+        add_one_column(cnx, cursor, table_name_scale, "id INT")
+   
 
     commit_db(cnx, cursor)
 

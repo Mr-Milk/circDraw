@@ -2,6 +2,9 @@
 var url = $(location).attr('href').split("/")
 var caseid = url[url.length -1]
 
+var $inputFrom = $(".js-input-from"),
+    $inputTo = $(".js-input-to")
+
 // draw a block
 function chr_block(y, len, name){
     var chr_block = den.paper.rect(50, y, len, 10).attr({
@@ -9,18 +12,19 @@ function chr_block(y, len, name){
         stroke: "#000",
         strokeWidth: 0.5
     })
-
-    var t1 = den.paper.text(27, y+8, name).attr({
+    
+    var t1 = den.paper.text(20, y+8, name).attr({
         'font-family': 'arial',
         'font-size': 10
     })
 
     return chr_block, t1
+
 }
 
 function density_block(x, y, len, chr, start, end, density_value){
-    var denBlock = den.paper.rect(x, y+0.3, len, 9.5).attr({
-        fill: palette[density_value-1],
+    var denBlock = den.paper.rect(x, y+0.3, len+1, 9.5).attr({
+        fill: palette[Math.round(density_value-1)],
         stroke: 'none',
         cursor: 'pointer'
     }).mouseover(function(){
@@ -39,7 +43,9 @@ function density_block(x, y, len, chr, start, end, density_value){
         den_value.remove()
         position.remove()
     }).click(function(){
-        /* change value of the slider, set the start and end*/
+        $inputFrom.prop("value", start);
+        $inputTo.prop("value", end);
+        $('#go').click()
     })
 
     return denBlock
@@ -54,7 +60,8 @@ function normChr(chrJSON){ //The function will organize chromosome transcending
     };
     console.log(max)
     for (i=0; i<chrJSON.length; i++) {
-        normChr.push({"chr": chrJSON[i].chr_ci, "len": 640*chrJSON[i].chrLen/max})
+        console.log(chrJSON[i])
+        normChr.push({"chr": chrJSON[i].chr, "len": 640*chrJSON[i].chrLen/max})
     }
 
     console.log(normChr)
@@ -63,8 +70,8 @@ function normChr(chrJSON){ //The function will organize chromosome transcending
     var svgHeight = 60 + len*20
         $("#svg2").attr("height", svgHeight)
         for (i=0; i<normChr.length ; i++) {
-            console.log(20+20*normChr[i].chr)
-            chr = chr_block(20+20*normChr[i].chr, normChr[i].len, "chr" + normChr[i].chr)
+            console.log(20+20*(i+1))
+            chr = chr_block(20+20*(i+1), normChr[i].len, "chr" + normChr[i].chr)
         }
     return max
     };
@@ -190,7 +197,7 @@ $.getJSON('/tools/tools_file4', {'case_id': caseid}).done(function(chrJSON){
     
     chrMaxLen = normChr(chrJSON)
 
-    $.getJSON('/tools/tools_file5', function(densityJSON){
+    $.getJSON('/tools/tools_file5', {'case_id': caseid}).done(function(densityJSON){
         denPlot(chrMaxLen, densityJSON)
     })
 
