@@ -23,6 +23,7 @@ $region.ionRangeSlider({
     values_separator: " to ",
     drag_interval: true,
     min_interval: 1000000,
+    max_interval: 10000000,
     onFinish: updateRange
 })
 
@@ -89,8 +90,6 @@ $('#go').click(function(){
 
     start = val1
     end = val2
-    console.log("start_input: ", start)
-    console.log("end_input: ", end)
 })
 
 /*

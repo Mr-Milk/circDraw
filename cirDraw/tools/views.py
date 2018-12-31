@@ -137,18 +137,16 @@ def handle_file1(request):
         chr_ci = toCHR(int(request.GET['chr']))
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        chr_max_min = ToolsChromosome.objects.filter(caseid__exact=case_id).get(chr_ci__exact=chr_ci)
         obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
-
+        #print("!!!1:",obs)
         results = []
-        for ob in obs[:1]:
+        for ob in obs:
             result_draw = {
-                'start': start,
-                'end': end,
-                'obid': ob.pk,
+                'start': ob.circRNA_start,
+                'end': ob.circRNA_end
             }
             results.append(result_draw)
-        print(results[0])
+        print(results)
         return JsonResponse(results, safe=False)
     else:
         print("your request for file1 is not get")
@@ -158,20 +156,24 @@ def handle_file1(request):
 def handle_file2(request):
     if request.method == 'GET':
         case_id = request.GET['caseid']
-        chr_ci = request.GET['chr']
+        chr_ci = toCHR(int(request.GET['chr']))
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
+        print(start)
+        print(end)
+        print(chr_ci)
+        gene_type = "exon"
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact=gene_type).filter(gene_start__gt=start).filter(gene_end__lt=end)
+        print("file2", obs)
         results = []
         for ob in obs:
             result = {
                     'name': ob.gene_name,
                     'start': ob.gene_start,
-                    'end': ob.gene_end,
-                    'geneid': ob.gene_id
+                    'end': ob.gene_end
                     }
             results.append(result)
-        print("file2222", results[0])
+        #print("file2222", results)
         return JsonResponse(results,safe=False)
     else:
         print("your request for file2 is not get")

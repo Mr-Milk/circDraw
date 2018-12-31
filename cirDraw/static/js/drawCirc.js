@@ -13,14 +13,15 @@ $('#go').click(function(){
     var val2 = $inputTo.prop("value")
 
     val1 = start, val2 = end
+    console.log(start, end)
 
     // Call Ajax
     var chr = parseInt($('#chrSelector').val())
 
-    $.getJSON("tools_file1/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(exon){
+    $.getJSON("tools_file2/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(exon){
         exonList = exon;
         console.log(exon[0].start)
-        $.getJSON("tools_file2/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(arc){
+        $.getJSON("tools_file1/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(arc){
             arcList = arc;
             console.log(arc[0].start)
             backSplicing(exonList, arcList)
@@ -369,19 +370,26 @@ function backSplicing(exonJSON, arcJSON){
         console.log("scale start: ", scaleStart, ", scale end: ", scaleEnd, ", scale len: ", scaleLen)
         colorIndex += 1
         if (colorIndex<7) {
+            console.log("colorIndex: ", colorIndex)
             exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
             exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
         }
         else {
+            console.log("else colorIndex: ", colorIndex)
             colorIndex = 0
             exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
+            exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
         }
     }
+
+    console.log(exonList[0], exonList[6], exonList[13])
 
     for (i=0;i<arcJSON.length;i++) {
         arcStart = arcJSON[i].start
         arcEnd = arcJSON[i].end
+        console.log("exonlist len: ", exonList.length)
         for (i=0;i<exonList.length;i++) {
+            console.log(exonList[i])
             if (exonList[i].start >= arcStart & exonList[i].end <= arcEnd) {
                 drawArc.push(exonList[i])
             }
