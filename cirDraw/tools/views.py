@@ -133,7 +133,7 @@ def upload_and_save(request):
 def handle_file1(request):
     # database needed: ToolsChromosome, ToolsEachobservation 
     if request.method == 'GET':
-        case_id = request.GET['case_id']
+        case_id = request.GET['caseid']
         chr_ci = toCHR(int(request.GET['chr']))
         start = int(request.GET['start'])
         end = int(request.GET['end'])
@@ -148,6 +148,7 @@ def handle_file1(request):
                 'obid': ob.pk,
             }
             results.append(result_draw)
+        print(results[0])
         return JsonResponse(results, safe=False)
     else:
         print("your request for file1 is not get")
@@ -156,7 +157,7 @@ def handle_file1(request):
 # ------------------------handle_flie2---------------------------------
 def handle_file2(request):
     if request.method == 'GET':
-        case_id = request.GET['case_id']
+        case_id = request.GET['caseid']
         chr_ci = request.GET['chr']
         start = int(request.GET['start'])
         end = int(request.GET['end'])
@@ -170,7 +171,8 @@ def handle_file2(request):
                     'geneid': ob.gene_id
                     }
             results.append(result)
-        return JsonResponse(results)
+        print("file2222", results[0])
+        return JsonResponse(results,safe=False)
     else:
         print("your request for file2 is not get")
         raise Http404
@@ -360,19 +362,34 @@ def handle_file5(request):
 
 def lenChart(request):
     if request.method == 'GET':
-        caseid = request.GET['case_id']
-        partitions = 7
+        caseid = request.GET['caseid']
+        partitions = 20
         circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid)
         max_circ_len = max([i.max_length_circ for i in circ_info])
         min_circ_len = min([i.min_length_circ for i in circ_info])
         step = (max_circ_len - min_circ_len) // partitions
         points = [i * step for i in range(1, partitions+1)]
         results = [0]*partitions
+        now_start, now_end = 0, 0
         
-
+        circs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
+        for i in circs:
+            circ_len = i.circRNA_end - i.circRNA_start
+            group = circ_len // step 
+            if group == partitions:
+                group -= 1
+            results[group] += 1
+        re = {'x': points, 'y': results}
+        print(re)
+        return JsonResponse(re, safe=False)
     else:
         raise Http404
 
+
+
+
+
+        
 
 def exonChart(request):
     if request.method == 'GET':

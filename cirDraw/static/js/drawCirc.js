@@ -15,11 +15,14 @@ $('#go').click(function(){
     val1 = start, val2 = end
 
     // Call Ajax
+    var chr = parseInt($('#chrSelector').val())
 
-    $.getJSON("tools/tools_file1/", {"caseid": case_id, "start": start, "end": end}).done(function(exon){
+    $.getJSON("tools_file1/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(exon){
         exonList = exon;
-        $.getJSON("tools/tools_file2/", {"caseid": case_id, "start": start, "end": end}).done(function(arc){
+        console.log(exon[0].start)
+        $.getJSON("tools_file2/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(arc){
             arcList = arc;
+            console.log(arc[0].start)
             backSplicing(exonList, arcList)
         });
     });

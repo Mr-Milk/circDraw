@@ -58,29 +58,11 @@ $('#myfile').change(function () {
 
 $('#aftersubmit').hide()
 $('#submit').click(function(){
+    $('#aftersubmit').show()
     var sec = 0;
     setInterval(function(){
-    $('#aftersubmit').text('Processing time: '+ sec + 's')
+    $('#processtip').text('Processing time: '+ sec + 's')
     sec++;
+    $('#submitstatus').text('✓ Submitted')
 }, 1000);
 })
-
-$.ajax({
-    url: 'check if the file is finished uploaded',
-    method: "get",
-    success: function(){
-        $('#submitstatus').innerHTML('sumbitted')
-    }
-})
-
-$.ajax({
-    url: 'check if the file is finished processing',
-    method: "get",
-    success: function(){
-        $('#aftersubmit').innerHTML('Completed!')
-        $('#result').attr({
-            'href': 'where to go?'
-        })
-    }
-})
-

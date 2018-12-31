@@ -79,9 +79,9 @@ function normChr(chrJSON){ //The function will organize chromosome transcending
 function denPlot(chrMaxLen, densityJSON){
     for (i=0; i<densityJSON.length; i++) {
         var xAxis = 50 + 640*densityJSON[i].start/chrMaxLen
-        console.log(xAxis)
+        // console.log(xAxis)
         var len = 640*(densityJSON[i].end - densityJSON[i].start)/chrMaxLen
-        console.log(len)
+        // console.log(len)
         density_block(xAxis, 20+20*densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density)
     }
 }

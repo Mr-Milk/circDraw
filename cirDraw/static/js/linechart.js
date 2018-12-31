@@ -2,6 +2,7 @@ var url = $(location).attr('href').split("/")
 var case_id = url[url.length -1]
 $.getJSON('lenChart_URL', {'caseid': case_id})
 .done(function(lenChartData){
+    console.log(lenChartData);
     var x = lenChartData.x
     var y = lenChartData.y
     var lenChart = echarts.init(document.getElementById('lenChart'));
