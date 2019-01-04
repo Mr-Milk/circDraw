@@ -9,11 +9,18 @@ var case_id = url[url.length -1]
 var start, end
 var exonList, arcList
 $('#go').click(function(){
+    svg.clear()
     var val1 = $inputFrom.prop("value")
     var val2 = $inputTo.prop("value")
 
     val1 = start, val2 = end
     console.log(start, end)
+
+    // draw a straight line
+    var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
+        stroke: "#000",
+        strokeWidth: 1
+    });
 
     // Call Ajax
     var chr = parseInt($('#chrSelector').val())
@@ -31,12 +38,6 @@ $('#go').click(function(){
 
 // Initiate snap.SVG instance
 var svg = Snap("#svg");
-
-// draw a straight line
-var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
-    stroke: "#000",
-    strokeWidth: 1
-});
 
 // draw an exon block
 function junction_block(x, color){
@@ -353,7 +354,7 @@ function describeArc(x, y, radius, startAngle, endAngle){
 // draw a group of back-splicing
 
 function backSplicing(exonJSON, arcJSON){
-    var exonList = [], drawArc = []
+    var exonList = []
     var mm = getMinMax(exonJSON)
     var range = mm[1] - mm[0]
     var colorIndex = 0
@@ -376,23 +377,22 @@ function backSplicing(exonJSON, arcJSON){
 
     console.log("arc num: ", arcJSON.length)
 
-    /*for (i=0;i<arcJSON.length;i++) {
+    for (i=0;i<arcJSON.length;i++) {
         arcStart = arcJSON[i].start
         arcEnd = arcJSON[i].end
-        console.log("exonlist len: ", exonList.length)
+        scaleArcStart = 50+700*(arcStart-mm[0])/range
+        scaleArcEnd = 50+700*(arcEnd-mm[0])/range
+        var drawArc = [];
         for (i=0;i<exonList.length;i++) {
+            console.log(exonList[i].start >= arcStart && exonList[i].end <= arcEnd)
             if (exonList[i].start >= arcStart && exonList[i].end <= arcEnd) {
                 drawArc.push(exonList[i])
             }
+            else {
+                x = 1
+            }
         }
-    }*/
-
-    console.log(drawArc)
-
-    for (i=0;i<arcJSON.length;i++) {
-        scaleArcStart = 50+700*(arcStart-mm[0])/range
-        scaleArcEnd = 50+700*(arcEnd-mm[0])/range
-        console.log(1)
-        // arc(scaleArcStart, scaleArcEnd, drawArc)
+        console.log(drawArc)
+        arc(scaleArcStart, scaleArcEnd, drawArc)
     }
 };

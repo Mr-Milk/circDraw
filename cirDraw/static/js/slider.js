@@ -5,11 +5,14 @@ var $range = $("#view-selector"),
     min = 0,
     max = 248956422,
     from = 0,
-    to = 0,
+    to = 400,
     chrmin = 0,
     chrmax = 248956422,
     start = 0,
     end = 0;
+
+    $inputFrom.prop("value", from);
+    $inputTo.prop("value", to);
 
 $region.ionRangeSlider({
     skin:"flat",
@@ -38,6 +41,7 @@ $range.ionRangeSlider({
     decorate_both: true,
     values_separator: " to ",
     drag_interval: true,
+    max_interval: 200000,
     onStart: updateInputs,
     onChange: updateInputs
 });
