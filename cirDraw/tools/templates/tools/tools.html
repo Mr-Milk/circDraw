@@ -37,8 +37,11 @@
                         <input id="view-selector" type="text" class="js-range-slider" value="" />
                     </div>
                     <div class="extra-controls">
+                        <p class="inlineText">Start</p>
                         <input type="text" class="js-input-from" value="0" />
                         <input type="text" class="js-input-to" value="0" />
+                        <p class="inlineText">End</p>
+                        <button id='go'>Draw</button>
                     </div>
                 </div>
             </div>
@@ -118,6 +121,9 @@
                         </tbody>
                     </table>
                 </div>
+            <div id="lenChart" style="width:1000px;height:500px"></div>
+            <div id="exonChart" style="width:500px;height:500px"></div>
+            <div id="isoChart" style="width:500px;height:500px"></div>
             
         </section>
 
@@ -138,12 +144,15 @@
         <!-- Enbed varibles -->
       
         <!-- Custom js for this template -->
+        <script src="{% static 'js/ion.rangeSlider.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'js/slider.js' %}" type="text/javascript"></script>
         <script src="{% static 'js/denChrPlot.js' %}" type="text/javascript"></script>
+        <script src="{% static 'js/drawCirc.js' %}" type="text/javascript"></script>
         <script src="{% static 'js/agency.min.js' %}" type="text/javascript"></script>
         <script src="{% static 'js/linechart.js' %}" type="text/javascript"></script>
         <script src="{% static 'js/upload.js' %}" type="text/javascript"></script>
-        <script src="{% static 'js/ion.rangeSlider.min.js' %}" type="text/javascript"></script>
-        <script src="{% static 'js/slider.js' %}" type="text/javascript"></script>
+        
+        
 
 
         <script>

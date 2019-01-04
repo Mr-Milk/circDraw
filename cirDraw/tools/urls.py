@@ -13,10 +13,15 @@ urlpatterns = [
     url(r'^submit/$', views.upload_and_save, name='upload&save'), 
 
     # Ajax call functions
-    url(r'^tools_file1/$', views.handle_file1, name="tools_file1"),
-    url(r'^tools_file2/$', views.handle_file2, name="tools_file2"),
+    url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
+    url(r'^display/tools_file2/$', views.handle_file2, name="tools_file2"),
     url(r'^tools_file4/$', views.handle_file4, name="tools_file4"),
     url(r'^tools_file5/$', views.handle_file5, name="tools_file5"),
+
+    # charts
+    url(r'^display/lenChart_URL/$', views.lenChart),
+    #url(r'^display/exonChart_URL/$', views.exonChart),
+    #url(r'^isoChart_URL/$', views.isoChart),
     
     # dev testing urls
     # url(r'^test_submit/$', views.upload_fine, name='test_submit'),
@@ -25,3 +30,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

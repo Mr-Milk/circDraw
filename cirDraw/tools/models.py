@@ -25,6 +25,7 @@ class ToolsScalegenome(models.Model):
     chr_ci = models.CharField(max_length=30)
     gene_min_start = models.IntegerField()
     gene_max_end = models.IntegerField()
+    genelens_wiki = models.IntegerField()
 
     class Meta:
         managed = False

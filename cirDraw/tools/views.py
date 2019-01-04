@@ -133,21 +133,20 @@ def upload_and_save(request):
 def handle_file1(request):
     # database needed: ToolsChromosome, ToolsEachobservation 
     if request.method == 'GET':
-        case_id = request.GET['case_id']
+        case_id = request.GET['caseid']
         chr_ci = toCHR(int(request.GET['chr']))
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        chr_max_min = ToolsChromosome.objects.filter(caseid__exact=case_id).get(chr_ci__exact=chr_ci)
         obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
-
+        print("!!!1:",len(obs))
         results = []
-        for ob in obs[:1]:
+        for ob in obs:
             result_draw = {
-                'start': start,
-                'end': end,
-                'obid': ob.pk,
+                'start': ob.circRNA_start,
+                'end': ob.circRNA_end
             }
             results.append(result_draw)
+        print(results)
         return JsonResponse(results, safe=False)
     else:
         print("your request for file1 is not get")
@@ -156,21 +155,26 @@ def handle_file1(request):
 # ------------------------handle_flie2---------------------------------
 def handle_file2(request):
     if request.method == 'GET':
-        case_id = request.GET['case_id']
-        chr_ci = request.GET['chr']
+        case_id = request.GET['caseid']
+        chr_ci = toCHR(int(request.GET['chr']))
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
+        print(start)
+        print(end)
+        print(chr_ci)
+        gene_type = "exon"
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact=gene_type).filter(gene_start__gt=start).filter(gene_end__lt=end)
+        print("file2", obs)
         results = []
         for ob in obs:
             result = {
                     'name': ob.gene_name,
                     'start': ob.gene_start,
-                    'end': ob.gene_end,
-                    'geneid': ob.gene_id
+                    'end': ob.gene_end
                     }
             results.append(result)
-        return JsonResponse(results)
+        #print("file2222", results)
+        return JsonResponse(results,safe=False)
     else:
         print("your request for file2 is not get")
         raise Http404
@@ -186,8 +190,10 @@ def handle_file4(request):
         chr_inv = [i.chr_ci for i in obs]
         for i in chr_inv:
             gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=i)[0]
-            lens = gene_ob.gene_max_end - gene_ob.gene_min_start
-            gene_lens.append({'chr':i, 'chrLen': lens})
+            lens = gene_ob.genelens_wiki
+            result = {'chr':get_chr_num(i), 'chrLen': lens}
+            print(lens)
+            gene_lens.append(result)
 
         return JsonResponse(gene_lens, safe=False)
     else:
@@ -307,9 +313,9 @@ def handle_file5(request):
             gene_chr_lens = max_gene_end - min_gene_start
             
             # max circle len in this chr
-            overlap = 0.5
-            circ_info = ToolsChromosome.objects.filter(chr_ci__exact = chr_ccc)
-            max_circ_len = circ_info.max_length_circ
+            # overlap = 0.5
+            # circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid).filter(chr_ci__exact = chr_ccc)[0]
+            # max_circ_len = circ_info.max_length_circ
             
 
             # we want to divide the group so that the loop's runtime will be reduced.
@@ -317,17 +323,18 @@ def handle_file5(request):
             # start the loop
             for each in data_groups[1]:
                 start, end = each.gene_start, each.gene_end
-                gene_len = end - start
-                search_margin = max_circ_len - gene_len * overlap 
-                circ_start = start - search_margin
-                circ_end = end + search_margin
+                #gene_len = end - start
+                #search_margin = max_circ_len - gene_len * overlap 
+                #circ_start = start - search_margin
+                #circ_end = end + search_margin
                 # THE ACTUAL loop
                 count = 0
-                for r in data_groups[0].filter(circRNA_start__gt = circ_start).filter(circRNA_end__lt = circ_end):
+                #for r in data_groups[0].filter(circRNA_start__gt = circ_start).filter(circRNA_end__lt = circ_end):
+                for r in data_groups[0]:
                     if circ_isin(each, r):
                         count += 1
                 if count != 0:
-                    ret = {'chr': chr_num_now, 'start': start, 'end': end, 'density': count}
+                    ret = {'chr': chr_num_now + 1, 'start': start, 'end': end, 'density': count}
                     # record total density
                     densitys += count
                     results.append(ret)
@@ -338,10 +345,11 @@ def handle_file5(request):
         # fake data:
         results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
         """
+        print("THIS ++++++++++++++ IS FILE5")
+        
         for res in results[1:]:
-            res['density'] = res['density'] / densitys
-            if res['density'] > 20:
-                print(res)
+            res['density'] = (res['density'] / densitys) * 1000
+            #print(res)
         print("file5 has been handled with lens of returning list: ",len(results))
 
         ######################################
@@ -356,19 +364,34 @@ def handle_file5(request):
 
 def lenChart(request):
     if request.method == 'GET':
-        caseid = request.GET['case_id']
-        partitions = 7
+        caseid = request.GET['caseid']
+        partitions = 20
         circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid)
         max_circ_len = max([i.max_length_circ for i in circ_info])
         min_circ_len = min([i.min_length_circ for i in circ_info])
-        step = max_circ_len - min_circ_len) // partitions
+        step = (max_circ_len - min_circ_len) // partitions
         points = [i * step for i in range(1, partitions+1)]
         results = [0]*partitions
+        now_start, now_end = 0, 0
         
-
+        circs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
+        for i in circs:
+            circ_len = i.circRNA_end - i.circRNA_start
+            group = circ_len // step 
+            if group == partitions:
+                group -= 1
+            results[group] += 1
+        re = {'x': points, 'y': results}
+        print(re)
+        return JsonResponse(re, safe=False)
     else:
         raise Http404
 
+
+
+
+
+        
 
 def exonChart(request):
     if request.method == 'GET':

@@ -1,7 +1,8 @@
 var url = $(location).attr('href').split("/")
-var caseid = url[url.length -1]
-$.getJSON('lenChart_URL', {'case_id': caseid})
+var case_id = url[url.length -1]
+$.getJSON('lenChart_URL', {'caseid': case_id})
 .done(function(lenChartData){
+    console.log(lenChartData);
     var x = lenChartData.x
     var y = lenChartData.y
     var lenChart = echarts.init(document.getElementById('lenChart'));
@@ -50,7 +51,7 @@ $.getJSON('lenChart_URL', {'case_id': caseid})
     lenChart.setOption(option1);
 });
 
-$.getJSON('exonChart_URL', {'case_id': caseid})
+$.getJSON('exonChart_URL', {'caseid': case_id})
 .done(function(exonChartData){
     var x = exonChartData.x
     var y = exonChartData.y
@@ -100,7 +101,7 @@ $.getJSON('exonChart_URL', {'case_id': caseid})
     exonChart.setOption(option2);
 });
 
-$.getJSON('isoChart_URL', {'case_id': caseid})
+$.getJSON('isoChart_URL', {'caseid': case_id})
 .done(function(isoChartData){
     var x = isoChartData.x
     var y = isoChartData.y

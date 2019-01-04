@@ -5,9 +5,14 @@ var $range = $("#view-selector"),
     min = 0,
     max = 248956422,
     from = 0,
-    to = 0,
+    to = 400,
     chrmin = 0,
-    chrmax = 248956422;
+    chrmax = 248956422,
+    start = 0,
+    end = 0;
+
+    $inputFrom.prop("value", from);
+    $inputTo.prop("value", to);
 
 $region.ionRangeSlider({
     skin:"flat",
@@ -21,6 +26,7 @@ $region.ionRangeSlider({
     values_separator: " to ",
     drag_interval: true,
     min_interval: 1000000,
+    max_interval: 10000000,
     onFinish: updateRange
 })
 
@@ -35,6 +41,7 @@ $range.ionRangeSlider({
     decorate_both: true,
     values_separator: " to ",
     drag_interval: true,
+    max_interval: 200000,
     onStart: updateInputs,
     onChange: updateInputs
 });
@@ -61,6 +68,35 @@ function updateInputs (data) {
     $inputTo.prop("value", to);	
 }
 
+$('#go').click(function(){
+    var val1 = $inputFrom.prop("value")
+    var val2 = $inputTo.prop("value")
+
+    if (val1 < from) {
+        val1 = from;
+    } else if (val1 > to) {
+        val1 = to;
+    }
+
+    if (val2 < from) {
+        val2 = from;
+    } else if (val2 > to) {
+        val2 = to;
+    }
+
+    instance1.update({
+        from: val1,
+        to: val2
+    });
+
+    $inputFrom.prop("value", val1);
+    $inputTo.prop("value", val2);
+
+    start = val1
+    end = val2
+})
+
+/*
 $inputFrom.on("input", function () {
     var val = $(this).prop("value");
     
@@ -89,4 +125,4 @@ $inputTo.on("input", function () {
     instance1.update({
         to: val
     });
-});
+});*/
