@@ -196,12 +196,15 @@ var tipInfo = den.paper.text(700, 30, "Density: ").attr({
 })
 
 var chrMaxLen
+$("#svg2").hide()
 $.getJSON('/tools/tools_file4', {'case_id': caseid}).done(function(chrJSON){
     
     chrMaxLen = normChr(chrJSON)
 
     $.getJSON('/tools/tools_file5', {'case_id': caseid}).done(function(densityJSON){
         denPlot(chrMaxLen, densityJSON)
+        $("#load").hide()
+        $("#svg2").show()
     })
 
 })
