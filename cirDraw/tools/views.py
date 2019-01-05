@@ -138,7 +138,7 @@ def handle_file1(request):
         start = int(request.GET['start'])
         end = int(request.GET['end'])
         obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
-        #print("!!!1:",obs)
+        print("!!!1:",len(obs))
         results = []
         for ob in obs:
             result_draw = {
