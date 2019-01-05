@@ -1,16 +1,16 @@
-var $range = $("#view-selector"),
-    $region = $("#region-selector")
+var $gene = $("#gene-selector"),
     $inputFrom = $(".js-input-from"),
     $inputTo = $(".js-input-to"),
-    min = 0,
-    max = 248956422,
-    from = 0,
-    to = 0,
-    chrmin = 0,
-    chrmax = 248956422,
-    start = 0,
-    end = 0;
+    geneList = ["USB1", "MILK", "JACKLI", "UPS", "FedEx"]
 
+$gene.ionRangeSlider({
+    type: "double",
+    grid: true,
+    from: geneList[0],
+    to: geneList[0],
+    values: geneList,
+})
+/*
 $region.ionRangeSlider({
     skin:"flat",
     type: "double",
@@ -43,6 +43,7 @@ $range.ionRangeSlider({
 });
 var instance1 = $range.data("ionRangeSlider");
 var instance2 = $region.data("ionRangeSlider");
+*/
 
 function updateRange (data) {
 	min = data.from;

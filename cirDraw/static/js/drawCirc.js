@@ -8,12 +8,54 @@ var case_id = url[url.length -1]
 // Get which region the user want to draw
 var start, end
 var exonList, arcList
-$('#go').click(function(){
-    var val1 = $inputFrom.prop("value")
-    var val2 = $inputTo.prop("value")
+var $gene = $("#gene-selector"),
+    $inputFrom = $("#js-input-from"),
+    $inputTo = $("#js-input-to"),
+    geneList = [],
+    gene_selector = $gene.data("ionRangeSlider");
 
-    val1 = start, val2 = end
-    console.log(start, end)
+$gene.ionRangeSlider({
+    type: "double",
+    grid: true,
+    from: geneList[0],
+    to: geneList[0],
+    values: geneList,
+    onFinish: updataCirc,
+    onUpdata: getGeneList
+}).hide();
+
+function getGeneList(){
+    var val1 = parseInt($inputFrom.text()),
+        val2 = parseInt($inputTo.text()),
+        chr = parseInt($('#chrSelector').val())
+    $.getJSON("genelist for gene_selector", {"caseid": case_id, "start": val1, "end": val2, "chr": chr})
+        .done(function(genes){
+            geneList = genes
+        })
+}
+
+function updataCirc(data){
+    svg.clear()
+    // draw a straight line
+    var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
+        stroke: "#000",
+        strokeWidth: 1
+    });
+
+    start_gene = data.from;
+    end_gene = data.to;
+
+    for (i in geneList) {
+        if (i.name == start_gene) {
+            start = i.start
+        };
+        if (i.name == end_gene) {
+            end = i.end
+        };
+    };
+
+    $inputFrom.text(start);
+    $inputTo.text(end);
 
     // Call Ajax
     var chr = parseInt($('#chrSelector').val())
@@ -27,16 +69,10 @@ $('#go').click(function(){
             backSplicing(exonList, arcList)
         });
     });
-});
+}
 
 // Initiate snap.SVG instance
 var svg = Snap("#svg");
-
-// draw a straight line
-var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
-    stroke: "#000",
-    strokeWidth: 1
-});
 
 // draw an exon block
 function junction_block(x, color){
@@ -51,10 +87,51 @@ function junction_block(x, color){
 // draw a exon
 function exon_block(x, len, color, name){
 
-    var gene_name
+    var exon_name
     var display = false
 
     var exon_block = svg.paper.rect(x, 447, len, 6).attr({
+        fill: color,
+        stroke: 'none',
+        cursor: 'pointer'
+    }).click(function(){
+        if (display == true) {
+            exon_name.remove();
+            display = false ;}
+        else if (display == false) {
+            exon_name = svg.paper.text(x, 465, name).attr({
+                'font-family': 'arial',
+                'font-size': 10}); 
+            display = true;}
+        }).mouseover(function(){
+            exon_block.attr({
+                fill: color,
+                stroke: '#33A6B8',
+                strokeWidth: 1,
+                cursor: 'pointer'
+            });
+            exon_name = svg.paper.text(x, 465, name).attr({
+                'font-family': 'arial',
+                'font-size': 10});
+        }).mouseout(function(){
+            exon_block.attr({
+                fill: color,
+                stroke: 'none',
+                cursor: 'pointer'
+            });
+            exon_name.remove();
+        })
+    
+    return exon_block
+}
+
+// draw a gene
+function gene_block(x, len, color, name){
+
+    var gene_name
+    var display = false
+
+    var exon_block = svg.paper.rect(x, 449, len, 2).attr({
         fill: color,
         stroke: 'none',
         cursor: 'pointer'
@@ -73,13 +150,17 @@ function exon_block(x, len, color, name){
                 stroke: '#33A6B8',
                 strokeWidth: 1,
                 cursor: 'pointer'
-            })
+            });
+            gene_name = svg.paper.text(x, 465, name).attr({
+                'font-family': 'arial',
+                'font-size': 10}); 
         }).mouseout(function(){
             exon_block.attr({
                 fill: color,
                 stroke: 'none',
                 cursor: 'pointer'
-            })
+            });
+            gene_name.remove();
         })
     
     return exon_block
@@ -376,16 +457,16 @@ function backSplicing(exonJSON, arcJSON){
 
     console.log("arc num: ", arcJSON.length)
 
-    /*for (i=0;i<arcJSON.length;i++) {
+    for (i=0;i<arcJSON.length;i++) {
         arcStart = arcJSON[i].start
         arcEnd = arcJSON[i].end
         console.log("exonlist len: ", exonList.length)
-        for (i=0;i<exonList.length;i++) {
-            if (exonList[i].start >= arcStart && exonList[i].end <= arcEnd) {
-                drawArc.push(exonList[i])
+        for (t=0;t<exonList.length;t++) {
+            if (exonList[t].start >= arcStart && exonList[t].end <= arcEnd) {
+                drawArc.push(exonList[t])
             }
         }
-    }*/
+    }
 
     console.log(drawArc)
 
@@ -393,6 +474,6 @@ function backSplicing(exonJSON, arcJSON){
         scaleArcStart = 50+700*(arcStart-mm[0])/range
         scaleArcEnd = 50+700*(arcEnd-mm[0])/range
         console.log(1)
-        // arc(scaleArcStart, scaleArcEnd, drawArc)
+        arc(scaleArcStart, scaleArcEnd, drawArc)
     }
-};
+}; 
