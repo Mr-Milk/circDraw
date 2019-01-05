@@ -58,3 +58,21 @@
         display: inline-block;
         margin-left: 5px;
 }
+
+.loader{
+        width: 800px;
+        height: 500px;
+        display:inline-block;
+}
+    
+.loader .dna{
+        height:70%;
+        width: auto;
+        padding-top: 160px;
+}
+
+.svg{
+        border-style: solid;
+        border-width: 3px;
+        border-color: #fed136;
+}

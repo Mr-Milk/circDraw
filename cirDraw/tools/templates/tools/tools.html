@@ -11,7 +11,10 @@
                 <div class="col-lg-12 text-center">
                     <div id='denCanvas' class="text-center" style="display: inline-block;">
                       <h5>circRNA density distribution on chromosome</h5>
-                        <svg id="svg2" width="800" height="500" class="svg" style="border:3px solid #fed136;"></svg>
+                        <div class="loader svg" id="load">
+                            <img src='../../../media/dna.gif' class="dna">
+                        </div>
+                        <svg id="svg2" width="800" height="500" class="svg"></svg>
                         <div class="download text-center">
                             <button class="btn btn-primary btn-sm text-center" id="denDownload">Download</button>
                         </div>
@@ -19,7 +22,7 @@
                     <div id='circCanvas' style="display: inline-block;">
                     <h5>circRNA isoforms on chromosome region</h5>
                     <div class="Ids-ring"></div>
-                    <svg id="svg" width="800" height="500" class="svg" style="border:3px solid #fed136;"></svg>
+                    <svg id="svg" width="800" height="500" class="svg"></svg>
 
                     <div class="download text-center">
                         <button class="btn btn-primary btn-sm text-center" id="drawDownload">Download</button>
