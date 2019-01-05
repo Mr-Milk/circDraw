@@ -20,7 +20,7 @@ urlpatterns = [
 
     # charts
     url(r'^display/lenChart_URL/$', views.lenChart),
-    url(r'^display/exonChart_URL/$', views.exonChart),
+    #url(r'^display/exonChart_URL/$', views.exonChart),
     #url(r'^isoChart_URL/$', views.isoChart),
     
     # dev testing urls

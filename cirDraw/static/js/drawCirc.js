@@ -57,6 +57,12 @@ function updataCirc(data){
     $inputFrom.text(start);
     $inputTo.text(end);
 
+    // draw a straight line
+    var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
+        stroke: "#000",
+        strokeWidth: 1
+    });
+
     // Call Ajax
     var chr = parseInt($('#chrSelector').val())
 
@@ -434,7 +440,7 @@ function describeArc(x, y, radius, startAngle, endAngle){
 // draw a group of back-splicing
 
 function backSplicing(exonJSON, arcJSON){
-    var exonList = [], drawArc = []
+    var exonList = []
     var mm = getMinMax(exonJSON)
     var range = mm[1] - mm[0]
     var colorIndex = 0
@@ -464,6 +470,9 @@ function backSplicing(exonJSON, arcJSON){
         for (t=0;t<exonList.length;t++) {
             if (exonList[t].start >= arcStart && exonList[t].end <= arcEnd) {
                 drawArc.push(exonList[t])
+            }
+            else {
+                x = 1
             }
         }
     }
