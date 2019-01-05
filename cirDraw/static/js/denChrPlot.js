@@ -2,9 +2,6 @@
 var url = $(location).attr('href').split("/")
 var caseid = url[url.length -1]
 
-var $inputFrom = $(".js-input-from"),
-    $inputTo = $(".js-input-to")
-
 // draw a block
 function chr_block(y, len, name){
     var chr_block = den.paper.rect(50, y, len, 10).attr({
@@ -34,54 +31,60 @@ function density_block(x, y, len, chr, start, end, density_value){
             fill: 'orange',
         })
         pText = "chr" + chr + ": " + start + " - " + end
-        position = den.paper.text(350, 30, pText).attr({
+        position = den.paper.text(325, 30, pText).attr({
             'font-family': 'arial',
             'font-size': 15,
         })
-
     }).mouseout(function(){
         den_value.remove()
         position.remove()
     }).click(function(){
-        $inputFrom.prop("value", start);
-        $inputTo.prop("value", end);
-        $('#go').click()
+        $("#js-input-from").text(start);
+        $("#js-input-to").text(end);
+        $('#chrSelector').prop("value", chr)
+        var gene_selector = $("#gene_selector").data("ionRangeSlider");
+        $.getJSON("genelist for gene_selector", {"caseid": caseid, "start": start, "end": end, "chr": chr})
+        .done(function(geneList){
+            var geneValues = []
+            for (i in geneList) {
+                geneValues.push(i.name)
+            }
+            gene_selector.update({
+                values: geneValues,
+            })
+        });
+        $("#gene_selector").show()
     })
 
     return denBlock
 }
 
-function normChr(chrJSON){ //The function will organize chromosome transcending
+function normChr(chrJSON){
     var max = 0, normChr = []
     for (i=0; i<chrJSON.length; i++) {
         if (chrJSON[i].chrLen > max) {
             max = chrJSON[i].chrLen
         };
     };
-    console.log(max)
+
     for (i=0; i<chrJSON.length; i++) {
-        console.log(chrJSON[i])
         normChr.push({"chr": chrJSON[i].chr, "len": 640*chrJSON[i].chrLen/max})
     }
-
-    console.log(normChr)
     
     var len = normChr.length
     var svgHeight = 60 + len*20
         $("#svg2").attr("height", svgHeight)
         for (i=0; i<normChr.length ; i++) {
-            console.log(20+20*(i+1))
-            chr = chr_block(20+20*(i+1), normChr[i].len, "chr" + normChr[i].chr)
+            chr = chr_block(20+20*(i+1), normChr[i].len, normChr[i].chr)
         }
     return max
     };
 
 function denPlot(chrMaxLen, densityJSON){
     for (i=0; i<densityJSON.length; i++) {
-        var xAxis = 50 + 640*densityJSON[i].start/chrMaxLen
-        // console.log(xAxis)
-        var len = 640*(densityJSON[i].end - densityJSON[i].start)/chrMaxLen
-        // console.log(len)
+        var xAxis = 50 + 640*densityJSON[i].start/chrMaxLen,
+            len = 640*(densityJSON[i].end - densityJSON[i].start)/chrMaxLen
+        
         density_block(xAxis, 20+20*densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density)
     }
 }
