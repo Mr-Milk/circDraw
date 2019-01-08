@@ -132,10 +132,13 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
-    'static/css',
-    'static/js/',
-    'static/vendor/',
-    'static/vendor/jquery-easing/',
+    os.path.join(BASE_DIR, "static/css"),
+    os.path.join(BASE_DIR, "static/js"),
+    os.path.join(BASE_DIR, "static/js/jquery"),
+    os.path.join(BASE_DIR, "static/js/jquery-easing"),
+    os.path.join(BASE_DIR, "static/js/bootstrap"),
+    os.path.join(BASE_DIR, "static/vendor"),
+    os.path.join(BASE_DIR, "static/vendor/jquery-easing"),
 )
 
 
