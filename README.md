@@ -60,6 +60,11 @@ By processing the uploaded file in backend, you will be able to __interactively_
 
 #### Frontend
 - jQuery: https://jquery.com/
+- Snap.svg: http://snapsvg.io/
+- Ion.RangeSlider: http://ionden.com/a/plugins/ion.rangeSlider/index.html
+- DataTables: https://datatables.net/
+- BioCircos: http://bioinfo.ibp.ac.cn/biocircos/
+- ECharts: https://www.echartsjs.com/
 
 #### Deployment 
 - Nginx: https://nginx.org/en/
