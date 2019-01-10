@@ -41,7 +41,7 @@ By processing the uploaded file in backend, you will be able to interactively vi
 <p align="center"><img src="density.png" alt="300" width="cover"></p>
 
 
-[comment]: <> (### How to read Results?)
+[//]: # (### How to read Results?)
 
 
 ### Used library
@@ -64,7 +64,7 @@ By processing the uploaded file in backend, you will be able to interactively vi
 - Nginx: https://nginx.org/en/
 - uWSGI: https://uwsgi-docs.readthedocs.io/en/latest/
 
-[comment]: <> (## About)
+[//]: # (## About)
 
 
 ### More Information
