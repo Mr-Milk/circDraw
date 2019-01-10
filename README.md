@@ -37,7 +37,7 @@ Upload instruction:
 
 
 ### Circle RNA density distribution analysis
-By processing the uploaded file in backend, you will be able to interactively view the circle RNA density distribution results and explore your interest further.
+By processing the uploaded file in backend, you will be able to __interactively__ view the circle RNA density distribution results and explore your interest further.
 
 <p align="center"><img src="density.png" alt="300" width="cover"></p>
 
