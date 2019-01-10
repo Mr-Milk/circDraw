@@ -49,10 +49,10 @@ By processing the uploaded file in backend, you will be able to __interactively_
 #### Backend
 - Python 3: https://www.python.org/
 - Django: https://www.djangoproject.com/
-- Requests: http://docs.python-requests.org/en/master/
 - MySQL: https://www.mysql.com/cn/
 - mysqlclient-python: https://github.com/PyMySQL/mysqlclient-python
 - PyMySQL: https://pypi.python.org/pypi/PyMySQL
+- ijson: https://pypi.org/project/ijson/
 
 #### Algorithm
 - NumPy: http://www.numpy.org/
