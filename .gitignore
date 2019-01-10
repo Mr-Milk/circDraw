@@ -1,5 +1,8 @@
 # Byte-compiled / optimized / DLL files
+<<<<<<< HEAD
+=======
 cirDraw/cirDraw/__pycache__
+>>>>>>> front
 __pycache__/
 *.py[cod]
 *$py.class

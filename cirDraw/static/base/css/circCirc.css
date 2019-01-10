@@ -1,0 +1,78 @@
+.choiceWindow {
+            display: none; 
+            position: absolute; 
+            top: 25%; 
+            left: 25%; 
+            width: 30%; 
+            height: 55%; 
+            padding: 20px; 
+            border: 3px solid #ccc; 
+            background-color: white;
+            z-index:2; 
+            overflow: auto; 
+        }
+.backGround {
+            display: none; 
+            position: absolute; 
+            top: 0%; 
+            left: 0%; 
+            width: 100%; 
+            height: 1100px; 
+            background-color: black; 
+            z-index:1; 
+            -moz-opacity: 0.8; 
+            opacity:.80; 
+            filter: alpha(opacity=88);
+        }
+.x:hover {cursor: pointer;color: rgb(55,198,192);}
+
+.textarea {
+        height: 200px;
+        width: 500px;
+        padding: 20px;
+        border: 1px solid #888;
+        resize: vertical;
+        overflow: auto;
+        margin-bottom: 20px;
+        display: inline-block;
+        vertical-align:middle;
+      }
+      
+.textarea:empty:before {
+        color: #fed136;
+}
+
+#example {
+        margin-left:20px;
+        display: inline-block;
+        vertical-align:middle;
+        background-color: #fed136;
+}
+
+.download {
+        margin-top: 20px;
+        margin-bottom: 20px;
+}
+
+.inlineText {
+        display: inline-block;
+        margin-left: 5px;
+}
+
+.loader{
+        width: 800px;
+        height: 500px;
+        display:inline-block;
+}
+    
+.loader .dna{
+        height:70%;
+        width: auto;
+        padding-top: 160px;
+}
+
+.svg{
+        border-style: solid;
+        border-width: 3px;
+        border-color: #fed136;
+}

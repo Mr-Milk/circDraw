@@ -8,7 +8,7 @@
         <meta name="author" content="">
     
         <title>circDraw</title>
-        <link rel="icon" href="logo.png">
+        <link rel="icon" href="{% static 'base/img/logo.png' %}">
     
         <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -22,9 +22,9 @@
     
         <!-- CSS -->
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
-        <link href="{% static 'css/agency.css' %}" rel="stylesheet">
-        <link href="{% static 'css/ion.rangeSlider.css' %}" rel="stylesheet">
-        <link href="{% static 'css/circCirc.css' %}" rel="stylesheet">
+        <link href="{% static 'base/css/agency.css' %}" rel="stylesheet">
+        <link href="{% static 'base/css/ion.rangeSlider.css' %}" rel="stylesheet">
+        <link href="{% static 'base/css/circCirc.css' %}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
 
     </head>
@@ -99,16 +99,16 @@
 
 
     <!-- Bootstrap core JavaScript -->
-    <script src="{% static 'js/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'base/js/jquery.min.js' %}"></script>
 
     <!-- Plugin JavaScript -->
-    <script src="{% static 'js/jquery-easing/jquery.easing.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'base/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'base/js/bootstrap.bundle.min.js' %}"></script>
 
     <!-- Custom scripts for this template -->
-    <script src="{% static 'js/agency.min.js' %}"></script>
-    <script src="{% static 'js/jqBootstrapValidation.js' %}"></script>
-    <script src="{% static 'js/upload.js' %}"></script>
+    <script src="{% static 'base/js/agency.min.js' %}"></script>
+    <script src="{% static 'base/js/jqBootstrapValidation.js' %}"></script>
+    <script src="{% static 'base/js/upload.js' %}"></script>
 
     {% block otherJS %} {% endblock %}
 

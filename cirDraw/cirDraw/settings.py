@@ -27,7 +27,7 @@ SECRET_KEY = 'zaa7(53a2vvo)41!#xf-n$_p+np1znjqq67*g!27s(vy465pw4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['144.202.111.235', '127.0.0.1']
+ALLOWED_HOSTS = ['144.202.111.235', '127.0.0.1', '144.202.101.9']
 
 
 # Application definition
@@ -132,10 +132,13 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
-    'static/css',
-    'static/js/',
-    'static/vendor/',
-    'static/vendor/jquery-easing/',
+    os.path.join(BASE_DIR, "static/css"),
+    os.path.join(BASE_DIR, "static/js"),
+    os.path.join(BASE_DIR, "static/js/jquery"),
+    os.path.join(BASE_DIR, "static/js/jquery-easing"),
+    os.path.join(BASE_DIR, "static/js/bootstrap"),
+    os.path.join(BASE_DIR, "static/vendor"),
+    os.path.join(BASE_DIR, "static/vendor/jquery-easing"),
 )
 
 
