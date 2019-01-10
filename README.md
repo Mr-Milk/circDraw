@@ -35,17 +35,16 @@ Upload instruction:
 - Wait for about 1-3 mins depending on your network speed and enjoy the show!
 
 
-#### Display
 ### Circle RNA density distribution analysis
 By processing the uploaded file in backend, you will be able to interactively view the circle RNA density distribution results and explore your interest further.
 
 <p align="center"><img src="density.png" alt="300" width="cover"></p>
 
 
-#### How to read Results?
+[comment]: <> (### How to read Results?)
 
 
-#### Used library
+### Used library
 #### Backend
 - Python 3: https://www.python.org/
 - Django: https://www.djangoproject.com/
@@ -54,19 +53,18 @@ By processing the uploaded file in backend, you will be able to interactively vi
 - mysqlclient-python: https://github.com/PyMySQL/mysqlclient-python
 - PyMySQL: https://pypi.python.org/pypi/PyMySQL
 
-### Algorithm
+#### Algorithm
 - NumPy: http://www.numpy.org/
 - scikit-learn: http://scikit-learn.org/stable/
 
-### Frontend
+#### Frontend
 - jQuery: https://jquery.com/
 
-### Deployment 
+#### Deployment 
 - Nginx: https://nginx.org/en/
 - uWSGI: https://uwsgi-docs.readthedocs.io/en/latest/
 
-## About 
-
+[comment]: <> (## About)
 
 
 ### More Information
