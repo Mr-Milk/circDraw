@@ -10,7 +10,7 @@ Using [circDraw](http://144.202.101.9)
 
 The circDraw allow visualization circRNA analysis results of circRNA analysis tools. It's user friendly and allow you to get your picture within few clicks. 
 
-<p align="center"><img src="cirDraw/media/cover.png" alt="300" width="cover"></p>
+<p align="center"><img src="home.png" alt="300" width="cover"></p>
 
 
 
@@ -27,13 +27,19 @@ Supported circRNA software
 
 Upload instruction:
 - Click the `GET START!` button from the main page or use navigation button `TOOLS` to go to upload page.
-<p align="center"><img src="cirDraw/media/click_tools.png" alt="300" width="cover"></p>
+
+<p align="center"><img src="upload.png" alt="300" width="uploadr"></p>
 
 - Use `upload` button to upload file from your upstream processing software for circle RNA prediction, for example CIRI2.
 
-- Wait for about 1-3 mins depending on your network speed and wait for being impressed!
+- Wait for about 1-3 mins depending on your network speed and enjoy the show!
 
 
+#### Display
+### Circle RNA density distribution analysis
+By processing the uploaded file in backend, you will be able to interactively view the circle RNA density distribution results and explore your interest further.
+
+<p align="center"><img src="density.png" alt="300" width="cover"></p>
 
 
 #### How to read Results?
