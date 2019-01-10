@@ -28,9 +28,10 @@ Supported circRNA software
 Upload instruction:
 - Click the `GET START!` button from the main page or use navigation button `TOOLS` to go to upload page.
 
-<p align="center"><img src="upload.png" alt="300" width="uploadr"></p>
 
-- Use `upload` button to upload file from your upstream processing software for circle RNA prediction, for example CIRI2.
+- Use `+ Select File` and `Submit` button to upload file from your upstream processing software for circle RNA prediction, for example CIRI2. *Please note that we only support one file at a time for now.*
+
+<p align="center"><img src="upload.png" alt="300" width="uploadr"></p>
 
 - Wait for about 1-3 mins depending on your network speed and enjoy the show!
 
