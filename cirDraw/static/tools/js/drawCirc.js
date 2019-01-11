@@ -413,6 +413,8 @@ function arc(start, end, exonJSON){
 
             arcBackGround.remove()
 
+            circName.remove()
+
             display = false
         }
     }).mouseover(function(){
