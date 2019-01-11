@@ -23,6 +23,9 @@ $gene.ionRangeSlider({
     from: geneList[0],
     to: geneList[0],
     values: geneList,
+    drag_interval: true,
+    min_interval: null,
+    max_interval: null,
     onFinish: updataCirc,
     onUpdata: getGeneList
 }).hide();

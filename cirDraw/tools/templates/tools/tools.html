@@ -9,6 +9,13 @@
      <section id="Tools" style="margin-top: 30px;">
             <div class="container">
                 <div class="col-lg-12 text-center">
+
+                    <!-- Statistic Charts of overall circRNA -->
+                    <h5>Basic Statistics Report</h5>
+                    <div id="lenChart" style="width:1000px;height:500px"></div>
+                    <div id="exonChart" style="width:500px;height:500px"></div>
+                    <div id="isoChart" style="width:500px;height:500px"></div>
+
                     <div id='denCanvas' class="text-center" style="display: inline-block;">
                       <h5>circRNA density distribution on chromosome</h5>
                         <div class="loader svg" id="load">
@@ -36,6 +43,10 @@
                         </select>
                     </p>
                     <!-- End of the chromosome option -->
+                    <div class="positionBotton">
+                        <button class="btn btn-primary btn-sm text-center" id="previous">&laquo; Previous Density Block</button>
+                        <button class="btn btn-primary btn-sm text-center" id="next">Next Density Block &raquo;</button>
+                    </div>
                     <div class="range-slider">
                         <input id="gene-selector" type="text" class="js-range-slider" value="" />
                     </div>
@@ -123,9 +134,6 @@
                         </tbody>
                     </table>
                 </div>
-            <div id="lenChart" style="width:1000px;height:500px"></div>
-            <div id="exonChart" style="width:500px;height:500px"></div>
-            <div id="isoChart" style="width:500px;height:500px"></div>
             
         </section>
 

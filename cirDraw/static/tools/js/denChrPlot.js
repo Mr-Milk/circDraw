@@ -2,93 +2,7 @@
 var url = $(location).attr('href').split("/")
 var caseid = url[url.length -1]
 
-// draw a block
-function chr_block(y, len, name){
-    var chr_block = den.paper.rect(50, y, len, 10).attr({
-        fill: "#e4e4e2",
-        stroke: "#000",
-        strokeWidth: 0.5
-    })
-    
-    var t1 = den.paper.text(20, y+8, name).attr({
-        'font-family': 'arial',
-        'font-size': 10
-    })
-
-    return chr_block, t1
-
-}
-
-function density_block(x, y, len, chr, start, end, density_value){
-    var denBlock = den.paper.rect(x, y+0.3, len+1, 9.5).attr({
-        fill: palette[Math.round(density_value-1)],
-        stroke: 'none',
-        cursor: 'pointer'
-    }).mouseover(function(){
-        den_value = den.paper.text(755, 30, density_value).attr({
-            'font-family': 'arial',
-            'font-size': 15,
-            fill: 'orange',
-        })
-        pText = "chr" + chr + ": " + start + " - " + end
-        position = den.paper.text(325, 30, pText).attr({
-            'font-family': 'arial',
-            'font-size': 15,
-        })
-    }).mouseout(function(){
-        den_value.remove()
-        position.remove()
-    }).click(function(){
-        $("#js-input-from").text(start);
-        $("#js-input-to").text(end);
-        $('#chrSelector').prop("value", chr)
-        var gene_selector = $("#gene_selector").data("ionRangeSlider");
-        $.getJSON("genelist for gene_selector", {"caseid": caseid, "start": start, "end": end, "chr": chr})
-        .done(function(geneList){
-            var geneValues = []
-            for (i in geneList) {
-                geneValues.push(i.name)
-            }
-            gene_selector.update({
-                values: geneValues,
-            })
-        });
-        $("#gene_selector").show()
-    })
-
-    return denBlock
-}
-
-function normChr(chrJSON){
-    var max = 0, normChr = []
-    for (i=0; i<chrJSON.length; i++) {
-        if (chrJSON[i].chrLen > max) {
-            max = chrJSON[i].chrLen
-        };
-    };
-
-    for (i=0; i<chrJSON.length; i++) {
-        normChr.push({"chr": chrJSON[i].chr, "len": 640*chrJSON[i].chrLen/max})
-    }
-    
-    var len = normChr.length
-    var svgHeight = 60 + len*20
-        $("#svg2").attr("height", svgHeight)
-        for (i=0; i<normChr.length ; i++) {
-            chr = chr_block(20+20*(i+1), normChr[i].len, normChr[i].chr)
-        }
-    return max
-    };
-
-function denPlot(chrMaxLen, densityJSON){
-    for (i=0; i<densityJSON.length; i++) {
-        var xAxis = 50 + 640*densityJSON[i].start/chrMaxLen,
-            len = 640*(densityJSON[i].end - densityJSON[i].start)/chrMaxLen
-        
-        density_block(xAxis, 20+20*densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density)
-    }
-}
-
+// Initiate Density Plot
 var den = Snap("#svg2");
 var palette = ['#c73e3a',
 '#c83f3a',
@@ -195,16 +109,145 @@ var tipInfo = den.paper.text(700, 30, "Density: ").attr({
     'font-size': 15
 })
 
-var chrMaxLen
+// Draw Density Plot
+var chrMaxLen, denINFO, densityBlock = []
 $("#svg2").hide()
 $.getJSON('/tools/tools_file4', {'case_id': caseid}).done(function(chrJSON){
     
     chrMaxLen = normChr(chrJSON)
 
     $.getJSON('/tools/tools_file5', {'case_id': caseid}).done(function(densityJSON){
+        denINFO = densityJSON
         denPlot(chrMaxLen, densityJSON)
         $("#load").hide()
         $("#svg2").show()
     })
 
 })
+
+// Changing Density Block
+$("#previous").click(
+    function(){
+        index = getIndex()
+        if (index > 0) {
+            densityBlock[index-1].click()
+            $("#next").removeAttr("disabled")
+        }
+        else {
+            $("#previous").attr("disabled", "")
+        }    
+    }
+)
+
+$("#next").click(
+    function(){
+        index = getIndex()
+        if (index < denINFO.length-1) {
+            densityBlock[index+1].click()
+            $("#previous").removeAttr("disabled")
+        }
+        else {
+            $("#next").attr("disabled", "")
+        }    
+    }
+)
+// get index of an array
+function getIndex(){
+    var from = $("#js-input-from").val(),
+        to = $("#js-input-to").val(),
+        chr = $('#chrSelector').val();
+
+    index = denINFO.findIndex(function(item, i){
+        return item.start === from && item.chr === chr && item.end === to
+    })
+
+    return index
+}
+
+// draw a block
+function chr_block(y, len, name){
+    var chr_block = den.paper.rect(50, y, len, 10).attr({
+        fill: "#e4e4e2",
+        stroke: "#000",
+        strokeWidth: 0.5
+    })
+    
+    var t1 = den.paper.text(20, y+8, name).attr({
+        'font-family': 'arial',
+        'font-size': 10
+    })
+
+    return chr_block, t1
+
+}
+
+function density_block(x, y, len, chr, start, end, density_value){
+    var denBlock = den.paper.rect(x, y+0.3, len+1, 9.5).attr({
+        fill: palette[Math.round(density_value-1)],
+        stroke: 'none',
+        cursor: 'pointer'
+    }).mouseover(function(){
+        den_value = den.paper.text(755, 30, density_value).attr({
+            'font-family': 'arial',
+            'font-size': 15,
+            fill: 'orange',
+        })
+        pText = "chr" + chr + ": " + start + " - " + end
+        position = den.paper.text(325, 30, pText).attr({
+            'font-family': 'arial',
+            'font-size': 15,
+        })
+    }).mouseout(function(){
+        den_value.remove()
+        position.remove()
+    }).click(function(){
+        $("#js-input-from").text(start);
+        $("#js-input-to").text(end);
+        $('#chrSelector').prop("value", chr)
+        var gene_selector = $("#gene_selector").data("ionRangeSlider");
+        $.getJSON("genelist for gene_selector", {"caseid": caseid, "start": start, "end": end, "chr": chr})
+        .done(function(geneList){
+            var geneValues = []
+            for (i in geneList) {
+                geneValues.push(i.name)
+            }
+            gene_selector.update({
+                values: geneValues,
+            })
+        });
+        $("#gene_selector").show()
+    })
+
+    return denBlock
+}
+
+function normChr(chrJSON){
+    var max = 0, normChr = []
+    for (i=0; i<chrJSON.length; i++) {
+        if (chrJSON[i].chrLen > max) {
+            max = chrJSON[i].chrLen
+        };
+    };
+
+    for (i=0; i<chrJSON.length; i++) {
+        normChr.push({"chr": chrJSON[i].chr, "len": 640*chrJSON[i].chrLen/max})
+    }
+    
+    var len = normChr.length
+    var svgHeight = 60 + len*20
+        $("#svg2").attr("height", svgHeight)
+        for (i=0; i<normChr.length ; i++) {
+            chr = chr_block(20+20*(i+1), normChr[i].len, normChr[i].chr)
+        }
+    return max
+    };
+
+function denPlot(chrMaxLen, densityJSON){
+    for (i=0; i<densityJSON.length; i++) {
+        densityBlock[i] = "density_block" + i
+        var xAxis = 50 + 640*densityJSON[i].start/chrMaxLen,
+            len = 640*(densityJSON[i].end - densityJSON[i].start)/chrMaxLen
+        
+        densityBlock[i] = density_block(xAxis, 20+20*densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density)
+    }
+}

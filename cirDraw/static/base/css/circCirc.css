@@ -76,3 +76,14 @@
         border-width: 3px;
         border-color: #fed136;
 }
+
+.positionBotton {
+        display: inline-block;
+        margin-top: 5px;
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+        color: #fff;
+        background-color: #fed168;
+        border-color: #fed168;
+    }    
