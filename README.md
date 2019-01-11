@@ -4,7 +4,7 @@
 
 An online circRNA visualization and analysis tool. 
 
-Using [circDraw](http://144.202.101.9)
+Using [circDraw](http://www.circdraw.com)
 
 ### Introduction
 
@@ -60,6 +60,11 @@ By processing the uploaded file in backend, you will be able to __interactively_
 
 #### Frontend
 - jQuery: https://jquery.com/
+- Snap.svg: http://snapsvg.io/
+- Ion.RangeSlider: http://ionden.com/a/plugins/ion.rangeSlider/index.html
+- DataTables: https://datatables.net/
+- BioCircos: http://bioinfo.ibp.ac.cn/biocircos/
+- ECharts: https://www.echartsjs.com/
 
 #### Deployment 
 - Nginx: https://nginx.org/en/
