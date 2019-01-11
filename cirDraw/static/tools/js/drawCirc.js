@@ -1,3 +1,6 @@
+// Initiate snap.SVG instance
+var svg = Snap("#svg");
+
 // Define a color palette for the exon blocks
 var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2", "#FF881D"]
 
@@ -77,10 +80,9 @@ function updataCirc(data){
     });
 }
 
-// Initiate snap.SVG instance
-var svg = Snap("#svg");
+//----------------------------------------- Functions For Drawing --------------------------------------
 
-// draw an exon block
+// draw an junction block
 function junction_block(x, color){
     var junction_block = svg.paper.rect(x, 445, 2, 10).attr({
         fill: color,
@@ -90,7 +92,7 @@ function junction_block(x, color){
     return junction_block
 }
 
-// draw a exon
+// draw an exon
 function exon_block(x, len, color, name){
 
     var exon_name
@@ -107,7 +109,9 @@ function exon_block(x, len, color, name){
         else if (display == false) {
             exon_name = svg.paper.text(x, 465, name).attr({
                 'font-family': 'arial',
-                'font-size': 10}); 
+                'font-size': 10,
+                'cursor': 'pointer'})
+                .drag(); 
             display = true;}
         }).mouseover(function(){
             exon_block.attr({
@@ -148,7 +152,9 @@ function gene_block(x, len, color, name){
         else if (display == false) {
             gene_name = svg.paper.text(x, 465, name).attr({
                 'font-family': 'arial',
-                'font-size': 10}); 
+                'font-size': 10,
+                'cursor': 'pointer'})
+                .drag();
             display = true;}
         }).mouseover(function(){
             exon_block.attr({
@@ -172,6 +178,7 @@ function gene_block(x, len, color, name){
     return exon_block
 }
 
+// calculate the range of an array
 function getRange(arr) {
     var range = 0
     for (var i=0 ; i<arr.length ; i++) {
@@ -180,6 +187,7 @@ function getRange(arr) {
     return range;
 }
 
+// calculate the min and max value of an array
 function getMinMax(exonJSON){
     var arr = []
     for (i=0 ; i<exonJSON.length ; i++) {
@@ -195,35 +203,73 @@ function getMinMax(exonJSON){
     return mm
 }
 
+// draw the epigenetic legned
 function drawLegend(){
-    var legendY = 20, legend = [], legendText = []
-    var modlist = {'mod':['m6A', 'm1C', 'm1A', 'MRE', 'ORF'], 'color':['#E98B2A', '#E16B8C', '#64363C', '#6D2E5B', '#516E41']}
-    for (i=0; i<modlist.mod.length; i++) {
-        legend[i] = 'legend_' + modlist[i]
-        legendText[i] = 'legendText_' + modlist[i]
-        legend[i] = svg.paper.rect(20, legendY, 10, 10).attr({
-            fill: modlist.color[i],
-            stroke: '#000',
-            strokeWidth: 0.5
-        })
-        legendText[i] = svg.paper.text(35, legendY+8, modlist.mod[i]).attr({
-            fill: modlist.color[i],
-            'font-size': 13,
-            'font-family': 'arial'
-        })
-        legendY += 15
-    }
-    legendGroup = svg.group(legend[0], legend[1], legend[2], legend[3], legend[4],
-                            legendText[0], legendText[1], legendText[2], legendText[3], legendText[4])
+    trig = triangelOnCircle(20, 20, 0, 0, 5, '#E98B2A')
 
-    return legendGroup
-    }
+    triText = legendText(30, 28, "m6A", '#E98B2A')
 
+    square = rectOnCircle(20, 35, 0, 5, 0, '#E16B8C')
 
+    squareText = legendText(30, 43, "m1C", '#E16B8C')
+
+    circle = svg.paper.circle(20, 56, 3).attr({
+        fill: '#64363C',
+        stroke: '#64363C',
+        "cursor": "pointer"
+    })
+
+    circleText = legendText(30, 58, "m6A", '#64363C')
+
+    arrow = arrowOnCircle(20, 66, 0, 0)
+
+    arrowText = legendText(30, 75, "SNP", '#000')
+
+    MRE = svg.paper.rect(18, 91, 7, 7).attr({
+        fill: '#6D2E5B',
+        stroke: '#000',
+        strokeWidth: 0.5
+    })
+
+    MREText = legendText(30, 99, "MRE", '#6D2E5B')
+
+    ORF = svg.paper.rect(18, 106, 7, 7).attr({
+        fill: '#516E41',
+        stroke: '#000',
+        strokeWidth: 0.5
+    })
+
+    ORFText = legendText(30, 114, "ORF")
+
+    legend = svg.group(trig, square, circle, arrow, MRE, ORF, triText, squareText, circleText, arrowText, MREText, ORFText)
+
+    return legend
+}
+
+// text at its center cordinate (x,y)
+function textCenter(centerX, centerY, text, fontSize, color) {
+    cText = svg.paper.text(centerX, centerY, text).attr({
+        "font-family": "arial",
+        "font-size": fontSize,
+    })
+    textW = cText.getBBox().w
+    textH = cText.getBBox().h
+    cText.remove()
+    cText = svg.paper.text(centerX-textW/2, centerY+textH/2, text).attr({
+        "font-family": "arial",
+        "font-size": fontSize,
+        fill: color
+    })
+
+    return cText
+}
+
+// CORE FUNCTION! draw the arc and its circRNA
 function arc(start, end, exonJSON){
     var rx = (end-start)/2
     var ry = rx/2
     var path = "M" + (start+1) + " 443A" +  rx + " " + ry + " 0 0 1 " + (end+1) + " 443"
+    // draw an arc
     var c = svg.paper.path(path).attr({
         stroke: "#000",
         strokeWidth: 1,
@@ -231,116 +277,97 @@ function arc(start, end, exonJSON){
         cursor: 'pointer'
     });
 
+    // the junction blocks
     var startBlock = junction_block(start, "#00AA90")
-    var endBLock = junction_block(end, "#D0104C")
+    var endBlock = junction_block(end, "#D0104C")
     var circle = [], modCirc = []
-    var display = false, legend
+    var display = false, legend, arcBackGround
     var junction_point1, junction_point2
     var range = getRange(exonJSON)
     var realStart = getMinMax(exonJSON)[0]
     var realEnd = getMinMax(exonJSON)[1]
-    var startAngle = 180, endAngle = 180, centerX = start+rx+1, centerY = 283-ry
+    var startAngle = 180, endAngle = 180, centerX = 400, centerY = 140
 
     c.click(function(){
         c.attr({
             stroke: "#33A6B8",
-            strokeWidth: 3,
+            strokeWidth: 6,
             fill:'none'
         });
         
         if (display == false) {
+            arcBackGround = svg.paper.rect(0,0,800,250).attr({
+                stroke: "none",
+                fill: "#fff"
+            });
+
+            // the name of circRNA
+            circText = "chr" + chr + ": " + realStart + " - " + realEnd
+            circName = textCenter(centerX, centerY-110, circText, 15, "#000")
+
             for (i=0;i<exonJSON.length;i++) {
                 circle[i] = 'circExon' + i;
                 modCirc[i] = 'modCirc' + i;
                 modCirc[i] = []
                 endAngle += 360*(exonJSON[i].end - exonJSON[i].start)/range
+                // draw the epigenetic sites
                 for (t=0;t<exonJSON[i]['mod'].length;t++) {
                     modCirc[i][t] += "mod" + t;
                     modStartAngle = startAngle + 360*(exonJSON[i]['mod'][t].start - exonJSON[i].start)/range
                     modEndAngle = startAngle + 360*(exonJSON[i]['mod'][t].end - exonJSON[i].start)/range
                     if (exonJSON[i]['mod'][t].type == 'm6A') {
-                        modPath = describeArc(centerX, centerY, 87, modStartAngle-1, modEndAngle+1)
-                        modCirc[i][t] = svg.paper.path(modPath).attr({
-                            stroke: '#E98B2A',
-                            strokeWidth: 3,
-                            fill: 'none'
-                        }).mouseover(function(){
-                            text = svg.paper.text(centerX-20, centerY+10, 'm6A').attr({
-                                fill: '#E98B2A',
-                                'font-size': 15,
-                                'font-family': 'arial',
-                            })
-                        }).mouseout(function(){
-                            text.remove()
-                        })
-                    }
+                        modCirc[i][t] = triTagOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                        .mouseover(function(){text = textCenter(centerX, centerY, "m6A", 15, '#E98B2A')})
+                        .mouseout(function(){text.remove()})
+                        .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                        }
                     if (exonJSON[i]['mod'][t].type == 'm1C') {
-                        modPath = describeArc(centerX, centerY, 87, modStartAngle-1, modEndAngle+1)
-                        modCirc[i][t] = svg.paper.path(modPath).attr({
-                            stroke: '#E16B8C',
-                            strokeWidth: 3,
-                            fill: 'none'
-                        }).mouseover(function(){
-                            text = svg.paper.text(centerX-20, centerY+10, 'm1C').attr({
-                                fill: '#E16B8C',
-                                'font-size': 15,
-                                'font-family': 'arial',
-                            })
-                        }).mouseout(function(){
-                            text.remove()
-                        })
+                        modCirc[i][t] = squareTagOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                        .mouseover(function(){text = textCenter(centerX, centerY, "m1C", 15, '#E16B8C')})
+                        .mouseout(function(){text.remove()})
+                        .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
                     }
                     if (exonJSON[i]['mod'][t].type == 'm1A') {
-                        modPath = describeArc(centerX, centerY, 87, modStartAngle-1, modEndAngle+1)
-                        modCirc[i][t] = svg.paper.path(modPath).attr({
-                            stroke: '#64363C',
-                            strokeWidth: 3,
-                            fill: 'none'
-                        }).mouseover(function(){
-                            text = svg.paper.text(centerX-20, centerY+10, 'm1A').attr({
-                                fill: '#64363C',
-                                'font-size': 15,
-                                'font-family': 'arial',
-                            })
-                        }).mouseout(function(){
-                            text.remove()
-                        })
-                    }
+                        modCirc[i][t] = circleTagOnCircle(centerX, centerY, 85, 180+modStartAngle, '#64363C')
+                        .mouseover(function(){text = textCenter(centerX, centerY, "m1A", 15, '#64363C')})
+                        .mouseout(function(){text.remove()})
+                        .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                        }
+                    if (exonJSON[i]['mod'][t].type == 'SNP') {
+                        modCirc[i][t] = arrowOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                        .mouseover(function(){text = textCenter(centerX, centerY, "SNP", 15, '#000')})
+                        .mouseout(function(){text.remove()})
+                        .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                        }
                     if (exonJSON[i]['mod'][t].type == 'MRE') {
                         modPath = describeArc(centerX, centerY, 70, modStartAngle, modEndAngle)
                         modCirc[i][t] = svg.paper.path(modPath).attr({
                             stroke: '#6D2E5B',
                             strokeWidth: 5,
-                            fill: 'none'
+                            fill: 'none',
+                            "cursor": "pointer"
                         }).mouseover(function(){
-                            text = svg.paper.text(centerX-20, centerY+10, 'MRE').attr({
-                                fill: '#6D2E5B',
-                                'font-size': 15,
-                                'font-family': 'arial',
-                            })
+                            text = textCenter(centerX, centerY, "MRE", 15, '#6D2E5B')
                         }).mouseout(function(){
                             text.remove()
-                        })
+                        }).click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
                     }
                     if (exonJSON[i]['mod'][t].type == 'ORF') {
                         modPath = describeArc(centerX, centerY, 63, modStartAngle, modEndAngle)
                         modCirc[i][t] = svg.paper.path(modPath).attr({
                             stroke: '#516E41',
                             strokeWidth: 5,
-                            fill: 'none'
+                            fill: 'none',
+                            "cursor": "pointer"
                         }).mouseover(function(){
-                            text = svg.paper.text(centerX-20, centerY+10, 'ORF').attr({
-                                fill: '#516E41',
-                                'font-size': 15,
-                                'font-family': 'arial',
-                            })
+                            text = text = textCenter(centerX, centerY, "ORF", 15, '#516E41')
                         }).mouseout(function(){
                             text.remove()
-                        })
+                        }).click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
                     }
+                //console.log(i, t, modCirc[i][t])
                 }
                 p = describeArc(centerX, centerY, 80, startAngle, endAngle)
-                console.log(p)
                 startAngle = endAngle
                 circle[i] = svg.paper.path(p).attr({
                     stroke: exonJSON[i].color,
@@ -349,15 +376,17 @@ function arc(start, end, exonJSON){
                 })
             }
 
+            // draw a legend
             legend = drawLegend()
-
-            var juncX = start + rx, juncY = 358-ry
-            junction_point1 = svg.paper.rect(juncX-2, juncY, 4, 10).attr({
+            
+            // draw the junction blocks on circRNA
+            var juncX = centerX-2, juncY = centerY+75
+            junction_point1 = svg.paper.rect(juncX-2.3, juncY, 4, 10).attr({
                 fill: "#00AA90",
                 stroke: "#000",
                 strokeWidth: 0.2,
             })
-            junction_point2 = svg.paper.rect(juncX+2, juncY, 4, 10).attr({
+            junction_point2 = svg.paper.rect(juncX+2.3, juncY, 4, 10).attr({
                 fill: "#D0104C",
                 stroke: "#000",
                 strokeWidth: 0.2
@@ -382,13 +411,23 @@ function arc(start, end, exonJSON){
 
             legend.remove()
 
+            arcBackGround.remove()
+
             display = false
         }
     }).mouseover(function(){
         c.attr({
             stroke: "#33A6B8",
-            strokeWidth: 3,
+            strokeWidth: 6,
             fill:'none'
+        });
+        startBlock.attr({
+            stroke: "#33A6B8",
+            strokeWidth: 1
+        });
+        endBlock.attr({
+            stroke: "#33A6B8",
+            strokeWidth: 1
         });
         startText = svg.paper.text(start-10, 475, realStart).attr({
             fill: '#000',
@@ -405,6 +444,14 @@ function arc(start, end, exonJSON){
             fill:'none',
             cursor: 'pointer'
         });
+        startBlock.attr({
+            fill: "#00AA90",
+            stroke: "none"
+        });
+        endBlock.attr({
+            fill: "#D0104C",
+            stroke: "none"
+        })
         startText.remove();
         endText.remove()
     })
@@ -437,8 +484,6 @@ function describeArc(x, y, radius, startAngle, endAngle){
     return d;       
 }
 
-// draw a group of back-splicing
-
 function backSplicing(exonJSON, arcJSON){
     var exonList = []
     var mm = getMinMax(exonJSON)
@@ -448,17 +493,23 @@ function backSplicing(exonJSON, arcJSON){
         scaleStart = 50+700*(exonJSON[i].start-mm[0])/range
         scaleEnd = 50+700*(exonJSON[i].end-mm[0])/range
         scaleLen = scaleEnd - scaleStart
-        if (colorIndex<7) {
-            exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-            exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
-            colorIndex += 1    
+        if (exonJSON[i].type == "exon") {
+            if (colorIndex<7) {
+                exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
+                exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
+                colorIndex += 1    
+            }
+            else {
+                colorIndex = 0
+                exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
+                exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
+                colorIndex += 1
+            }
         }
-        else {
-            colorIndex = 0
-            exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-            exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
-            colorIndex += 1
+        else if (exonJSON[i].type == "gene") {
+            gene_block(scaleStart, scaleLen, geneColor[geneColorIndex], exonJSON[i].name)
         }
+
     }
 
     console.log("arc num: ", arcJSON.length)
@@ -486,3 +537,112 @@ function backSplicing(exonJSON, arcJSON){
         arc(scaleArcStart, scaleArcEnd, drawArc)
     }
 }; 
+
+// get the cordinate triangle around circle
+function triCord(centerX, centerY, r, triDegree, triHeight, triType) {
+    rad_triDegree = (triDegree-270)*Math.PI/180
+    side = Math.sqrt((r + triHeight)**2 + triHeight**2)
+    rad_deviateDegree = Math.atan(Math.sqrt(triType)*triHeight/side)
+
+    x1 = centerX + (r)*Math.cos(rad_triDegree)
+    y1 = centerY + (r)*Math.sin(rad_triDegree)
+    x2 = centerX + (side)*Math.cos(rad_triDegree+rad_deviateDegree)
+    y2 = centerY + (side)*Math.sin(rad_triDegree+rad_deviateDegree)
+    x3 = centerX + (side)*Math.cos(rad_triDegree-rad_deviateDegree)
+    y3 = centerY + (side)*Math.sin(rad_triDegree-rad_deviateDegree)
+    x4 = centerX + (r + 2*triHeight)*Math.cos(rad_triDegree)
+    y4 = centerY + (r + 2*triHeight)*Math.sin(rad_triDegree)
+
+    return [x1, y1, x2, y2, x3, y3, x4, y4]
+}
+ 
+// get the cordinate of a stick
+function stickCord(centerX, centerY, r, Degree, Height) {
+    rad_Degree = (Degree-270)*Math.PI/180
+    x1 = centerX + (r)*Math.cos(rad_Degree)
+    y1 = centerY + (r)*Math.sin(rad_Degree)
+    x2 = centerX + (r+Height)*Math.cos(rad_Degree)
+    y2 = centerY + (r+Height)*Math.sin(rad_Degree)
+
+    return [x1, y1, x2, y2]
+}
+
+function triangelOnCircle(centerX, centerY, r, triDegree, triHeight, color){
+    cords = triCord(centerX, centerY, r, triDegree, triHeight, 1/3)
+    triangele = svg.paper.polygon(cords[0], cords[1], cords[2], cords[3], cords[4], cords[5]).attr({
+        stroke: color,
+        fill: color,
+        "cursor": "pointer",
+    })
+
+    return triangele
+}
+
+function rhoOnCircle(centerX, centerY, r, rhoDegree, rhoHalfHeight, color){
+    cords = triCord(centerX, centerY, r, rhoDegree, rhoHalfHeight, 1)
+    rho = svg.paper.polygon(cords[0], cords[1], cords[2], cords[3], cords[6], cords[7], cords[4], cords[5]).attr({
+        stroke: color,
+        fill: color,
+        "cursor": "pointer",
+    })
+
+    return rho
+}
+
+function arrowOnCircle(centerX, centerY, r, Degree){
+    tri = triangelOnCircle(centerX, centerY, r, Degree, 1, "#000")
+    cords = stickCord(centerX, centerY, r, Degree, 10)
+    arrowLine = svg.paper.line(cords[0], cords[1], cords[2], cords[3]).attr({
+        stroke: "#000",
+        strokeWidth: 0.5
+    })
+    arrow = svg.group(arrowLine, tri)
+
+    return arrow
+}
+
+function circleTagOnCircle(centerX, centerY, r, Degree, color) {
+    cords = stickCord(centerX, centerY, r, Degree, 5)
+    line = svg.paper.line(cords[0], cords[1], cords[2], cords[3]).attr({
+        stroke: color,
+        strokeWidth: 1
+    })
+    circle = svg.paper.circle(cords[2], cords[3], 2).attr({
+        fill: color,
+        stroke: color,
+        "cursor": "pointer"
+    })
+    circTag = svg.group(circle, line)
+
+    return circTag
+
+}
+
+function triTagOnCircle(centerX, centerY, r, Degree) {
+    cords = stickCord(centerX, centerY, r, Degree, 10)
+    line = svg.paper.line(cords[0], cords[1], cords[2], cords[3]).attr({
+        stroke: "#E98B2A",
+        strokeWidth: 1
+    })
+    tri = triangelOnCircle(centerX, centerY, r+10, Degree, 4.5, "#E98B2A")
+    triTag = svg.group(tri, line)
+
+    return triTag
+
+}
+
+function squareTagOnCircle(centerX, centerY, r, Degree) {
+    cords = stickCord(centerX, centerY, r, Degree, 5)
+    line = svg.paper.line(cords[0], cords[1], cords[2], cords[3]).attr({
+        stroke: "#E16B8C",
+        strokeWidth: 1
+    })
+    square = rhoOnCircle(centerX, centerY, r+5, Degree, 2.5, "#E16B8C")
+    squareTag = svg.group(square, line)
+
+    return squareTag
+}
+
+function openNewTab(link) {
+    window.open(link, "_blank")
+}
