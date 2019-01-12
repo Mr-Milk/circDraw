@@ -30,6 +30,12 @@ $gene.ionRangeSlider({
     onUpdata: getGeneList
 }).hide();
 
+$("#drawdownload").click(function(){
+    var saveSvgAsSvg = svg.paper.toString(),
+        blob = new Blob([saveSvgAsSvg], { type: 'text/plain' })
+    $("#drawdownload").attr("href", window.URL.createObjectURL(blob))
+})
+
 function getGeneList(){
     var val1 = parseInt($inputFrom.text()),
         val2 = parseInt($inputTo.text()),
