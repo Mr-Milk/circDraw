@@ -62,79 +62,22 @@
 
             <div class="container">
               <div class="col-lg-8 text-center">
-              </div>
-            </div>
-
-            <br><br>
-
-            <div class="densityTable">
-                    <table id="table_id" class="display compact">
+                <div id="table">
+                    <table id="circTable" class="display" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Chromosome</th>
-                                <th>Species</th>
-                                <th>Gene Name</th>
-                                <th>Gene ID</th>
-                                <th>Gene Type</th>
-                                <th>Density</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th></th>
+                            <th></th>
+                            <th>circID</th>
+                            <th>Chr</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Source Gene</th>
+                            <th>Details</th>
                             </tr>
                         </thead>
-                            {% for circRNA in RNAinfos %}
-                            <tr>
-                                <td id='tableChr'>{{ circRNA.chr }}</td>
-                                <td>{{ circRNA.species }}</td>
-                                <td>{{ circRNA.name }}</td>
-                                <td>{{ circRNA.id }}</td>
-                                <td>{{ circRNA.type }}</td>
-                                <td>{{ circRNA.density }}</td>
-                                <td id='tableStart'>{{ circRNA.start }}</td>
-                                <td id='tableEnd'>{{ circRNA.end }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning view" href='#Tools'>View</button>
-                                    <div class="circWindow">
-                                    <label class="x" style="position: absolute;top:2px;left: 95%;font-size: 25px;">x</label>
-                                    <canvas class="circCirc"></canvas>
-                                    <label class="btn btn-primary btn-sm text-center" for="circDownload">
-                                    <input class="ccDownload" style="display:none">
-                                    Download
-                                    </label>
-                                    </div>
-                                    <div class="shedlayer"></div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            <tr>
-                                <td id='tableChr'>chr1</td>
-                                <td>Human</td>
-                                <td>CDSN</td>
-                                <td>ENSG00000237114</td>
-                                <td>Protein coding</td>
-                                <td>98.9</td>
-                                <td id='tableStart'>98567</td>
-                                <td id='tableEnd'>106789</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning view" href='#Tools'>View</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td id='tableChr'>chr1</td>
-                                <td>Human</td>
-                                <td>LINC01556</td>
-                                <td>ENSG00000237313</td>
-                                <td>Protein coding</td>
-                                <td>54.6</td>
-                                <td id='tableStart'>6598006</td>
-                                <td id='tableEnd'>6834540</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning view" href='#Tools'>View</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
+              </div>
+            </div>
             
         </section>
 

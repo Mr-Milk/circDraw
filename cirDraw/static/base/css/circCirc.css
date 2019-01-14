@@ -87,3 +87,11 @@
         background-color: #fed168;
         border-color: #fed168;
     }    
+
+td.details-control {
+background: url('../../../media/open.png') no-repeat center center;
+cursor: pointer;
+}
+tr.shown td.details-control {
+background: url('../../../media/close.png') no-repeat center center;
+}

@@ -84,9 +84,58 @@ function updataCirc(data){
         $.getJSON("tools_file1/", {"caseid": case_id, "start": start, "end": end, "chr": chr}).done(function(arc){
             arcList = arc;
             console.log("circ number: ", arc.length)
-            backSplicing(exonList, arcList)
+            var tableContent = backSplicing(exonList, arcList)
+
+            $('#circTable').DataTable( {
+                "data": tableContent,
+                "columns": [
+                    {
+                        "className":      'details-control',
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": ''
+                    },
+                    { "data": "circid" },
+                    { "data": "chr" },
+                    { "data": "start" },
+                    { "data": "end" },
+                    { "data": "source" },
+                    { "data": "detail" }
+                ],
+                "order": [[1, 'asc']]
+            } )
+
+            $('#circTable tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row( tr );
+         
+                if ( row.child.isShown() ) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // Open this row
+                    row.child( subTable(row.data()) ).show();
+                    tr.addClass('shown');
+                }
+            } );
+
         });
     });
+}
+// for table
+function subTable ( modJSON ) {
+    var startTable = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;"><tr>'
+    var endTable = '</tr></table>'
+
+    for (i=0;i<modJSON.mod.length;i++){
+        startTable += '<td>' + modJSON.mod.type + ' | ' + modJSON.mod.start + ' - ' + modJSON.mod.end + ' | ' + '<button class="btn btn-sm btn-primary' + 'href="' + modJSON.mod.link + '"></button>' + '</td>'
+    }
+
+    var subTable = startTable + endTable
+
+    return subTable
 }
 
 //----------------------------------------- Functions For Drawing --------------------------------------
@@ -507,13 +556,27 @@ function backSplicing(exonJSON, arcJSON){
         if (exonJSON[i].type == "exon") {
             if (colorIndex<7) {
                 exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-                exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
-                colorIndex += 1    
+                exonList[i] = {"chr": parseInt($('#chrSelector').val()),
+                                "start": exonJSON[i].start,
+                                "end": exonJSON[i].end,
+                                "circid": "chr" + parseInt($('#chrSelector').val()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
+                                "color": colorList[colorIndex],
+                                "mod": exonJSON[i].mod,
+                                "source": exonJSON[i].source,
+                                "detail": exonJSON[i].detail}
+                colorIndex += 1
             }
             else {
                 colorIndex = 0
                 exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-                exonList[i] = {"start": exonJSON[i].start, "end": exonJSON[i].end, "color": colorList[colorIndex], "mod": exonJSON[i].mod}
+                exonList[i] = {"chr": parseInt($('#chrSelector').val()),
+                                "start": exonJSON[i].start,
+                                "end": exonJSON[i].end,
+                                "circid": "chr" + parseInt($('#chrSelector').val()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
+                                "color": colorList[colorIndex],
+                                "mod": exonJSON[i].mod,
+                                "source": exonJSON[i].source,
+                                "detail": exonJSON[i].detail}
                 colorIndex += 1
             }
         }
@@ -547,6 +610,8 @@ function backSplicing(exonJSON, arcJSON){
         console.log(1)
         arc(scaleArcStart, scaleArcEnd, drawArc)
     }
+
+    return drawArc
 }; 
 
 // get the cordinate triangle around circle
