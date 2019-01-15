@@ -44,8 +44,20 @@ $.getJSON('lenChart_URL', {'caseid': case_id})
                     },
             },
             type: 'line',
-            smooth: true
-        }]
+            smooth: true,
+            itemStyle: {color: "#fed136"},
+        }],
+        toolbox: {
+            　　show: true,  
+            　　feature: {
+            　　　　saveAsImage: {
+            　　　　show:true,
+            　　　　title: "png",
+            　　　　excludeComponents :['toolbox'],
+            　　　　pixelRatio: 2
+            　　　　}
+            　　}
+            }
     };
 
     lenChart.setOption(option1);
@@ -94,8 +106,20 @@ $.getJSON('exonChart_URL', {'caseid': case_id})
                     },
             },
             type: 'line',
-            smooth: true
-        }]
+            smooth: true,
+            itemStyle: {color: "#fed136"},
+        }],
+        toolbox: {
+            　　show: true,  
+            　　feature: {
+            　　　　saveAsImage: {
+            　　　　show:true,
+            　　　　title: "png",
+            　　　　excludeComponents :['toolbox'],
+            　　　　pixelRatio: 2
+            　　　　}
+            　　}
+            }
     };
 
     exonChart.setOption(option2);
@@ -144,8 +168,20 @@ var option3 = {
                 },
         },
         type: 'line',
-        smooth: true
-    }]
+        smooth: true,
+        itemStyle: {color: "#fed136"},
+    }],
+    toolbox: {
+        　　show: true,  
+        　　feature: {
+        　　　　saveAsImage: {
+        　　　　show:true,
+        　　　　title: "png",
+        　　　　excludeComponents :['toolbox'],
+        　　　　pixelRatio: 2
+        　　　　}
+        　　}
+        }
 };
 
 isoChart.setOption(option3);
