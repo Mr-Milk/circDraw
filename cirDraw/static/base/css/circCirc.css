@@ -89,9 +89,18 @@
     }    
 
 td.details-control {
-background: url('../../../media/open.png') no-repeat center center;
-cursor: pointer;
+        background: url('../../../media/open.png') no-repeat center center;
+        cursor: pointer;
 }
 tr.shown td.details-control {
 background: url('../../../media/close.png') no-repeat center center;
+}
+
+.mdl-button--raised.mdl-button--colored {
+        background: #fed136;
+        color: #fff;
+        }
+    
+.mdl-button--raised.mdl-button--colored:active, .mdl-button--raised.mdl-button--colored:hover {
+        background-color: #E8B647;
 }
