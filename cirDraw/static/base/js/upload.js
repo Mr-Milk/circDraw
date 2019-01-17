@@ -1,68 +1,59 @@
 $(document).ready(function(){
 
-    $('#fileupload').on('submit', function(event){
-        console.log('hello');
-        var formData = new FormData($('#fileform')[0]);
-            setTimeout(function(){
-                $.ajax({
-                    xhr: function(e){
-                        var xhr = new window.XMLHttpRequest();
-                        xhr.upload.addEventLister('process', function(e){
-                            if (e.lengthComputable) {
-                                var percent = Math.round((e.loaded / e.total) * 100)
-                                $('#bar').attr('aria-valuenow', percent).css('width', percent + '%').text(percent + '%')
-                            };
-                        });
+    console.log("running")
 
-                        return xhr;
-                    },
-                    beforeSend: function (xhr) {
-                                xhr.setRequestHeader("Content-Type", "multipart/form-data");
-                                $("#loading").html("<p>loading...</p>");
-                            },
-                    type: 'POST',
-                    url: "upload&save/",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    cache: false,
-                    success: function(cid){
-                        alert(caseid.cid); 
-                        var filename = $('#fileform').prop("files")['name'];
-                        $('#uploadname').text(filename);
-                        var caseID = new STRING(caseid[cid])
-                        var myURL = document.URL
-                        window.location.href = myURL + "?id=" + caseID;
-                    },
-                    error: function(ts) { alert(ts.responseText) }
-                });
-            }, 3000);
-        console.log('done');
-        event.preventDefault();
+    $('#resultbutton').hide()
+    
+    $('#aftersubmit').hide()
+
+    $('#cancel').hide()
+    
+    $('#myfile').change(function () {
+        var a = $('#myfile').val().toString().split('\\');
+        console.log(a)
+        $('#filename').text(a[a.length -1])
+        $('#cancel').show().click(function(){
+            $('#filename').text('');
+            $('#cancel').hide()
         });
-});
-
-console.log("running")
-
-$('#cancel').hide()
-
-$('#myfile').change(function () {
-    var a = $('#myfile').val().toString().split('\\');
-    console.log(a)
-    $('#filename').text(a[a.length -1])
-    $('#cancel').show().click(function(){
-        $('#filename').text('');
-        $('#cancel').hide()
     });
-});
 
-$('#aftersubmit').hide()
-$('#submit').click(function(){
-    $('#aftersubmit').show()
-    var sec = 0;
-    setInterval(function(){
-    $('#processtip').text('Processing time: '+ sec + 's')
-    sec++;
-    $('#submitstatus').text('✓ Submitted')
-}, 1000);
-})
+    
+    $('#uploadlabel').click(function(){
+        $('#myfile').click()
+    })
+    var reportID
+    $('#submit').click(function(){
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            cache: false,
+            data: new FormData($('#fileform')[0]),
+            processData: false,
+            contentType: false
+        }).done(
+            function(reportID) {$('#submitstatus').text('✓ Submitted');
+                reportID = reportID[0]
+        }).fail(
+            function() {$('#processtip').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")});
+    
+        $('#aftersubmit').show()
+        $('#resultbutton').show()
+        var sec = 0;
+        intervalID_1 = setInterval(
+            function(){
+                $('#processtip').text('Processing time: '+ sec + 's')
+                sec++;}, 1000);
+        
+        while (true) {
+            intervalID_2 = setInterval($.getJSON("statusfile").done(function(processState){
+                if (processState == true) {
+                    clearInterval(intervalID_1)
+                    $('#processtip').text('Processing Completed! Your report ID is ' + '<b><i>' + reportID + '</i></b>')
+                    $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/"+ reportID)
+                    clearInterval(intervalID_2)
+                }
+            }), 5000)
+        }
+    })
+});
