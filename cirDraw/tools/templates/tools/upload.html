@@ -12,9 +12,12 @@
                 <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
                 <div class="center"><div class="textarea" contenteditable="true"></div>
                 <button type="button" class="btn btn-primary btn-sm" id="example">Example</button></div>
+                <!--
                 <form id="fileform" method="POST" action="{% url 'upload&save' %}" enctype="multipart/form-data">
                 {% csrf_token %}
-                  <label class="btn btn-primary btn-sm" for="fileupload" onclick="document.getElementById('myfile').click();" id="uploadlabel">
+                -->
+                <form id="fileform" enctype="multipart/form-data">
+                  <label class="btn btn-primary btn-sm" for="fileupload" id="uploadlabel">
                     + Select File 
                     <input type="file" id="myfile" name="myfile" style="display:none">
                   </label>
@@ -29,6 +32,7 @@
 
                 <p id="aftersubmit">After submitting your file, it usually takes 2-3 mins to process, thanks for your patience.</p>
                 <p id="processtip"></p>
+                <button class="btn btn-primary btn-sm" id="resultbutton" disabled>View Report</button>
                 <!--<div class="progress col-sm-8" id="progressbar">
                     <div id='bar' class="progress-bar" role="progressbar" style="width: 0%;background:#fed136;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                   </div>-->

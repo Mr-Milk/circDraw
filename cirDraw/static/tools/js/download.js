@@ -53,3 +53,22 @@ function svg2png(svgCanvas){
     $("<canvas></canvas>").remove()
     return imgData
 }
+
+function pdfReport(){
+    var img1 = $("#lenChart").getDataURL({
+        pixelRatio: 2,
+        backgroundColor: '#fff'
+    });
+    var img2 = $("#exonChart").getDataURL({
+        pixelRatio: 2,
+        backgroundColor: '#fff'
+    });
+    var img3 = $("#isoChart").getDataURL({
+        pixelRatio: 2,
+        backgroundColor: '#fff'
+    });
+
+    var report = new jsPDF('p', 'mm', [291, 210])
+    report.setFontSize(16)
+    report.text(20, 20, "CircRNA Report")
+}
