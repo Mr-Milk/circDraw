@@ -57,6 +57,17 @@
 .inlineText {
         display: inline-block;
         margin-left: 5px;
+        margin-right: 10px;
+}
+
+.inlineSelector {
+        display: inline-block;
+        width: 20px;
+}
+
+.inlineInput {
+        display: inline-block;
+        width: 50px;
 }
 
 .loader{
@@ -104,3 +115,9 @@ background: url('../../../media/close.png') no-repeat center center;
 .mdl-button--raised.mdl-button--colored:active, .mdl-button--raised.mdl-button--colored:hover {
         background-color: #E8B647;
 }
+
+.dropdown-item.active, .dropdown-item:active {
+        color: #fff;
+        text-decoration: none;
+        background-color: #fed136;
+    }

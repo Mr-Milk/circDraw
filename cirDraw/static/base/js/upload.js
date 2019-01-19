@@ -24,18 +24,31 @@ $(document).ready(function(){
     })
     var reportID
     $('#submit').click(function(){
+        parameters = {"FileType": $("#software").val(), "Species": $("#species").val(), "expvalue": $("#expvalue").val(), "denvalue": $("#denvalue").val()}
+        parametersString = JSON.stringfy(parameters)
         $.ajax({
             url: '/upload',
             type: 'POST',
             cache: false,
-            data: new FormData($('#fileform')[0]),
+            dataType: "json",
+            data: parametersString,
             processData: false,
             contentType: false
-        }).done(
-            function(reportID) {$('#submitstatus').text('✓ Submitted');
-                reportID = reportID[0]
-        }).fail(
-            function() {$('#processtip').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")});
+        })
+        .done(
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                cache: false,
+                data: new FormData($('#fileform')[0]),
+                processData: false,
+                contentType: false
+            }).done(
+                function(reportID) {$('#submitstatus').text('✓ Submitted');
+                    reportID = reportID[0]
+            }).fail(
+                function() {$('#processtip').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")})
+        )
     
         $('#aftersubmit').show()
         $('#resultbutton').show()

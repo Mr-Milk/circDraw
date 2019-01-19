@@ -117,7 +117,7 @@ $.getJSON('/tools/tools_file4', {'case_id': caseid}).done(function(chrJSON){
     chrMaxLen = normChr(chrJSON)
 
     $.getJSON('/tools/tools_file5', {'case_id': caseid}).done(function(densityJSON){
-        denINFO = densityJSON
+        denINFO = normden(densityJSON)
         denPlot(chrMaxLen, densityJSON)
         $("#load").hide()
         $("#svg2").show()
@@ -186,6 +186,33 @@ function chr_block(y, len, name){
 
     return chr_block, t1
 
+}
+
+// normalize density value
+function getMinMax(denJSON){
+    var arr = []
+    for (i=0 ; i<denJSON.length ; i++) {
+        arr.push(denJSON[i].density)
+    }
+
+    max = Math.max.apply(null, arr)
+    min = Math.min.apply(null, arr)
+
+    mm = [min, max, max-min]
+
+    return mm
+}
+
+function normden(denJSON){
+    mm = getMinMax(denJSON)
+    min = mm[0]
+    max = mm[1]
+    range = mm[2]
+    for (x in denJSON) {
+        x.scaleDen = 100*(x.density_value-min)/range
+    }
+
+    return denJSON
 }
 
 function density_block(x, y, len, chr, start, end, density_value){

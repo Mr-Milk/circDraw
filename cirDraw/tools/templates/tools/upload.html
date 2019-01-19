@@ -9,7 +9,19 @@
 
     <div class="container">
           <div class="form-group">
-                <p class="help-block"> Supported Software: CIRI2, CIRCexploer2, DCC</p>
+                <p class="inlineText">Which software you used to get the result file?</p>
+                <select class="selectpicker inlineSelector" id="software" >
+                  <option>CIRI2</option>
+                </select>
+                <br>
+                <p class="inlineText">Which species are we dealing with?</p>
+                <select class="selectpicker inlineSelector" id="species">
+                  <option>Human</option>
+                </select>
+                <br>
+                <p class="inlineText">Please set the threshold to filter your circRNA.</p><br>
+                <p class="inlineText">EXP ( > 1 ): </p><input type="text" id="expvalue" class="inlineInput" value="10"><br>
+                <p class="inlineText">Density ( 1 ~ 100 ): </p><input type="text" id="denvalue" class="inlineInput" value="10"></div>
                 <div class="center"><div class="textarea" contenteditable="true"></div>
                 <button type="button" class="btn btn-primary btn-sm" id="example">Example</button></div>
                 <!--
