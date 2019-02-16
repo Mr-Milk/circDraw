@@ -216,8 +216,9 @@ function normden(denJSON){
 }
 
 function density_block(x, y, len, chr, start, end, density_value){
+    var fillColor = palette[Math.round(density_value-1)]
     var denBlock = den.paper.rect(x, y+0.3, len+1, 9.5).attr({
-        fill: palette[Math.round(density_value-1)],
+        fill: fillColor,
         stroke: 'none',
         cursor: 'pointer'
     }).mouseover(function(){
@@ -231,9 +232,20 @@ function density_block(x, y, len, chr, start, end, density_value){
             'font-family': 'arial',
             'font-size': 15,
         })
+        denBlock.attr({
+            fill: fillColor,
+            stroke: '#E83015',
+            strokeWidth: 1.5,
+            cursor: 'pointer'
+        })
     }).mouseout(function(){
         den_value.remove()
         position.remove()
+        denBlock.attr({
+            fill: fillColor,
+            stroke: 'none',
+            cursor: 'pointer'
+        })
     }).click(function(){
         $("#js-input-from").text(start);
         $("#js-input-to").text(end);
