@@ -166,21 +166,22 @@ function exon_block(x, len, color, name){
                 .drag(); 
             display = true;}
         }).mouseover(function(){
-            exon_block.attr({
-                fill: color,
-                stroke: '#33A6B8',
-                strokeWidth: 1,
-                cursor: 'pointer'
-            });
+            Snap.animate(0, 1.5, function (val) {
+                exon_block.attr({
+                    stroke: '#33A6B8',
+                    strokeWidth: val,
+                });
+            }, 200);
             exon_name = svg.paper.text(x, 465, name).attr({
                 'font-family': 'arial',
-                'font-size': 10});
+                'font-size': 10}).drag();
         }).mouseout(function(){
-            exon_block.attr({
-                fill: color,
-                stroke: 'none',
-                cursor: 'pointer'
-            });
+            Snap.animate(1.5, 0, function (val) {
+                exon_block.attr({
+                    stroke: '#33A6B8',
+                    strokeWidth: val,
+                });
+            }, 200);
             exon_name.remove();
         })
     
@@ -193,7 +194,7 @@ function gene_block(x, len, color, name){
     var gene_name
     var display = false
 
-    var exon_block = svg.paper.rect(x, 449, len, 2).attr({
+    var gene_block = svg.paper.rect(x, 449, len, 2).attr({
         fill: color,
         stroke: 'none',
         cursor: 'pointer'
@@ -209,25 +210,26 @@ function gene_block(x, len, color, name){
                 .drag();
             display = true;}
         }).mouseover(function(){
-            exon_block.attr({
-                fill: color,
-                stroke: '#33A6B8',
-                strokeWidth: 1,
-                cursor: 'pointer'
-            });
+            Snap.animate(0, 1.5, function (val) {
+                gene_block.attr({
+                    stroke: '#33A6B8',
+                    strokeWidth: val,
+                });
+            }, 200);
             gene_name = svg.paper.text(x, 465, name).attr({
                 'font-family': 'arial',
-                'font-size': 10}); 
+                'font-size': 10}).drag(); 
         }).mouseout(function(){
-            exon_block.attr({
-                fill: color,
-                stroke: 'none',
-                cursor: 'pointer'
-            });
+            Snap.animate(1.5, 0, function (val) {
+                gene_block.attr({
+                    stroke: '#33A6B8',
+                    strokeWidth: val,
+                });
+            }, 200);
             gene_name.remove();
         })
     
-    return exon_block
+    return gene_block
 }
 
 // calculate the range of an array
@@ -445,12 +447,6 @@ function arc(start, end, exonJSON){
     });
 
     c.click(function(){
-        c.attr({
-            stroke: "#33A6B8",
-            strokeWidth: 6,
-            fill:'none'
-        });
-
         if (display == false) {
             var x = svg.select("g")
             if (x != null) {
@@ -465,11 +461,12 @@ function arc(start, end, exonJSON){
             display = false
         }
     }).mouseover(function(){
-        c.attr({
-            stroke: "#33A6B8",
-            strokeWidth: 6,
-            fill:'none'
-        });
+        Snap.animate(1, 6, function (val) {
+            c.attr({
+                stroke: "#33A6B8",
+                strokeWidth: val,
+            });
+        }, 200);
         startBlock.attr({
             stroke: "#33A6B8",
             strokeWidth: 1
@@ -482,12 +479,16 @@ function arc(start, end, exonJSON){
 
         endText = textCenter(end, 470, realEnd, 10, '#000')
     }).mouseout(function(){
-        c.attr({
-            stroke: "#000",
-            strokeWidth: 1,
-            fill:'none',
-            cursor: 'pointer'
-        });
+        Snap.animate(6, 1, function (val) {
+            c.attr({
+                stroke: "#33A6B8",
+                strokeWidth: val,
+            });
+        }, 200, function(){c.attr({
+                stroke: "#000",
+                strokeWidth: 1,
+                fill:'none',
+            });})
         startBlock.attr({
             fill: "#00AA90",
             stroke: "none"
