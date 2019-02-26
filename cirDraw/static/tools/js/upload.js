@@ -18,10 +18,6 @@ $(document).ready(function(){
         });
     });
 
-    
-    $('#uploadlabel').click(function(){
-        $('#myfile').click()
-    })
     var reportID
     $('#submit').click(function(){
         parameters = {"FileType": $("#software").val(), "Species": $("#species").val(), "expvalue": $("#expvalue").val(), "denvalue": $("#denvalue").val()}

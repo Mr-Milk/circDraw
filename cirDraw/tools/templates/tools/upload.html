@@ -29,7 +29,7 @@
                 {% csrf_token %}
                 -->
                 <form id="fileform" enctype="multipart/form-data">
-                  <label class="btn btn-primary btn-sm" for="fileupload" id="uploadlabel">
+                  <label class="btn btn-primary btn-sm" for="fileupload" id="uploadlabel" onclick="document.getElementById('myfile').click();">
                     + Select File 
                     <input type="file" id="myfile" name="myfile" style="display:none">
                   </label>
