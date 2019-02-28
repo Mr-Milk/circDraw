@@ -3,11 +3,11 @@ $(document).ready(function(){
     console.log("running")
 
     $('#resultbutton').hide()
-    
+
     $('#aftersubmit').hide()
 
     $('#cancel').hide()
-    
+
     $('#myfile').change(function () {
         var a = $('#myfile').val().toString().split('\\');
         console.log(a)
