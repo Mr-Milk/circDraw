@@ -307,6 +307,23 @@ function textCenter(centerX, centerY, text, fontSize, color) {
 
     return cText
 }
+
+// Adding animation for epi-tag on circRNA
+function epiAnimate(epi, name, color, centerX, centerY, exonJSON) {
+    var c = epi.getBBox()
+    epi.mouseover(function(){
+        epi.animate({
+            transform: 's1.5,' + c.cx + ',' + c.cy
+        }, 200)
+        text = textCenter(centerX, centerY, name, 15, color)})
+    .mouseout(function(){
+        epi.animate({
+            transform: 's1,' + c.cx + ',' + c.cy
+        }, 200)
+        text.remove()})
+    .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+}
+
 // Draw circRNA when clicking the arc
 function drawCircRNA(exonJSON){
     var modCirc = [], circle = [], realStart = getMinMax(exonJSON)[0], realEnd = getMinMax(exonJSON)[1]
@@ -335,54 +352,80 @@ function drawCircRNA(exonJSON){
             modStartAngle = startAngle + 360*(exonJSON[i]['mod'][t].start - exonJSON[i].start)/range
             modEndAngle = startAngle + 360*(exonJSON[i]['mod'][t].end - exonJSON[i].start)/range
             if (exonJSON[i]['mod'][t].type == 'm6A') {
-                modCirc[i][t] = triTagOnCircle(centerX, centerY, 85, 180+modStartAngle)
-                .mouseover(function(){text = textCenter(centerX, centerY, "m6A", 15, '#E98B2A')})
-                .mouseout(function(){text.remove()})
-                .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                var m6A = triTagOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                epiAnimate(m6A, 'm6A', '#E98B2A', centerX, centerY, exonJSON)
+                modCirc[i][t] = m6A
                 }
             if (exonJSON[i]['mod'][t].type == 'm1C') {
-                modCirc[i][t] = squareTagOnCircle(centerX, centerY, 85, 180+modStartAngle)
-                .mouseover(function(){text = textCenter(centerX, centerY, "m1C", 15, '#E16B8C')})
-                .mouseout(function(){text.remove()})
-                .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                var m1C = squareTagOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                epiAnimate(m1C, 'm1C', '#E16B8C', centerX, centerY, exonJSON)
+                modCirc[i][t] = m1C
             }
             if (exonJSON[i]['mod'][t].type == 'm1A') {
-                modCirc[i][t] = circleTagOnCircle(centerX, centerY, 85, 180+modStartAngle, '#64363C')
-                .mouseover(function(){text = textCenter(centerX, centerY, "m1A", 15, '#64363C')})
-                .mouseout(function(){text.remove()})
-                .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                var m1A = circleTagOnCircle(centerX, centerY, 85, 180+modStartAngle, '#64363C')
+                epiAnimate(m1A, 'm1A', '#64363C', centerX, centerY, exonJSON)
+                modCirc[i][t] = m1A
                 }
             if (exonJSON[i]['mod'][t].type == 'SNP') {
-                modCirc[i][t] = arrowOnCircle(centerX, centerY, 85, 180+modStartAngle)
-                .mouseover(function(){text = textCenter(centerX, centerY, "SNP", 15, '#000')})
-                .mouseout(function(){text.remove()})
-                .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                var SNP = arrowOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                epiAnimate(SNP, 'SNP', '#000', centerX, centerY, exonJSON)
+                modCirc[i][t] = SNP
                 }
             if (exonJSON[i]['mod'][t].type == 'MRE') {
                 modPath = describeArc(centerX, centerY, 70, modStartAngle, modEndAngle)
-                modCirc[i][t] = svg.paper.path(modPath).attr({
+                var MRE = svg.paper.path(modPath).attr({
                     stroke: '#6D2E5B',
                     strokeWidth: 5,
                     fill: 'none',
                     "cursor": "pointer"
                 }).mouseover(function(){
+                    Snap.animate(5, 6.5, function (val) {
+                        MRE.attr({
+                            stroke: '#6D2E5B',
+                            strokeWidth: val,
+                            cursor: 'pointer'
+                        });
+                    }, 200);
                     text = textCenter(centerX, centerY, "MRE", 15, '#6D2E5B')
                 }).mouseout(function(){
+                    Snap.animate(6.5, 5, function (val) {
+                        MRE.attr({
+                            stroke: '#6D2E5B',
+                            strokeWidth: val,
+                            cursor: 'pointer'
+                        });
+                    }, 200);
                     text.remove()
                 }).click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                modCirc[i][t] = MRE
             }
             if (exonJSON[i]['mod'][t].type == 'ORF') {
                 modPath = describeArc(centerX, centerY, 63, modStartAngle, modEndAngle)
-                modCirc[i][t] = svg.paper.path(modPath).attr({
+                var ORF = svg.paper.path(modPath).attr({
                     stroke: '#516E41',
                     strokeWidth: 5,
                     fill: 'none',
                     "cursor": "pointer"
                 }).mouseover(function(){
+                    Snap.animate(5, 6.5, function (val) {
+                        ORF.attr({
+                            stroke: '#516E41',
+                            strokeWidth: val,
+                            cursor: 'pointer'
+                        });
+                    }, 200);
                     text = text = textCenter(centerX, centerY, "ORF", 15, '#516E41')
                 }).mouseout(function(){
+                    Snap.animate(6.5, 5, function (val) {
+                        ORF.attr({
+                            stroke: '#516E41',
+                            strokeWidth: val,
+                            cursor: 'pointer'
+                        });
+                    }, 200);
                     text.remove()
                 }).click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                modCirc[i][t] = ORF
             }
         //console.log(i, t, modCirc[i][t])
         }
@@ -651,7 +694,7 @@ function rhoOnCircle(centerX, centerY, r, rhoDegree, rhoHalfHeight, color){
 }
 
 function arrowOnCircle(centerX, centerY, r, Degree){
-    tri = triangelOnCircle(centerX, centerY, r, Degree, 1, "#000")
+    tri = triangelOnCircle(centerX, centerY, r+1, Degree, 1, "#000")
     cords = stickCord(centerX, centerY, r, Degree, 10)
     arrowLine = svg.paper.line(cords[0], cords[1], cords[2], cords[3]).attr({
         stroke: "#000",
