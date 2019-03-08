@@ -30,13 +30,15 @@ def process_upload(request, filename):
     >>> c = Client()
     """
     if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
+        print("request post: ", request.POST)
+        form = UploadFileForm(request.POST)
         if form.is_valid():
-            data_raw_file = request.FILES[filename]
-            header, result = handle_uploaded_file(data_raw_file)
-            file_type = detect_filetype(data_raw_file)
-            species = detect_species(data_raw_file)
-            return header, result, file_type, species
+            data_raw_file = form.cleaned_data
+            print("data raw: ", data_raw_file)
+            # header, result = handle_uploaded_file(data_raw_file)
+            # file_type = detect_filetype(data_raw_file)
+            # species = detect_species(data_raw_file)
+            # return header, result, file_type, species
         else:
             print('upload file form is not valid')
             raise Http404
@@ -53,7 +55,7 @@ def save(header, results, file_type, species):
     case = ToolsUploadcase()
     caseid = case.whichcase
     case.save()
-    chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(25)] 
+    chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(25)]
     max_length = 0
 
     def get_start_point(lst):
@@ -96,7 +98,7 @@ def save(header, results, file_type, species):
                 update_chromosome_end(chromosome_info[chr_num-1], now_end)
         else:
             print("one of Your input of chr from the handle file is crap")
-        
+
         # update max length of circle RNA
         length = now_end - now_start
         now_max = get_max_len(chromosome_info[chr_num - 1])
@@ -106,13 +108,14 @@ def save(header, results, file_type, species):
                 update_circlen_max(chromosome_info[chr_num - 1], length)
             if now_min > length:
                 update_circlen_min(chromosome_info[chr_num - 1], length)
-        
+
     for i,each_chr in enumerate(chromosome_info):
         if get_start_point(each_chr) < get_end_point(each_chr):
             ob_chr = ToolsChromosome(caseid = case, chr_ci = toCHR(i+1),chr_start = get_start_point(each_chr), chr_end = get_end_point(each_chr), max_length_circ = get_max_len(each_chr), min_length_circ = get_min_len(each_chr))
             ob_chr.save()
     return caseid
 
+@csrf_exempt
 def upload_and_save(request):
     """
     main function in this section. handle data-save_to_database-getid-jump_to_display_page
@@ -131,7 +134,7 @@ def upload_and_save(request):
 # ---------------------handle_file1---------------------------------------
 @csrf_exempt
 def handle_file1(request):
-    # database needed: ToolsChromosome, ToolsEachobservation 
+    # database needed: ToolsChromosome, ToolsEachobservation
     if request.method == 'GET':
         case_id = request.GET['caseid']
         chr_ci = toCHR(int(request.GET['chr']))
@@ -268,7 +271,7 @@ def handle_file5(request):
         caseid = request.GET['case_id']
 
         # =========================================================================================================
-        # Get basic information 
+        # Get basic information
         # =========================================================================================================
 
         # create circRNA and gene group based on chr
@@ -311,12 +314,12 @@ def handle_file5(request):
             gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
             min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
             gene_chr_lens = max_gene_end - min_gene_start
-            
+
             # max circle len in this chr
             # overlap = 0.5
             # circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid).filter(chr_ci__exact = chr_ccc)[0]
             # max_circ_len = circ_info.max_length_circ
-            
+
 
             # we want to divide the group so that the loop's runtime will be reduced.
 
@@ -324,7 +327,7 @@ def handle_file5(request):
             for each in data_groups[1]:
                 start, end = each.gene_start, each.gene_end
                 #gene_len = end - start
-                #search_margin = max_circ_len - gene_len * overlap 
+                #search_margin = max_circ_len - gene_len * overlap
                 #circ_start = start - search_margin
                 #circ_end = end + search_margin
                 # THE ACTUAL loop
@@ -346,7 +349,7 @@ def handle_file5(request):
         results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
         """
         print("THIS ++++++++++++++ IS FILE5")
-        
+
         for res in results[1:]:
             res['density'] = (res['density'] / densitys) * 1000
             #print(res)
@@ -373,11 +376,11 @@ def lenChart(request):
         points = [i * step for i in range(1, partitions+1)]
         results = [0]*partitions
         now_start, now_end = 0, 0
-        
+
         circs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
         for i in circs:
             circ_len = i.circRNA_end - i.circRNA_start
-            group = circ_len // step 
+            group = circ_len // step
             if group == partitions:
                 group -= 1
             results[group] += 1
@@ -391,7 +394,7 @@ def lenChart(request):
 
 
 
-        
+
 
 def exonChart(request):
     if request.method == 'GET':
@@ -405,3 +408,5 @@ def isoChart(request):
         pass
     else:
         raise Http404
+
+

@@ -25,7 +25,7 @@ $(document).ready(function(){
         formdata.append('file', $('#fileform')[0])
         formdata.append('parameters', parameters)
        $.ajax({
-            url: '/upload',
+            url: '/tools/upload/',
             type: 'POST',
             cache: false,
             dataType: "json",
