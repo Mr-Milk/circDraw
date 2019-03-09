@@ -697,6 +697,26 @@ function arrowOnCircle(centerX, centerY, r, Degree){
     return arrow
 }
 
+function rectOnCircle(centerX, centerY, r, a, degree, color) {
+    rad_Degree = Snap.rad(degree - 270)
+    r += 1
+    x = r * Math.cos(rad_Degree) + centerX
+    y = r * Math.sin(rad_Degree) + centerY
+    rect = svg.paper.rect(x, y, a, a).attr({
+        fill: color,
+        stroke: color,
+        "cursor": "pointer"
+    })
+
+    matrix = new Snap.Matrix()
+    angle = 45 + degree
+    matrix.rotate(angle, x, y)
+
+    rect.transform(matrix)
+
+    return rect
+}
+
 function circleTagOnCircle(centerX, centerY, r, Degree, color) {
     cords = stickCord(centerX, centerY, r, Degree, 5)
     line = svg.paper.line(cords[0], cords[1], cords[2], cords[3]).attr({
