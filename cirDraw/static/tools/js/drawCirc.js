@@ -172,9 +172,6 @@ function exon_block(x, len, color, name){
                     strokeWidth: val,
                 });
             }, 200);
-            exon_name = svg.paper.text(x, 465, name).attr({
-                'font-family': 'arial',
-                'font-size': 10}).drag();
         }).mouseout(function(){
             Snap.animate(1.5, 0, function (val) {
                 exon_block.attr({
@@ -182,7 +179,6 @@ function exon_block(x, len, color, name){
                     strokeWidth: val,
                 });
             }, 200);
-            exon_name.remove();
         })
     
     return exon_block
@@ -216,9 +212,6 @@ function gene_block(x, len, color, name){
                     strokeWidth: val,
                 });
             }, 200);
-            gene_name = svg.paper.text(x, 465, name).attr({
-                'font-family': 'arial',
-                'font-size': 10}).drag(); 
         }).mouseout(function(){
             Snap.animate(1.5, 0, function (val) {
                 gene_block.attr({
@@ -226,7 +219,6 @@ function gene_block(x, len, color, name){
                     strokeWidth: val,
                 });
             }, 200);
-            gene_name.remove();
         })
     
     return gene_block
