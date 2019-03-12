@@ -22,7 +22,7 @@ $(document).ready(function(){
                     "expvalue": $("#expvalue").val(),
                     "denvalue": $("#denvalue").val()}
 
-        formdata.append('file', $('#fileform')[0])
+        formdata.append('file',document.getElementById('myfile').files[0])
         formdata.append('parameters', parameters)
        $.ajax({
             url: '/tools/upload/',

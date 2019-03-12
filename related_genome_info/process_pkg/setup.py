@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="process_pkg"
+    name="procsert"
     version="0.0.1",
     author="Tianqin Li"
     author_email="jacklitianqin@gmail.com",
@@ -18,4 +18,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    entry_points = {
+        'console_scripts': [
+            'procsert'
+            ]
+        }
 )

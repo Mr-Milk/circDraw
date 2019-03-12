@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse, JsonResponse
-from .forms import UploadFileForm
+from .forms import UploadFileForm, JsonTestFile
 from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
 from .process_file import handle_uploaded_file, detect_filetype, detect_species
 from django.views.decorators.csrf import csrf_exempt
@@ -9,6 +9,7 @@ from sklearn.neighbors import KernelDensity
 import numpy as np
 from math import floor
 import sys
+import json
 
 # ========================= RENDER PAGES ==============================
 def render_index_page(request):
@@ -30,15 +31,18 @@ def process_upload(request, filename):
     >>> c = Client()
     """
     if request.method == "POST":
-        print("request post: ", request.POST)
-        form = UploadFileForm(request.POST)
+        # form = JsonTestFile({'json_receive': request.body})
+        print("request.FILES: ", request.FILES['file'])
+        print("request.POST: ", str(request.POST['parameters']))
+        form = UploadFileForm(data=request.POST, files=request.FILES)
+        print("form is valid?: ", form.is_valid())
         if form.is_valid():
-            data_raw_file = form.cleaned_data
-            print("data raw: ", data_raw_file)
-            # header, result = handle_uploaded_file(data_raw_file)
-            # file_type = detect_filetype(data_raw_file)
-            # species = detect_species(data_raw_file)
-            # return header, result, file_type, species
+            data_raw_file = request.FILES['file']
+            print("data raw: ",data_raw_file)
+            header, result = handle_uploaded_file(data_raw_file)
+            file_type = detect_filetype(data_raw_file)
+            species = detect_species(data_raw_file)
+            return header, result, file_type, species
         else:
             print('upload file form is not valid')
             raise Http404
