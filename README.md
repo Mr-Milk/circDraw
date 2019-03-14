@@ -125,7 +125,7 @@ Yes, we will add more species gradually. But for epigenetic annotation, it depen
 - Citation: 
 - Contact
   - Milk zhengym28@mail2.sysu.edu.cn
-  - JackLi jacklitianqin@gmail.com
+  - JackLi litq7@mail2.sysu.edu.cn
 
 
 Copyright: Qu Lab, School of Life School, Sun Yat-sen University

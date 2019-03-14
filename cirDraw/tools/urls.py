@@ -6,11 +6,11 @@ from django.conf import settings
 urlpatterns = [
 
     # Render pages
-	url(r'^$', views.render_upload_page, name='tools'), 
-    url(r'^display/(?P<caseid>[0-9a-f-]+)$', views.render_display_page, name="render_display"), 
-    
+	url(r'^$', views.render_upload_page, name='tools'),
+    url(r'^display/(?P<caseid>[0-9a-f-]+)$', views.render_display_page, name="render_display"),
+
     # Upload
-    url(r'^submit/$', views.upload_and_save, name='upload&save'), 
+    url(r'^upload/$', views.upload_and_save, name='upload&save'),
 
     # Ajax call functions
     url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^display/lenChart_URL/$', views.lenChart),
     #url(r'^display/exonChart_URL/$', views.exonChart),
     #url(r'^isoChart_URL/$', views.isoChart),
-    
+
     # dev testing urls
     # url(r'^test_submit/$', views.upload_fine, name='test_submit'),
     # url(r'^test_display/914cfa25acee400aa41a95e9a66899e0$', views.display_fine, name='test_display')

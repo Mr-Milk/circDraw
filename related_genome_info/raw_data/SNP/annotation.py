@@ -85,7 +85,8 @@ def file_length(filename, skipline):
 
 
 
-
+## Process Line ###################################################
+## functions to change
 def process_line(line):
     ob = {}
     sep_line = line.split('\t')
@@ -166,6 +167,8 @@ def remove_null(lst):
         return remove_null(lst[1:])
     else:
         return [lst[0]] + remove_null(lst[1:])
+
+############################################################
 
 
 def main():

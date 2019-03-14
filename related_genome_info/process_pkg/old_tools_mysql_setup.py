@@ -43,7 +43,7 @@ def load_and_insert(cnx, cursor, data_file_name, table_columns, table_name, leng
             except:
                 print(line)
                 break
-  
+
 
 
 
@@ -239,8 +239,8 @@ def insert_select(cursor, table_name, table_columns, select_sql):
     for i in table_columns:
         name = i.split(' ')[0]
         names.append(name)
-    
-    select_column_lens = len(select_sql.split(",")) 
+
+    select_column_lens = len(select_sql.split(","))
 
     assert select_column_lens == len(names), "columns of select method should match the table columns inserted"
 
@@ -251,7 +251,7 @@ def insert_select(cursor, table_name, table_columns, select_sql):
     try:
         cursor.execute(insert_sql)
     except mysql.connector.Error as err:
-        print('Insert with select failded: {}'.format(err)) 
+        print('Insert with select failded: {}'.format(err))
 
 
 
@@ -264,7 +264,7 @@ def add_column(cnx, cursor, table_name, table_columns_setting,  union_value):
 
     assert is_exist_table(cursor, table_name), "No such table when adding columns"
 
-    for i in range(len(table_columns_setting)): 
+    for i in range(len(table_columns_setting)):
         name = table_columns_setting[i].split(' ')[0]
         if is_exist_column(cursor, table_name, name):
             drop_column(cursor, table_name, name)
@@ -282,7 +282,7 @@ def add_column(cnx, cursor, table_name, table_columns_setting,  union_value):
         add_sql = add_sql.format(*table_columns_setting)
         cursor.execute(add_sql)
     except mysql.connector.Error as err:
-        print('Add column failded: {}'.format(err)) 
+        print('Add column failded: {}'.format(err))
 
     # update the value of that column
     update_sql = """UPDATE `""" + str(table_name) + """` SET """
@@ -290,21 +290,21 @@ def add_column(cnx, cursor, table_name, table_columns_setting,  union_value):
         name = table_columns_setting[i].split(' ')[0]
         value = union_value[i]
         if i == len(table_columns_setting) - 1 or len(table_columns_setting) == 1:
-            update_sql += str(name) + """ = {};""" 
+            update_sql += str(name) + """ = {};"""
         else:
             update_sql += str(name) + """ = {},"""
-    final_sql = update_sql.format(*union_value) 
+    final_sql = update_sql.format(*union_value)
     try:
         cursor.execute(final_sql)
     except mysql.connector.Error as err:
-        print('update column failded: {}'.format(err))  
-   
-    
+        print('update column failded: {}'.format(err))
+
+
 
 def toos_scale(cnx, cursor, table_name, table_name_origin, table_columns, group_by, max_column=False, min_column=False, species = "'human'"):
     # function of generating tools_scalegenome
     # table_columns = ["species VARCHAR(300) NOT NULL", "chr_ci VARCHAR(30) NOT NULL", "gene_min_start INT NOT NULL", "gene_max_end INT NOT NULL"]
-    
+
     assert max_column or min_column, "Must specific a column to max or min"
     # get names
     names = []
@@ -318,13 +318,13 @@ def toos_scale(cnx, cursor, table_name, table_name_origin, table_columns, group_
 
     def max_column_value(max_column):
         return max_column[0]
-    
+
     def max_column_name(max_column):
         return max_column[1]
 
     def min_column_value(min_column):
         return min_column[0]
-    
+
     def min_column_name(min_column):
         return min_column[1]
 
@@ -340,7 +340,7 @@ def toos_scale(cnx, cursor, table_name, table_name_origin, table_columns, group_
     # insert into table sql
 
     insert_select(cursor, table_name, table_columns, final_select_sql)
-    
+
 
 
 def add_one_column_update(cnx, cursor, table_name, column, value_pairs):
@@ -417,7 +417,7 @@ def is_exist_column(cursor, table_name, column_name):
 
 def is_exist_species(cursor, table_name, column_name, value):
     """ Check if a specific value is contained in a specific column"""
-    try: 
+    try:
         assert is_exist_column(cursor, table_name, column_name), "Column name doesn't existed"
         query_sql = """ SELECT """ + str(column_name) + """ FROM `"""  + str(table_name) + """` WHERE """ + str(column_name) +  """ = {};"""
         final_sql = query_sql.format(value)
@@ -430,7 +430,7 @@ def is_exist_species(cursor, table_name, column_name, value):
     except mysql.connector.Error as err:
         print('is_exist_species fail: {}'.format(err))
 
-# drop function 
+# drop function
 
 def drop_column(cursor, table_name, column_name):
     """ function to drop one column inside a table"""
@@ -499,11 +499,11 @@ def main():
             ["'chr11'", 135006516],
             ["'chr12'", 133851895],
             ["'chr13'", 115169878],
-            ["'chr14'", 107349540], 
-            ["'chr15'", 102531392], 
-            ["'chr16'",  90354753], 
+            ["'chr14'", 107349540],
+            ["'chr15'", 102531392],
+            ["'chr16'",  90354753],
             ["'chr17'", 81195210],
-            ["'chr18'", 78077248], 
+            ["'chr18'", 78077248],
             ["'chr19'", 59128983],
             ["'chr20'", 63025520],
             ["'chr21'", 48129895],
@@ -514,10 +514,10 @@ def main():
         ]
         add_one_column_update(cnx, cursor, table_name_scale, "genelens_wiki INT", value_pairs)
         add_one_column(cnx, cursor, table_name_scale, "id INT")
-   
+
 
     commit_db(cnx, cursor)
 
-        
+
 if __name__ == '__main__':
    main()

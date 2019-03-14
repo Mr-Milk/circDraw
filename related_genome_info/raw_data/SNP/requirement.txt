@@ -1,0 +1,9 @@
+SNPstrand
+SNPchr
+SNPstart
+SNPend
+SNPid
+
+
+id links:
+https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=rs10797432

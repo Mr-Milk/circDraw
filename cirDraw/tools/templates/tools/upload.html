@@ -26,18 +26,18 @@
                 <button type="button" class="btn btn-primary btn-sm" id="example">Example</button></div>
                 <!--
                 <form id="fileform" method="POST" action="{% url 'upload&save' %}" enctype="multipart/form-data">
-                {% csrf_token %}
                 -->
 
                 <div id="uploadarea" class="center">
 
-                  <form id="fileform" enctype="multipart/form-data">
+                  <form id="fileform" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
                   <label class="btn btn-primary btn-sm" for="fileupload" id="uploadlabel" onclick="document.getElementById('myfile').click();">
                     + Select File 
                     <input type="file" id="myfile" name="myfile" style="display:none">
                   </label>
                   
-                  <button class="btn btn-primary btn-sm" id="submit" style="margin-bottom: .5rem">Submit</button></div>
+                  <button class="btn btn-primary btn-sm" id="submit" style="margin-bottom: .5rem">Submit</button>
                   <!--
                   <label class="btn btn-primary btn-sm" for="submit" id="submitstatus">
                   Submit
@@ -46,6 +46,7 @@
                     <p id="filename" style="display: inline-block"></p><span id='cancel' class='btn' style="display: none">X</span>
                     
                 </form>
+                </div>
                 
 
                 <p id="aftersubmit"></p>

@@ -1,7 +1,6 @@
 $(document).ready(function(){
 
     console.log("running")
-    
     $('#myfile').change(function () {
         $("#processtip").text('')
         var a = $('#myfile').val().toString().split('\\');
@@ -26,7 +25,7 @@ $(document).ready(function(){
         formdata.append('file', $('#fileform')[0])
         formdata.append('parameters', parameters)
        $.ajax({
-            url: '/upload',
+            url: '/tools/upload/',
             type: 'POST',
             cache: false,
             dataType: "json",
@@ -65,5 +64,5 @@ $(document).ready(function(){
                     $('#processtip').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")}
                         }
                     )
-                
+
 })})

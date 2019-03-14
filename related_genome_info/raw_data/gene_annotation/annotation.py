@@ -169,7 +169,7 @@ def remove_null(lst):
 
 
 def main():
-    filename = 'gencode.v29.annotation.gtf'
+    filename = 'gencode.v19.annotation.gtf'
     # filename = 'test_a.gtf'
     write_file_length_name = 'gencode_length_annotation.json'
     maxread = None
