@@ -172,9 +172,6 @@ function exon_block(x, len, color, name){
                     strokeWidth: val,
                 });
             }, 200);
-            exon_name = svg.paper.text(x, 465, name).attr({
-                'font-family': 'arial',
-                'font-size': 10}).drag();
         }).mouseout(function(){
             Snap.animate(1.5, 0, function (val) {
                 exon_block.attr({
@@ -182,7 +179,6 @@ function exon_block(x, len, color, name){
                     strokeWidth: val,
                 });
             }, 200);
-            exon_name.remove();
         })
     
     return exon_block
@@ -216,9 +212,6 @@ function gene_block(x, len, color, name){
                     strokeWidth: val,
                 });
             }, 200);
-            gene_name = svg.paper.text(x, 465, name).attr({
-                'font-family': 'arial',
-                'font-size': 10}).drag(); 
         }).mouseout(function(){
             Snap.animate(1.5, 0, function (val) {
                 gene_block.attr({
@@ -226,7 +219,6 @@ function gene_block(x, len, color, name){
                     strokeWidth: val,
                 });
             }, 200);
-            gene_name.remove();
         })
     
     return gene_block
@@ -258,34 +250,109 @@ function getMinMax(exonJSON){
 }
 
 // draw the epigenetic legned
-function drawLegend(){
-    trig = triangelOnCircle(20, 20, 0, 0, 5, '#E98B2A')
-    square = rectOnCircle(20, 35, 0, 5, 0, '#E16B8C')
-    arrow = arrowOnCircle(20, 66, 0, 0)
-    circle = svg.paper.circle(20, 56, 3).attr({
-        fill: '#64363C',
-        stroke: '#64363C',
-        "cursor": "pointer"
-    })
-    MRE = svg.paper.rect(18, 91, 7, 7).attr({
-        fill: '#6D2E5B',
-        stroke: '#000',
-        strokeWidth: 0.5
-    })
-    ORF = svg.paper.rect(18, 106, 7, 7).attr({
-        fill: '#516E41',
-        stroke: '#000',
-        strokeWidth: 0.5
+function legendText(x, y, text, color) {
+    legText = svg.paper.text(x, y, text).attr({
+        fill: color,
+        'font-size': 13,
+        'font-family': 'arial'
     })
 
-    triText = legendText(30, 28, "m6A", '#E98B2A')
-    squareText = legendText(30, 43, "m1C", '#E16B8C')
-    circleText = legendText(30, 58, "m6A", '#64363C')
-    arrowText = legendText(30, 75, "SNP", '#000')
-    MREText = legendText(30, 99, "MRE", '#6D2E5B')
-    ORFText = legendText(30, 114, "ORF")
+    return legText
+}
 
-    legend = svg.group(trig, square, circle, arrow, MRE, ORF, triText, squareText, circleText, arrowText, MREText, ORFText)
+function drawLegend(epiList) {
+
+    var y = 20,
+        step_y = 15,
+        epi = []
+
+    function range(start, step, times) {
+        var list = []
+        for (i = 0; i < times; i++) {
+            y = start + step * i
+            list.push(y)
+        }
+        return list
+    }
+
+    function m6A(y) {
+        trig = triangelOnCircle(20, y, 0, 0, 5, '#E98B2A')
+        triText = legendText(30, y + 8, "m6A", '#E98B2A')
+        return svg.group(trig, triText)
+    }
+
+    function m1A(y) {
+        circle = svg.paper.circle(20, y, 3).attr({
+            fill: '#64363C',
+            stroke: '#64363C',
+            "cursor": "pointer"
+        })
+        circleText = legendText(30, y + 2, "m1A", '#64363C')
+        return svg.group(circle, circleText)
+    }
+
+    function m1C(y) {
+        square = rectOnCircle(20, y, 0, 5, 0, '#E16B8C')
+        squareText = legendText(30, y + 8, "m1C", '#E16B8C')
+        return svg.group(square, squareText)
+    }
+
+    function MRE(y) {
+        MRE = svg.paper.rect(17, y, 7, 7).attr({
+            fill: '#6D2E5B',
+            stroke: '#000',
+            strokeWidth: 0.5
+        })
+        MREText = legendText(30, y + 8, "MRE", '#6D2E5B')
+        return svg.group(MRE, MREText)
+    }
+
+    function ORF(y) {
+        ORF = svg.paper.rect(17, y, 7, 7).attr({
+            fill: '#516E41',
+            stroke: '#000',
+            strokeWidth: 0.5
+        })
+        ORFText = legendText(30, y + 8, "ORF")
+        return svg.group(ORF, ORFText)
+    }
+
+    function SNP(y) {
+        arrow = arrowOnCircle(20, y, 0, 0)
+        arrowText = legendText(30, y + 8, "SNP", '#000')
+        return svg.group(arrow, arrowText)
+    }
+
+    var yList = range(20, 15, epiList.length)
+    console.log(yList)
+
+    for (i = 0; i < epiList.length; i++) {
+        if (epiList[i] == 'm6A') {
+            epi.push(m6A(yList[i]))
+        }
+        if (epiList[i] == 'm1A') {
+            epi.push(m1A(yList[i] + 5))
+        }
+        if (epiList[i] == 'm1C') {
+            epi.push(m1C(yList[i]))
+        }
+        if (epiList[i] == 'ORF') {
+            epi.push(ORF(yList[i]))
+        }
+        if (epiList[i] == 'MRE') {
+            epi.push(MRE(yList[i]))
+        }
+        if (epiList[i] == 'SNP') {
+            epi.push(SNP(yList[i]))
+        }
+    }
+
+    console.log(epi[0])
+    var legend = epi[0]
+
+    for (i = 1; i < epi.length; i++) {
+        legend = svg.group(legend, epi[i])
+    }
 
     return legend
 }
@@ -328,7 +395,7 @@ function epiAnimate(epi, name, color, centerX, centerY, exonJSON) {
 function drawCircRNA(exonJSON){
     var modCirc = [], circle = [], realStart = getMinMax(exonJSON)[0], realEnd = getMinMax(exonJSON)[1]
     var startAngle = 180, endAngle = 180, centerX = 400, centerY = 140
-    var range = getRange(exonJSON)
+    var range = getRange(exonJSON), modType = []
 
     // circRNA background
     arcBackGround = svg.paper.rect(0,0,800,250).attr({
@@ -348,6 +415,9 @@ function drawCircRNA(exonJSON){
         endAngle += 360*(exonJSON[i].end - exonJSON[i].start)/range
         console.log(centerX, centerY, startAngle, endAngle)
         for (t=0;t<exonJSON[i]['mod'].length;t++) {
+            if ($.inArray(exonJSON[i]['mod'][t]['type'], modType) === -1) {
+                modType.push(exonJSON[i]['mod'][t]['type'])
+            }
             modCirc[i][t] += "mod" + t;
             modStartAngle = startAngle + 360*(exonJSON[i]['mod'][t].start - exonJSON[i].start)/range
             modEndAngle = startAngle + 360*(exonJSON[i]['mod'][t].end - exonJSON[i].start)/range
@@ -429,13 +499,21 @@ function drawCircRNA(exonJSON){
             }
         //console.log(i, t, modCirc[i][t])
         }
+        if (endAngle - startAngle == 360) {
+            circle[i] = svg.paper.circle(centerX, centerY, 80).attr({
+                stroke: exonJSON[i].color,
+                strokeWidth: 10,
+                fill: 'none'
+            })
+        }
+        else {
         p = describeArc(centerX, centerY, 80, startAngle, endAngle)
         startAngle = endAngle
         circle[i] = svg.paper.path(p).attr({
             stroke: exonJSON[i].color,
             strokeWidth: 10,
             fill: 'none'
-        })
+        })}
     }
 
     var juncX = centerX-2, juncY = centerY+75
@@ -451,10 +529,16 @@ function drawCircRNA(exonJSON){
     })
 
     // draw legend
-    legend = drawLegend()
+    legend = drawLegend(modType)
 
     // group everything together
-    var group = svg.group(arcBackGround, junction_point1, junction_point2,  circName, legend)
+    var group
+    if (legend == undefined) {
+        group = svg.group(arcBackGround, circName)
+    }
+    else {
+        group = svg.group(arcBackGround, circName, legend)
+    }
 
     for (i=0;i<modCirc.length;i++) {
         for (t=0;t<modCirc[i].length;t++){
@@ -467,7 +551,7 @@ function drawCircRNA(exonJSON){
         group = svg.group(cc, circle[i])
     }
 
-    return group
+    return svg.group(group, junction_point1, junction_point2)
 }
 
 // CORE FUNCTION! draw the arc and its circRNA
@@ -703,6 +787,26 @@ function arrowOnCircle(centerX, centerY, r, Degree){
     arrow = svg.group(arrowLine, tri)
 
     return arrow
+}
+
+function rectOnCircle(centerX, centerY, r, a, degree, color) {
+    rad_Degree = Snap.rad(degree - 270)
+    r += 1
+    x = r * Math.cos(rad_Degree) + centerX
+    y = r * Math.sin(rad_Degree) + centerY
+    rect = svg.paper.rect(x, y, a, a).attr({
+        fill: color,
+        stroke: color,
+        "cursor": "pointer"
+    })
+
+    matrix = new Snap.Matrix()
+    angle = 45 + degree
+    matrix.rotate(angle, x, y)
+
+    rect.transform(matrix)
+
+    return rect
 }
 
 function circleTagOnCircle(centerX, centerY, r, Degree, color) {
