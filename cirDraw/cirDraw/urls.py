@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^$', toolviews.render_index_page, name = 'home'),
     url(r'^admin/', admin.site.urls),
     url(r'^tools/', include('tools.urls')),
+    url(r'^diy/', include('diy.urls')),
     url(r'^download/', include('download.urls')),
     url(r'^information/', include('information.urls')),
 ]
