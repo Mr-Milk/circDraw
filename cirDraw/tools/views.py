@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect
+from django.core.files.storage import default_storage
 from django.http import Http404, HttpResponse, JsonResponse
 from .forms import UploadFileForm, JsonTestFile
-from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
-from .process_file import handle_uploaded_file, detect_filetype, detect_species
+from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5
+from .process_file import handle_uploaded_file
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 from sklearn.neighbors import KernelDensity
 import numpy as np
 from math import floor
-import sys
+import sys, datetime, time
 import json
+import hashlib
 
 # ========================= RENDER PAGES ==============================
 def render_index_page(request):
@@ -25,6 +27,59 @@ def render_display_page(request, caseid):
     context = {"caseid":caseid}
     return render(request, 'tools/tools.html', context)
 # ======================== UPLOAD & SAVE ==============================
+def is_same_parameters(md5ob, file_type, species, denvalue):
+    """Check if the parameters are the same, part of the principle of Abstraction"""
+    return all([md5ob.file_type == file_type, md5ob.species == species, md5ob.denvalue == denvalue])
+
+
+@csrf_exempt
+def save_to_files(request):
+    if request.method == "POST":
+        form = UploadFileForm(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            # get md5 value with parameters and time
+            form_file = form.cleaned_data['file']
+            md5 = hashlib.md5(form_file.read()).hexdigest()
+            parameters = json.loads(form.cleaned_data['parameters'])
+            file_type = parameters['FileType']
+            species = parameters['Species']
+            denvalue = parameters['denvalue']
+            time_ = time.time()
+            path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+            sub_base = "md5_data/"
+
+            # md5_based url that want to be returned
+            url_base = "tools/results/"
+            url = url_base + md5
+            # url_json = json.dumps([{'url': url}])
+            md5_json = [{'md5': md5}]
+
+            # check if the file exists
+            if default_storage.exists(path):
+                # check if the process has finished?
+                md5ob = UploadParametersMD5.objects.filter(md5__exact=md5)
+                if md5ob.status:
+                    # check if the parameters are the same:
+                    if is_same_parameters(md5ob, file_type, species, denvalue):
+                        return JsonResponse(md5_json, safe=False)
+                    else:
+                        # invoke reading function with the new parameters
+                        """Your code here"""
+                        pass
+                else:
+                    JsonResponse(md5_json, safe=False)
+
+            # store md5 value and parameters into database
+            a = UploadParametersMD5(md5 = md5, status = False, file_type = file_type, species = species, denvalue = denvalue, time = time_, path = path)
+            a.save()
+
+            # call process functions
+
+            return JsonResponse(url_json, safe=False)
+
+
+
+
 
 def process_upload(request, filename):
     """handle upload file and return [{}..]
@@ -37,12 +92,11 @@ def process_upload(request, filename):
         form = UploadFileForm(data=request.POST, files=request.FILES)
         print("form is valid?: ", form.is_valid())
         if form.is_valid():
-            data_raw_file = request.FILES['file']
-            print("data raw: ",data_raw_file)
-            header, result = handle_uploaded_file(data_raw_file)
-            file_type = detect_filetype(data_raw_file)
-            species = detect_species(data_raw_file)
-            return header, result, file_type, species
+            data_raw_file = form.cleaned_data['file']
+            info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
+            header, result = handle_uploaded_file(data_raw_file, filter_lst=info_needed)
+            parameters = json.loads(form.cleaned_data['parameters'])
+            return header, result, parameters
         else:
             print('upload file form is not valid')
             raise Http404
@@ -51,11 +105,13 @@ def process_upload(request, filename):
         print('request of upload is not POST')
         raise Http404
 
+def process_read(file_hash):
+    pass
+
+
+
 def save(header, results, file_type, species):
-    """
-    >>> header = ['circRNA_ID', 'chr_ci', 'circRNA_start', 'circRNA_end']
-    >>> results = [{'chr_ci': 'KI270792.1', 'circRNA_ID': 'KI270792.1:75980|83617','circRNA_end': '83617', 'circRNA_start': '75980'}, {'chr_ci': 'KI270850.1','circRNA_ID': 'KI270850.1:171308|171975','circRNA_end': '171975','circRNA_start': '171308'}]
-    """
+    """Save file"""
     case = ToolsUploadcase()
     caseid = case.whichcase
     case.save()

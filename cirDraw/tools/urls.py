@@ -10,7 +10,8 @@ urlpatterns = [
     url(r'^display/(?P<caseid>[0-9a-f-]+)$', views.render_display_page, name="render_display"),
 
     # Upload
-    url(r'^upload/$', views.upload_and_save, name='upload&save'),
+    # url(r'^upload/$', views.upload_and_save, name='upload&save'),
+    url(r'^upload/$', views.save_to_files, name='upload&save'),
 
     # Ajax call functions
     url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),

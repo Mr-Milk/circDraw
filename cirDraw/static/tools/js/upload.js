@@ -23,7 +23,8 @@ $(document).ready(function(){
                     "denvalue": $("#denvalue").val()}
 
         formdata.append('file',document.getElementById('myfile').files[0])
-        formdata.append('parameters', parameters)
+        formdata.append('parameters', JSON.stringify(parameters))
+        console.log(JSON.stringify(parameters))
        $.ajax({
             url: '/tools/upload/',
             type: 'POST',

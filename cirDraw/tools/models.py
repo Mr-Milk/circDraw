@@ -72,4 +72,16 @@ class ToolsUploadcase(models.Model):
         db_table = 'tools_uploadcase'
 
 
+class UploadParametersMD5(models.Model):
+    md5 = models.CharField(db_column="MD5", max_length = 32, primary_key = True)
+    status = models.BooleanField(db_column="Status", default = False)
+    file_type = models.CharField(db_column="FileType", max_length = 100)
+    path = models.CharField(db_column="path", max_length=200)
+    species = models.CharField(db_column="Species", max_length = 400)
+    denvalue = models.IntegerField(db_column = "denvalue")
+    time = models.FloatField(db_column = "time_created")
+
+
+    class Meta:
+        db_table = 'tools_uploadmd5'
 
