@@ -60,7 +60,8 @@ def save_to_files(request):
                     else:
                         # invoke reading function with the new parameters
                         """Your code here"""
-                        return JsonResponse(md5_json, safe=False)
+                        # return JsonResponse(md5_json, safe=False)
+                        return
                 else:
                     return JsonResponse(md5_json, safe=False)
 
@@ -70,10 +71,12 @@ def save_to_files(request):
             a.save()
 
             # call process functions
+            call_process(path, md5, )
 
             return JsonResponse(md5_json, safe=False)
 
 
+def call_process()
 
 
 
