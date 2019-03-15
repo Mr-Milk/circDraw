@@ -59,7 +59,7 @@ class ToolsEachobservation(models.Model):
     gene_id = models.CharField(max_length=100, blank=True, null=True)
     strand = models.CharField(max_length=100, blank=True, null=True)
     junction_reads_id = models.CharField(db_column='junction_reads_ID', max_length=500, blank=True, null=True)  # Field name made lowercase.
-    caseid = models.ForeignKey('ToolsUploadcase', models.DO_NOTHING, blank=True, null=True)
+    caseid = models.ForeignKey('UploadParametersMD5', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         db_table = 'tools_eachobservation'
