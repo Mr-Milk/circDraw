@@ -10,123 +10,125 @@
 
 {% block content %}
 
-<section id="diy">
-        <div class='container-fluid'>
-                <div class='row'>
-
-                        <div class='col-4 alert alert-dark'>
-
-                                <div class='row justify-content-start'>
-                                        <div class='col-7'>
-                                                <div class='input-group mb-3'>
-                                                        <div class='input-group-prepend'>
-                                                                <label class='input-group-text' for='circName'>Chromosome</label>
+        <div class="container-fluid">
+        <div class="row flex-xl-nowrap mb-3">
+        <div class="col-12 col-md-4 col-xl-4 bd-sidebar mt-5">
+                        <div class='mt-3'>
+                                        <div class='row justify-content-start'>
+                                                <div class="col-7">
+                                                        <div class='input-group mb-3'>
+                                                                <div class='input-group-prepend'>
+                                                                        <label class='input-group-text' for='circName'>Chromosome</label>
+                                                                </div>
+                                                                <input type='text' class='form-control alpha-num-only'
+                                                                        placeholder='Ex: 1' id='chr'>
+                                                </div></div>
+                                        </div>
+        
+        
+                                        <label for='circInput' id='appendCircForm'>circRNA</label>
+                                        <div class='input-group mb-3' id='circInput'>
+                                                <input type='text' class='form-control alpha-num-only' placeholder='name' id='circName'>
+                                                <input type='text' class='form-control num-only' placeholder='start' id='circStart'
+                                                        pattern='number'>
+                                                <input type='text' class='form-control num-only' placeholder='end' id='circEnd'>
+                                        </div>
+        
+                                        <div class='row justify-content-end'>
+                                                <div class='col-11' id='exon'>
+                                                        <label for='circInput'>Exons</label>
+                                                        <div class='input-group mb-3'>
+                                                                <input type='text' class='form-control alpha-num-only'
+                                                                        placeholder='name' id='exonName'>
+                                                                <input type='text' class='form-control num-only' placeholder='start'
+                                                                        id='exonStart'>
+                                                                <input type='text' class='form-control num-only' placeholder='end'
+                                                                        id='exonEnd'>
+                                                                <div class='input-group-append'>
+                                                                        <button class='btn btn-outline-secondary' type='button'
+                                                                                id='exonAdd'>+</button>
+                                                                </div>
                                                         </div>
-                                                        <input type='text' class='form-control alpha-num-only'
-                                                                placeholder='Ex: 1' id='chr'>
+        
                                                 </div>
                                         </div>
-                                </div>
-
-
-                                <label for='circInput' id='appendCircForm'>circRNA</label>
-                                <div class='input-group mb-3' id='circInput'>
-                                        <input type='text' class='form-control alpha-num-only' placeholder='name' id='circName'>
-                                        <input type='text' class='form-control num-only' placeholder='start' id='circStart'
-                                                pattern='number'>
-                                        <input type='text' class='form-control num-only' placeholder='end' id='circEnd'>
-                                </div>
-
-                                <div class='row justify-content-end'>
-                                        <div class='col-11' id='exon'>
-                                                <label for='circInput'>Exons</label>
-                                                <div class='input-group mb-3'>
-                                                        <input type='text' class='form-control alpha-num-only'
-                                                                placeholder='name' id='exonName'>
-                                                        <input type='text' class='form-control num-only' placeholder='start'
-                                                                id='exonStart'>
-                                                        <input type='text' class='form-control num-only' placeholder='end'
-                                                                id='exonEnd'>
-                                                        <div class='input-group-append'>
-                                                                <button class='btn btn-outline-secondary' type='button'
-                                                                        id='exonAdd'>+</button>
-                                                        </div>
-                                                </div>
-
-                                        </div>
-                                </div>
-
-                                <div class='row justify-content-end'>
-                                        <div class='col-11' id='mod'>
-                                                <label for='circInput'>Modifications</label>
-                                                <div class='input-group mb-3'>
-                                                        <select class='custom-select' id='inputGroupSelect01'>
-                                                                <option selected>Type</option>
-                                                                <option value='m6A'>m6A</option>
-                                                                <option value='m1C'>m1C</option>
-                                                                <option value='m1A'>m1A</option>
-                                                                <option value='SNP'>SNP</option>
-                                                        </select>
-                                                        <input type='text' class='form-control num-only' placeholder='site'
-                                                                id='modsite'>
-                                                        <div class='input-group-append'>
-                                                                <button class='btn btn-outline-secondary' type='button'
-                                                                        id='modAdd'>+</button>
+        
+                                        <div class='row justify-content-end'>
+                                                <div class='col-11' id='mod'>
+                                                        <label for='circInput'>Modifications</label>
+                                                        <div class='input-group mb-3'>
+                                                                <select class='custom-select' id='inputGroupSelect01'>
+                                                                        <option selected>Type</option>
+                                                                        <option value='m6A'>m6A</option>
+                                                                        <option value='m1C'>m1C</option>
+                                                                        <option value='m1A'>m1A</option>
+                                                                        <option value='SNP'>SNP</option>
+                                                                </select>
+                                                                <input type='text' class='form-control num-only' placeholder='site'
+                                                                        id='modsite'>
+                                                                <div class='input-group-append'>
+                                                                        <button class='btn btn-outline-secondary' type='button'
+                                                                                id='modAdd'>+</button>
+                                                                </div>
                                                         </div>
                                                 </div>
                                         </div>
-                                </div>
-
-                                <div class='row justify-content-end'>
-                                        <div class='col-11' id='f'>
-                                                <label for='circInput'>Functional Regions</label>
-                                                <div class='input-group mb-3'>
-                                                        <select class='custom-select' id='inputGroupSelect01'>
-                                                                <option selected>Type</option>
-                                                                <option value='MRE'>MRE</option>
-                                                                <option value='ORF'>ORF</option>
-                                                        </select>
-                                                        <input type='text' class='form-control num-only' placeholder='start'
-                                                                id='modstart'>
-                                                        <input type='text' class='form-control num-only' placeholder='end'
-                                                                id='modend'>
-                                                        <div class='input-group-append'>
-                                                                <button class='btn btn-outline-secondary' type='button'
-                                                                        id='fAdd'>+</button>
+        
+                                        <div class='row justify-content-end'>
+                                                <div class='col-11' id='f'>
+                                                        <label for='circInput'>Functional Regions</label>
+                                                        <div class='input-group mb-3'>
+                                                                <select class='custom-select' id='inputGroupSelect01'>
+                                                                        <option selected>Type</option>
+                                                                        <option value='MRE'>MRE</option>
+                                                                        <option value='ORF'>ORF</option>
+                                                                </select>
+                                                                <input type='text' class='form-control num-only' placeholder='start'
+                                                                        id='modstart'>
+                                                                <input type='text' class='form-control num-only' placeholder='end'
+                                                                        id='modend'>
+                                                                <div class='input-group-append'>
+                                                                        <button class='btn btn-outline-secondary' type='button'
+                                                                                id='fAdd'>+</button>
+                                                                </div>
                                                         </div>
                                                 </div>
                                         </div>
-                                </div>
-                                <div class='row mb-3 justify-content-start align-middle'>
-                                        <div class='col-12'>
-                                                <button class='btn btn-danger' type='button' id='addcirc'>Add circRNA</button>
+                                        <div class='row mb-3 justify-content-start align-middle'>
+                                                <div class='col-12'>
+                                                        <button class='btn btn-primary btn-sm' type='button' id='addcirc'>Add circRNA</button>
+                                                </div>
                                         </div>
-                                </div>
-
-
-
-                                <label for='circInput'>Genes</label>
-                                <div class='input-group mb-3' id='gene'>
-                                        <input type='text' class='form-control alpha-num-only' placeholder='name' id='geneName'>
-                                        <input type='text' class='form-control num-only' placeholder='start' id='geneStart'>
-                                        <input type='text' class='form-control num-only' placeholder='end' id='geneEnd'>
-                                </div>
-
-                                <div class='row mb-3 justify-content-start align-middle'>
-                                        <div class='col-12'>
-                                                <button class='btn btn-danger' type='button' id='addgene'>Add Gene</button>
+        
+        
+        
+                                        <label for='circInput'>Genes</label>
+                                        <div class='input-group mb-3' id='gene'>
+                                                <input type='text' class='form-control alpha-num-only' placeholder='name' id='geneName'>
+                                                <input type='text' class='form-control num-only' placeholder='start' id='geneStart'>
+                                                <input type='text' class='form-control num-only' placeholder='end' id='geneEnd'>
                                         </div>
+        
+                                        <div class='row mb-3 justify-content-start align-middle'>
+                                                <div class='col-12'>
+                                                        <button class='btn btn-primary btn-sm' type='button' id='addgene'>Add Gene</button>
+                                                </div>
+                                        </div>
+        
                                 </div>
-
-                        </div>
-
-                        <div class='col-8 alert alert-warning center'>
-                                <svg id='svg' width='800' height='500'>
-                        </div>
-                </div>
         </div>
+        <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-bottom">
+                                                
+                                                <div class='mt-5 center'>
+                                                        <svg id='svg' width='800' height='500' style="border:3px solid #fed136;">
+                                        </div>
+                                        
+        </main></div></div>
 
-</section>
+    
+                
+        
+
 
 
 {% endblock %}
