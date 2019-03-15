@@ -45,19 +45,14 @@ def save_to_files(request):
             species = parameters['Species']
             denvalue = parameters['denvalue']
             time_ = time.time()
-            path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
             sub_base = "md5_data/"
-
-            # md5_based url that want to be returned
-            url_base = "tools/results/"
-            url = url_base + md5
-            # url_json = json.dumps([{'url': url}])
+            path = sub_base + md5
             md5_json = [{'md5': md5}]
 
             # check if the file exists
             if default_storage.exists(path):
                 # check if the process has finished?
-                md5ob = UploadParametersMD5.objects.filter(md5__exact=md5)
+                md5ob = UploadParametersMD5.objects.filter(md5__exact=md5)[0]
                 if md5ob.status:
                     # check if the parameters are the same:
                     if is_same_parameters(md5ob, file_type, species, denvalue):
@@ -65,17 +60,18 @@ def save_to_files(request):
                     else:
                         # invoke reading function with the new parameters
                         """Your code here"""
-                        pass
+                        return JsonResponse(md5_json, safe=False)
                 else:
-                    JsonResponse(md5_json, safe=False)
+                    return JsonResponse(md5_json, safe=False)
 
             # store md5 value and parameters into database
+            path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
             a = UploadParametersMD5(md5 = md5, status = False, file_type = file_type, species = species, denvalue = denvalue, time = time_, path = path)
             a.save()
 
             # call process functions
 
-            return JsonResponse(url_json, safe=False)
+            return JsonResponse(md5_json, safe=False)
 
 
 
