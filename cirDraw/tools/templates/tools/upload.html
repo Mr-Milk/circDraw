@@ -1,76 +1,73 @@
 {% extends "base.html" %}
 
 {% load static %}
- 
-{% block content %}
-    <div class="container">
-      <br><br><br><br><br>
-    </div>
 
-    <div class="container">
-          <div class="form-group">
-                <p class="inlineText">Which software you used to get the result file?</p>
-                <select class="selectpicker inlineSelector" id="software" >
-                  <option>CIRI2</option>
-                </select>
-                <br>
-                <p class="inlineText">Which species are we dealing with?</p>
-                <select class="selectpicker inlineSelector" id="species">
-                  <option>Human</option>
-                </select>
-                <br>
-                <p class="inlineText">Please set the threshold to filter your circRNA.</p><br>
-                <p class="inlineText">EXP ( > 1 ): </p><input type="text" id="expvalue" class="inlineInput" value="10"><br>
-                <p class="inlineText">Density ( 1 ~ 100 ): </p><input type="text" id="denvalue" class="inlineInput" value="10"></div>
-                <div class="center"><div class="textarea" contenteditable="true"></div>
-                <button type="button" class="btn btn-primary btn-sm" id="example">Example</button></div>
-                <!--
+{% block content %}
+<div class="container" style="padding-top: 55px;">
+  <div class="form-group">
+    <p class="inlineText">Select your file type</p>
+    <select class="selectpicker inlineSelector" id="software">
+      <option>.BED file</option>
+      <option>CIRI2 file</option>
+    </select>
+    <br>
+    <p class="inlineText">Species</p>
+    <select class="selectpicker inlineSelector" id="species">
+      <option>Human</option>
+    </select>
+    <br>
+    <p class="inlineText">Set Density threshold( 1 ~ 100 ): </p><input type="text" id="denvalue" class="inlineInput" value="10">
+  </div>
+  <div class="center">
+    <div class="textarea" contenteditable="true"></div>
+    <button type="button" class="btn btn-primary btn-sm" id="example">Example</button>
+  </div>
+  <!--
                 <form id="fileform" method="POST" action="{% url 'upload&save' %}" enctype="multipart/form-data">
                 -->
 
-                <div id="uploadarea" class="center">
+  <div id="uploadarea" class="center">
 
-                  <form id="fileform" method="POST" enctype="multipart/form-data">
-                  {% csrf_token %}
-                  <label class="btn btn-primary btn-sm" for="fileupload" id="uploadlabel" onclick="document.getElementById('myfile').click();">
-                    + Select File 
-                    <input type="file" id="myfile" name="myfile" style="display:none">
-                  </label>
-                  
-                  <button class="btn btn-primary btn-sm" id="submit" style="margin-bottom: .5rem">Submit</button>
-                  <!--
+    <form id="fileform" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label class="btn btn-primary btn-sm" for="fileupload" id="uploadlabel" onclick="document.getElementById('myfile').click();">
+        + Select File
+        <input type="file" id="myfile" name="myfile" style="display:none">
+      </label>
+
+      <button class="btn btn-primary btn-sm" id="submit" style="margin-bottom: .5rem">Submit</button>
+      <!--
                   <label class="btn btn-primary btn-sm" for="submit" id="submitstatus">
                   Submit
                       <input type="submit" id="submit" style="display:none">
                     </label>-->
-                    <p id="filename" style="display: inline-block"></p><span id='cancel' class='btn' style="display: none">X</span>
-                    
-                </form>
-                </div>
-                
+      <p id="filename" style="display: inline-block"></p><span id='cancel' class='btn' style="display: none">X</span>
 
-                <p id="aftersubmit"></p>
-                <p id="processtip"></p>
-                <button class="btn btn-primary btn-sm" id="resultbutton" disabled style="display: none">View Report</button>
-                
-                
-                <!--<div class="progress col-sm-8" id="progressbar">
+    </form>
+  </div>
+
+
+  <p id="aftersubmit"></p>
+  <p id="processtip"></p>
+  <button class="btn btn-primary btn-sm" id="resultbutton" disabled style="display: none">View Report</button>
+
+
+  <!--<div class="progress col-sm-8" id="progressbar">
                     <div id='bar' class="progress-bar" role="progressbar" style="width: 0%;background:#fed136;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                   </div>-->
-              </div>
-        </div>
+</div>
+</div>
 
-        <div class="container">
-      <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    </div>
+<div class="container mb-5 mt-5">
+</div>
 
 
-        <!-- Upload -->
+<!-- Upload -->
 {% endblock %}
 
 {% block otherJS %}
-    <script src="{% static 'tools/js/upload.js' %}"></script>
-    <!--<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+<script src="{% static 'tools/js/upload.js' %}"></script>
+<!--<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
     <<script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.2/jquery.fileupload.min.js"></script>
     <script>
     $('#myfile').change(function () {
