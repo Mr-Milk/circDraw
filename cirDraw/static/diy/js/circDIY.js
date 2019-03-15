@@ -47,8 +47,8 @@ var svg = Snap("#svg");
 
 var background = svg.paper.rect(0, 0, $("#svg").attr('width'), $("#svg").attr('height')).attr({
     fill: "#fff",
-    stroke: "#f00",
-    strokeWidth: 1
+    stroke: "none",
+    //strokeWidth: 1
 })
 
 $('.alpha-num-only').alphaNumOnly()
@@ -370,32 +370,34 @@ $('#addcirc').click(function(){
 
             console.log($('#circName').val())
             $('#exon div').siblings('div').slice(1).remove()
-
+            var modNum = 0, fNum = 0
             for (i=0;i<editCirc.exon.length;i++) {
                 setExon = $('#exon div').siblings('div input').slice(i*3,i*3+3)
                 setExon[0].value = editCirc.exon[i].name
                 setExon[1].value = editCirc.exon[i].start
                 setExon[2].value = editCirc.exon[i].end
+                $('#exonAdd').click()
 
                 for (t=0;t<editCirc.exon[i].mod.length;t++){
-                    console.log("modName: ", editCirc.exon.mod[t].name, " Type: ", typeof(editCirc.exon.mod[t].name))
-                    if ($.inArray(editCirc.exon.mod[t].name, ['m6A', 'm1A', 'M1C', 'SNP']) !== -1){
-                        $('#mod div').children('select')[t].value = editCirc.exon[i].mod[t].name
-                        $('#mod div').children('input')[t].value = editCirc.exon[i].mod[t].start
+                    console.log("modName: ", editCirc.exon[i].mod[t].type, " Type: ", typeof(editCirc.exon[i].mod[t].start))
+                    if ($.inArray(editCirc.exon[i].mod[t].type, ['m6A', 'm1A', 'm1C', 'SNP']) !== -1){
+                        $('#mod div').children('select')[modNum].value = editCirc.exon[i].mod[t].type
+                        $('#mod div').children('input')[modNum].value = editCirc.exon[i].mod[t].start
                         $('#modAdd').click()
+                        modNum += 1
                     }
-                    else if ($.inArray(editCirc.exon[i].mod[t].name in ['MRE', 'ORF']) !== -1){
-                        $('#f div').children('select')[t].value = editCirc.exon[i].mod[t].name
-                        $('#f div').children('input')[t*2].value = editCirc.exon[i].mod[t].start
-                        $('#f div').children('input')[t*2+1].value = editCirc.exon[i].mod[t].end
-                        $('#modAdd').click()
+                    else if ($.inArray(editCirc.exon[i].mod[t].type, ['MRE', 'ORF']) !== -1){
+                        $('#f div').children('select')[fNum].value = editCirc.exon[i].mod[t].type
+                        $('#f div').children('input')[fNum*2].value = editCirc.exon[i].mod[t].start
+                        $('#f div').children('input')[fNum*2+1].value = editCirc.exon[i].mod[t].end
+                        $('#fAdd').click()
+                        fNum += 1
                     }
-                }
-
-                if (i < editCirc.exon.length - 1) {
-                    $('#exonAdd').click()
                 }
             }
+            $('#exon div').siblings('div').slice(-1).remove()
+            $('#mod div').siblings('div').slice(-1).remove()
+            $('#f div').siblings('div').slice(-1).remove()
         })
 
 
@@ -434,7 +436,12 @@ $('#addcirc').click(function(){
 })
 
 var geneList = []
-var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2", "#FF881D"]
+var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2", "#FF881D", '#e30067', '#924900', '#ab9c00',
+'#ccd0d2', '#075800', '#5e0094', '#f28600', '#a327ea', '#ff8cc6', '#d60000', '#fff97a', '#ff0081', '#8aa0ae',
+'#87d1ff', '#7f00b8', '#2ab3e7', '#bd0056', '#0c9200', '#ffe85b', '#d27400', '#3f2e27', '#846a5b', '#004ac7',
+'#490063', '#ff5757', '#007aea', '#88cc66', '#ff4848', '#73aeff', '#ae5800', '#c1b900', '#c36cff', '#39b03b',
+'#244c66', '#9c0000', '#6d0000', '#877400', '#002065', '#000cae', '#ecd600', '#ff44a2', '#ffa254', '#ff0000',
+'#1a6f00', '#ffa12c']
 
 $('#addgene').click(function(){
     var geneName = $('#geneName').val(),
@@ -493,23 +500,23 @@ function redraw(){
         svg.clear()
         var background = svg.paper.rect(0, 0, $("#svg").attr('width'), $("#svg").attr('height')).attr({
             fill: "#fff",
-            stroke: "#f00",
-            strokeWidth: 1
+            stroke: "none",
+            //strokeWidth: 1
         })
     }
     else{
     svg.clear()
     var background = svg.paper.rect(0, 0, $("#svg").attr('width'), $("#svg").attr('height')).attr({
         fill: "#fff",
-        stroke: "#f00",
-        strokeWidth: 1
+        stroke: "none",
+        //strokeWidth: 1
     })
     var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
         stroke: "#000",
         strokeWidth: 1
     });
 
-    var scStart, scEnd, drawArc = [], exons = []
+    var scStart, scEnd, drawArc = [], exons = [], currentStat
 
     if (exonList.length == 0 || circList.length == 0) {
         gmm = getMinMax(geneList)
@@ -554,7 +561,7 @@ function redraw(){
         scaleLen = scaleEnd - scaleStart
         //console.log("scale start: ", scaleStart, ", scale end: ", scaleEnd, ", scale len: ", scaleLen)
         colorIndex += 1
-        if (colorIndex < 100) {
+        if (colorIndex < 50) {
             //console.log(exonJSON[i].name)
             exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[r].name)
             exons[r] = {
@@ -1050,7 +1057,6 @@ function arc(start, end, exonJSON){
         endBlock = junction_block(end, "#D0104C"),
         realStart = getMinMax(exonJSON)[0],
         realEnd = getMinMax(exonJSON)[1],
-        display = false,
         circ
 
     var path = "M" + (start+1) + " 443A" +  rx + " " + ry + " 0 0 1 " + (end+1) + " 443"
@@ -1063,18 +1069,18 @@ function arc(start, end, exonJSON){
     console.log('Drawing Arc: ' + c)
 
     c.click(function(){
-        if (display == false) {
-            var x = svg.select("g")
+        var x = svg.select("g")
             if (x != null) {
                 x.remove()
             }
-            circ = drawCircRNA(exonJSON)
-            display = true
-        }
-
-        else if (display == true) {
+        circ = drawCircRNA(exonJSON)
+        id = "circ" + start + end
+        if (id == window.currentStat) {
             circ.remove()
-            display = false
+            window.currentStat = null
+        }
+        else {
+            window.currentStat = id
         }
     }).mouseover(function(){
         Snap.animate(1, 6, function (val) {

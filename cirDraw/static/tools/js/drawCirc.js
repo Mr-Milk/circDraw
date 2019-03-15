@@ -2,7 +2,12 @@
 var svg = Snap("#svg");
 
 // Define a color palette for the exon blocks
-var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2", "#FF881D"]
+var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2", "#FF881D", '#e30067', '#924900', '#ab9c00',
+'#ccd0d2', '#075800', '#5e0094', '#f28600', '#a327ea', '#ff8cc6', '#d60000', '#fff97a', '#ff0081', '#8aa0ae',
+'#87d1ff', '#7f00b8', '#2ab3e7', '#bd0056', '#0c9200', '#ffe85b', '#d27400', '#3f2e27', '#846a5b', '#004ac7',
+'#490063', '#ff5757', '#007aea', '#88cc66', '#ff4848', '#73aeff', '#ae5800', '#c1b900', '#c36cff', '#39b03b',
+'#244c66', '#9c0000', '#6d0000', '#877400', '#002065', '#000cae', '#ecd600', '#ff44a2', '#ffa254', '#ff0000',
+'#1a6f00', '#ffa12c']
 
 // Get URL and split to caseid
 var url = $(location).attr('href').split("/")
@@ -666,7 +671,7 @@ function backSplicing(exonJSON, arcJSON){
         scaleEnd = 50+700*(exonJSON[i].end-mm[0])/range
         scaleLen = scaleEnd - scaleStart
         if (exonJSON[i].type == "exon") {
-            if (colorIndex<7) {
+            if (colorIndex<50) {
                 exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
                 exonList[i] = {"chr": parseInt($('#chrSelector').val()),
                                 "start": exonJSON[i].start,
@@ -693,7 +698,16 @@ function backSplicing(exonJSON, arcJSON){
             }
         }
         else if (exonJSON[i].type == "gene") {
-            gene_block(scaleStart, scaleLen, geneColor[geneColorIndex], exonJSON[i].name)
+            if (colorIndex<50){
+                gene_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
+                colorIndex += 1
+            }
+            else {
+                colorIndex = 0
+                gene_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
+                colorIndex += 1
+            }
+            
         }
 
     }

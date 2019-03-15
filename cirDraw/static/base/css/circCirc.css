@@ -1,3 +1,6 @@
+body { 
+        padding-top: 65px; 
+    }
 .choiceWindow {
             display: none; 
             position: absolute; 
@@ -133,4 +136,18 @@ background: url('../../../media/close.png') no-repeat center center;
 
 .movedown {
         margin-top: 40px;
+}
+
+.bg-toolbox {
+        background-color: #fed168;
+}
+
+.bd-sidebar {
+        border-top: 1px solid rgba(0,0,0,.1);
+        border-right: 1px solid rgba(0,0,0,.1);
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+.bd-bottom {
+        border-bottom: 1px solid rgba(0,0,0,.1);
 }
