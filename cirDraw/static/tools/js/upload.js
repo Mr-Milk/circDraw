@@ -75,6 +75,7 @@ $(document).ready(function () {
                 processData: false,
                 contentType: false
             }
+
         } else {
             formdata.append('text', $('.textarea').text())
             formdata.append('parameters', JSON.stringify(parameters))
@@ -87,34 +88,39 @@ $(document).ready(function () {
                 processData: false,
                 contentType: false
             }
-
         }
 
         $.ajax(ajaxParameters)
             .done(
                 function (reportID) {
                     $('#submit').text('✓ Submitted').prop('disabled', true);
-                    var reportID = reportID[0]
+                    var md5 = reportID[0].md5,
+                        systime = reportID[0].time
+                    $('#processtip').text('Your process ID is ' + '<b><i>' + md5 + '</i></b>')
                     $('#resultbutton').show()
-                    var sec = 0;
+                    var sec;
                     intervalID_1 = setInterval(
                         function () {
+                            var d = new Data()
+                            sec = d.getTime().toString().substr(0,10) - systime.substr(0,10)
                             $('#processtip').text('Processing time: ' + sec + 's')
-                            sec++;
                         }, 1000);
-
-                    $.getJSON("statusfile").done(function (processState) {
-                        if (processState == true) {
-                            clearInterval(intervalID_1)
-                            $('#processtip').text('Processing Completed! Your report ID is ' + '<b><i>' + reportID + '</i></b>')
-                            $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/" + reportID)
-                        }
-
-                        if (processState == false) {
-                            clearInterval(intervalID_1)
-                            $('#processtip').text('Processing Failed!')
-                        }
-                    })
+                    
+                    interval_2 = setInterval(function(){
+                        $.getJSON("statusfile").done(function (processStatus) {
+                            var status
+                            if (status == true) {
+                                clearInterval(intervalID_1)
+                                $('#processtip').text('Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/' + md5 + '</i></b>' + '\n')
+                                $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/" + md5)
+                            }
+    
+                            if (status == false) {
+                                clearInterval(intervalID_1)
+                                $('#processtip').text('Processing Failed!')
+                            }
+                        })
+                    },2000)
                 }).fail(
                 function () {
                     if ($('#myfile').val() === "") {
