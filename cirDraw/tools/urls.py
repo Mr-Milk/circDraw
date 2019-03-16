@@ -13,6 +13,9 @@ urlpatterns = [
     # url(r'^upload/$', views.upload_and_save, name='upload&save'),
     url(r'^upload/$', views.save_to_files, name='upload&save'),
 
+    # Run pre-process
+    url(r'^run/$', views.handle_file5)
+
     # Check Status
     url(r'^statusfile/$', views.check_status),
 
