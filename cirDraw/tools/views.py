@@ -56,8 +56,11 @@ def save_to_files(request):
             # check if the file exists
             md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
 
-            if default_storage.exists(path) and md5ob:
-                # check if the process has finished?
+            if md5ob:
+                print("existed in databse")
+                return JsonResponse(return_json, safe=False)
+            elif default_storage.exists(path):
+                print("existed in saved file")
                 return JsonResponse(return_json, safe=False)
 
             # store md5 value and parameters into database
@@ -71,21 +74,23 @@ def save_to_files(request):
 
             # insert to data base the info of file, paramerter and time
             a = UploadParametersMD5(md5 = md5, status = False, file_type = file_type, species = species, denvalue = denvalue, time = time_, path = path)
+            md5ob = a
             a.save()
+
+
+            # calling for process
+            call_process(form_file, md5ob, parameters)
 
             return JsonResponse(return_json, safe=False)
 
 
-def call_process(path, md5ob, parameters):
+def call_process(form_file, md5ob, parameters):
     """Function to control the file process precedure"""
-    # get data_raw_file
-
-
-
+    assert md5ob, "Md5 object should be valid"
 
     info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
-    header, result = handle_uploaded_file(data_raw_file, info_needed, md5ob)
-    parameters = json.loads(form.cleaned_data['parameters'])
+    save_status = handle_uploaded_file(form_file, info_needed, md5ob)
+    print("saved?: ", save_status)
 
 
 
@@ -172,6 +177,15 @@ def upload_and_save(request):
     (header, results, file_type, species) = process_upload(request, filename)
     caseid = save(header, results, file_type, species)
     return redirect('render_display', caseid=caseid)
+
+
+# ======================== UPLOAD & SAVE ==============================
+
+def check_status(request):
+
+
+
+
 
 # ===================== HANDLE AJAX CALL =================================
 # ---------------------handle_file1---------------------------------------

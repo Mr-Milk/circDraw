@@ -1,81 +1,88 @@
-from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5
-
 # processing file module
+from mysqlconnect import Connector
+login_file_name = "admin_login.json"
+
+
+def get_object():
+    connector = Connector(login_file_name)
+    print(connector)
 
 def handle_uploaded_file(f, filter_lst, md5ob):
     """
     >>> filter_list = ['CIRI_one_column_name']
     """
+    lines = []
     f_iter = iter(f)
     header = next(f_iter).decode("utf-8").split("\t")
+    # md5ob get
+    md5ob = get_md5_object()
     for line in f_iter:
         line_sep = line.decode().split('\t')
         line_sep, head = fil_lst(line_sep, header, filter_lst)
         info_ob = RNAob(head, line_sep)
         save_status = save_line(md5ob, head, info_ob)
-    #header_ob = Header(head)
-    return save_status
+	#header_ob = Header(head)
+    return head, lines
 
 
 
 def fil_lst(line_lst, header, filter_lst):
-    lst = []
-    head = []
-    for i in range(len(header)):
-        if header[i] in filter_lst:
-            lst.append(line_lst[i])
-            head.append(header[i])
-    return lst, head
+	lst = []
+	head = []
+	for i in range(len(header)):
+		if header[i] in filter_lst:
+			lst.append(line_lst[i])
+			head.append(header[i])
+	return lst, head
 
 
 
 def RNAob(header, data_lst):
-    ob = {}
-    if len(header) == len(data_lst):
-        for i in range(len(header)):
-            if header[i] == 'chr':
-                header[i] = 'chr_ci'
-            header[i] = noslash(nohash(header[i]))
-            if header[i] == 'junction_reads_ID':
-                ob[str(header[i])] = data_lst[i][:-2]
-            else:
-                ob[str(header[i])] = data_lst[i]
-        return ob
-    else:
-        return {"NO": [header, data_lst]}
+	ob = {}
+	if len(header) == len(data_lst):
+		for i in range(len(header)):
+			if header[i] == 'chr':
+				header[i] = 'chr_ci'
+			header[i] = noslash(nohash(header[i]))
+			if header[i] == 'junction_reads_ID':
+				ob[str(header[i])] = data_lst[i][:-2]
+			else:
+				ob[str(header[i])] = data_lst[i]
+		return ob
+	else:
+		return {"NO": [header, data_lst]}
 
 
 def nohash(str):
-    if str[0] != '#':
-        return str
-    else:
-        return nohash(str[1:])
+	if str[0] != '#':
+		return str
+	else:
+		return nohash(str[1:])
 
 
 def noslash(str):
-    if str == '':
-        return str
-    elif str[0] == '\n':
-        return noslash(str[1:])
-    else:
-        return ''.join([str[0], noslash(str[1:])])
+	if str == '':
+		return str
+	elif str[0] == '\n':
+		return noslash(str[1:])
+	else:
+		return ''.join([str[0], noslash(str[1:])])
 
 
 
 
 class Header:
-    def __init__(self, lst):
-        name = "-".join(lst)
-        self.lst = lst
-        self.name = name
-    def __repr__(self):
-        return self.name
+	def __init__(self, lst):
+		name = "-".join(lst)
+		self.lst = lst
+		self.name = name
+	def __repr__(self):
+		return self.name
 
 
-def save_line(md5ob, header, info_ob, pk_ob):
+def save_line(md5ob, header, info_ob):
     """save each observation"""
-    # try:
-    if True:
+    try:
         ob = ToolsEachobservation(caseid = md5ob)
         assert type(header) == list, "HEADER passed in to save is not a list"
         e = info_ob
@@ -83,8 +90,8 @@ def save_line(md5ob, header, info_ob, pk_ob):
             exec('ob.' + each +' = ' + 'e["' + each +'"]', globals(), locals())
         ob.save()
         return True
-    # except:
-    #     return False
+    except:
+        return False
 
 
 

@@ -3,7 +3,6 @@
 import mysql.connector
 import ijson
 import json
-from annotation import readfile, string_or_int
 import random
 
 
@@ -16,6 +15,8 @@ class Connector:
         self.password = self.admin['password']
         self.host = self.admin['host']
         self.database = self.admin['database']
+        self._connect_to_db()
+        self.checkpoint = Checkpoint(self)
 
     def get_current_login(self, lst):
         return lst[0]
@@ -32,11 +33,37 @@ class Connector:
             database = login['database']
         return {'user': user, 'password': password, 'host': host, 'database': database}
 
-    def connect_to_db(self):
+    def _connect_to_db(self):
         """connect to database and create the cursor and cnx attribute"""
         self.cnx = mysql.connector.connect(user=self.user, password=self.password, host=self.host, database=self.database, auth_plugin='mysql_native_password')
-        self.cursor = self.cnx.cursor(buffered=True)
-        return self.cnx, self.cursor
+        self.origin_cursor = self.cnx.cursor(buffered=True)
+        return self.cnx, self.origin_cursor
+
+    def commit_close_db(self):
+        self.cnx.commit()
+        self.origin_cursor.close()
+        self.cnx.close()
+
+
+class Operator:
+    def __init__(self, connector):
+        self.connector = connector
+
+    def get_objects(self, table_name, query_map):
+        """Use the connection to get objects out of a table of database
+        >>> query_map = {'column_name': "some value", "column2": "values"}
+        """
+        if self.connector.checkpoint.is_exist_table(table_name):
+
+            select = """SELECT * from """ + str(table_name) + """ WHERE """
+
+
+
+
+
+
+
+
 
 
 
@@ -102,9 +129,9 @@ class Checkpoint:
 
 
 
-class Loop:
-    """A class that provides looping power and controls during the process."""
-    def __init__(self, )
+# class Loop:
+#     """A class that provides looping power and controls during the process."""
+#     def __init__(self, )
 
 
 
@@ -175,6 +202,3 @@ def main():
 
     commit_db(cnx, cursor)
 
-
-if __name__ == '__main__':
-   main()

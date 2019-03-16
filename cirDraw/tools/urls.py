@@ -13,6 +13,9 @@ urlpatterns = [
     # url(r'^upload/$', views.upload_and_save, name='upload&save'),
     url(r'^upload/$', views.save_to_files, name='upload&save'),
 
+    # Check Status
+    url(r'^statusfile/$', views.check_status),
+
     # Ajax call functions
     # url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
     # url(r'^display/tools_file2/$', views.handle_file2, name="tools_file2"),

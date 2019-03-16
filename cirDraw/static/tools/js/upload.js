@@ -44,7 +44,7 @@ $(document).ready(function(){
                         $('#processtip').text('Processing time: '+ sec + 's')
                         sec++;}, 1000);
 
-                $.getJSON("statusfile").done(function(processState){
+                $.getJSON("statusfile/").done(function(processState){
                     if (processState == true) {
                         clearInterval(intervalID_1)
                         $('#processtip').text('Processing Completed! Your report ID is ' + '<b><i>' + reportID + '</i></b>')
