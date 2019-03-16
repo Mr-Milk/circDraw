@@ -63,7 +63,7 @@ $(document).ready(function () {
     $('#submit').click(function (e) {
         e.preventDefault();
         //e.stopPropagation();
-        if ($('#myfile').val() === "") {
+        if ($('#myfile').val() === "" && $('.textarea').text() === "") {
             $('#processtip').text('Please choose a file to upload.').css("color", "#CB4042")
         }
         else {
@@ -91,7 +91,8 @@ $(document).ready(function () {
             }
 
         } else {
-            formdata.append('text', $('.textarea').text())
+            var inputText = JSON.stringify({'text': $('.textarea').text()})
+            formdata.append('text', inputText)
             formdata.append('parameters', JSON.stringify(parameters))
             var ajaxParameters = {
                 url: 'text-url',
