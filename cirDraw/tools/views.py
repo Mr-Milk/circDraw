@@ -79,7 +79,10 @@ def save_to_files(request):
 
 
             # calling for process
-            call_process(form_file, md5ob, parameters)
+            save_status = call_process(form_file, md5ob, parameters)
+
+            if not save_status:
+                return_json = [{'md5': "File process failed...", 'time': time_, 'save_status': False}]
 
             return JsonResponse(return_json, safe=False)
 
@@ -91,6 +94,7 @@ def call_process(form_file, md5ob, parameters):
     info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
     save_status = handle_uploaded_file(form_file, info_needed, md5ob)
     print("saved?: ", save_status)
+    return save_status
 
 
 
@@ -182,6 +186,21 @@ def upload_and_save(request):
 # ======================== UPLOAD & SAVE ==============================
 
 def check_status(request):
+    if request.method == 'GET':
+        md5 = request.GET['caseid']
+        try:
+            md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
+            process_status = md5ob.status
+            if process_status:
+                status = 200
+            else:
+                status = 101
+            return JsonResponse([{'status': status}], safe=False)
+        except:
+            print("check status error: No object returned or attribute is not correct")
+            return JsonResponse([{'status': 404}], safe=False)
+    else:
+        raise Http404
 
 
 

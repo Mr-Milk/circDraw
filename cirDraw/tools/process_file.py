@@ -72,10 +72,9 @@ class Header:
         return self.name
 
 
-def save_line(md5ob, header, info_ob, pk_ob):
+def save_line(md5ob, header, info_ob):
     """save each observation"""
-    # try:
-    if True:
+    try:
         ob = ToolsEachobservation(caseid = md5ob)
         assert type(header) == list, "HEADER passed in to save is not a list"
         e = info_ob
@@ -83,8 +82,8 @@ def save_line(md5ob, header, info_ob, pk_ob):
             exec('ob.' + each +' = ' + 'e["' + each +'"]', globals(), locals())
         ob.save()
         return True
-    # except:
-    #     return False
+    except:
+        return False
 
 
 
