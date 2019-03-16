@@ -128,7 +128,7 @@ $(document).ready(function () {
                                 type: 'POST',
                                 cache: false,
                                 dataType: "json",
-                                data: md5,
+                                data: {'md5':md5},
                                 processData: false,
                                 contentType: false
                             })
