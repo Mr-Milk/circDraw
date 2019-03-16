@@ -111,7 +111,7 @@ $(document).ready(function () {
                     $('#submit').text('✓ Submitted').prop('disabled', true);
                     var md5 = reportID[0].md5,
                         systime = reportID[0].time
-                    $('#processtip').text('Your process ID is ' + '<b><i>' + md5 + '</i></b>')
+                    $('#processtip').html('Your process ID is ' + '<b><i>' + md5 + '</i></b>')
                     $('#resultbutton').show()
                     var sec;
                     interval_1 = setInterval(
@@ -123,11 +123,20 @@ $(document).ready(function () {
 
                     interval_2 = setInterval(function(){
                         $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
+                            $.ajax({
+                                url: 'tools/run',
+                                type: 'POST',
+                                cache: false,
+                                dataType: "json",
+                                data: md5,
+                                processData: false,
+                                contentType: false
+                            })
                             var status = processStatus[0].status
                             if (status == 200) {
                                 clearInterval(interval_1)
-                                $('#processtip').text('Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/' + md5 + '</i></b>' + '\n')
-                                $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/" + md5)
+                                $('#processtip').text('Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b>' + '\n')
+                                $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/display/" + md5)
                                 clearInterval(interval_2)
                             }
 
