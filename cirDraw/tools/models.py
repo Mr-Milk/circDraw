@@ -47,7 +47,7 @@ class ToolsAnnotation(models.Model):
 
 
 class ToolsEachobservation(models.Model):
-    circRNA_ID = models.CharField(db_column='circRNA_ID', primary_key=True, max_length=200)  # Field name made lowercase.
+    circRNA_ID = models.CharField(db_column='circRNA_ID', max_length=200)  # Field name made lowercase.
     chr_ci = models.CharField(max_length=40, blank=True, null=True)
     circRNA_start = models.IntegerField(db_column='circRNA_start', blank=True, null=True)  # Field name made lowercase.
     circRNA_end = models.IntegerField(db_column='circRNA_end', blank=True, null=True)  # Field name made lowercase.
@@ -59,8 +59,8 @@ class ToolsEachobservation(models.Model):
     gene_id = models.CharField(max_length=100, blank=True, null=True)
     strand = models.CharField(max_length=100, blank=True, null=True)
     junction_reads_id = models.CharField(db_column='junction_reads_ID', max_length=500, blank=True, null=True)  # Field name made lowercase.
-    caseid = models.ForeignKey('ToolsUploadcase', models.DO_NOTHING, blank=True, null=True)
-
+    caseid = models.ForeignKey('UploadParametersMD5', on_delete=models.CASCADE, blank=True, null=True)
+    circ_id = models.AutoField(primary_key=True)
     class Meta:
         db_table = 'tools_eachobservation'
 

@@ -119,7 +119,7 @@ $(document).ready(function () {
                             sec = d.getTime().toString().substr(0,10) - systime.substr(0,10)
                             $('#processtip').text('Processing time: ' + sec + 's')
                         }, 1000);
-                    
+
                     interval_2 = setInterval(function(){
                         $.getJSON("statusfile").done(function (processStatus) {
                             var status
@@ -128,7 +128,7 @@ $(document).ready(function () {
                                 $('#processtip').text('Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/' + md5 + '</i></b>' + '\n')
                                 $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/" + md5)
                             }
-    
+
                             if (status == false) {
                                 clearInterval(intervalID_1)
                                 $('#processtip').text('Processing Failed!')

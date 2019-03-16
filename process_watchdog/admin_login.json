@@ -1,0 +1,14 @@
+[
+    {
+        "user": "root",
+        "password": "12345678",
+        "host": "127.0.0.1",
+        "database": "circDraw"
+    },
+    {
+        "user": "root",
+        "password": "password",
+        "host": "production_host",
+        "database": "cirDraw"
+    }
+]

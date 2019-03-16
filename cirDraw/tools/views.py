@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.files.storage import default_storage
 from django.http import Http404, HttpResponse, JsonResponse
+from annoying.functions import get_object_or_None
 from .forms import UploadFileForm, JsonTestFile
 from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5
 from .process_file import handle_uploaded_file
@@ -26,83 +27,78 @@ def render_upload_page(request):
 def render_display_page(request, caseid):
     context = {"caseid":caseid}
     return render(request, 'tools/tools.html', context)
-# ======================== UPLOAD & SAVE ==============================
-def is_same_parameters(md5ob, file_type, species, denvalue):
-    """Check if the parameters are the same, part of the principle of Abstraction"""
-    return all([md5ob.file_type == file_type, md5ob.species == species, md5ob.denvalue == denvalue])
 
+# ======================== UPLOAD & SAVE ==============================
 
 @csrf_exempt
 def save_to_files(request):
     if request.method == "POST":
         form = UploadFileForm(data=request.POST, files=request.FILES)
         if form.is_valid():
-            # get md5 value with parameters and time
+            # get md5 value. Note: consider (file + parameters) as a whole md5
             form_file = form.cleaned_data['file']
-            md5 = hashlib.md5(form_file.read()).hexdigest()
-            parameters = json.loads(form.cleaned_data['parameters'])
-            file_type = parameters['FileType']
-            species = parameters['Species']
-            denvalue = parameters['denvalue']
-            time_ = time.time()
+
+            str_parameters = form.cleaned_data['parameters']
+
+            parameters = json.loads(str_parameters)
+
+            b_file = form_file.read()
+            print(type(b_file))
+            file_parameters = str_parameters.encode('utf-8') + b_file
+            md5 = hashlib.md5(file_parameters).hexdigest()
+
+
             sub_base = "md5_data/"
             path = sub_base + md5
-            md5_json = [{'md5': md5}]
-
+            time_ = time.time()
+            return_json = [{'md5': md5, 'time': time_}]
+            print("return: ", return_json)
             # check if the file exists
-            if default_storage.exists(path):
-                # check if the process has finished?
-                md5ob = UploadParametersMD5.objects.filter(md5__exact=md5)[0]
-                if md5ob.status:
-                    # check if the parameters are the same:
-                    if is_same_parameters(md5ob, file_type, species, denvalue):
-                        return JsonResponse(md5_json, safe=False)
-                    else:
-                        # invoke reading function with the new parameters
-                        """Your code here"""
-                        return JsonResponse(md5_json, safe=False)
-                else:
-                    return JsonResponse(md5_json, safe=False)
+            md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
+
+            if md5ob:
+                print("existed in databse")
+                return JsonResponse(return_json, safe=False)
+            elif default_storage.exists(path):
+                print("existed in saved file")
+                return JsonResponse(return_json, safe=False)
 
             # store md5 value and parameters into database
             path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+
+            # distribute parameters details
+            file_type = parameters['FileType']
+            species = parameters['Species']
+            denvalue = parameters['denvalue']
+
+
+            # insert to data base the info of file, paramerter and time
             a = UploadParametersMD5(md5 = md5, status = False, file_type = file_type, species = species, denvalue = denvalue, time = time_, path = path)
+            md5ob = a
             a.save()
 
-            # call process functions
 
-            return JsonResponse(md5_json, safe=False)
+            # calling for process
+            save_status = call_process(form_file, md5ob, parameters)
+
+            if not save_status:
+                return_json = [{'md5': "File process failed...", 'time': time_, 'save_status': False}]
+
+            return JsonResponse(return_json, safe=False)
+
+
+def call_process(form_file, md5ob, parameters):
+    """Function to control the file process precedure"""
+    assert md5ob, "Md5 object should be valid"
+
+    info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
+    save_status = handle_uploaded_file(form_file, info_needed, md5ob)
+    print("saved?: ", save_status)
+    return save_status
 
 
 
 
-
-def process_upload(request, filename):
-    """handle upload file and return [{}..]
-    >>> c = Client()
-    """
-    if request.method == "POST":
-        # form = JsonTestFile({'json_receive': request.body})
-        print("request.FILES: ", request.FILES['file'])
-        print("request.POST: ", str(request.POST['parameters']))
-        form = UploadFileForm(data=request.POST, files=request.FILES)
-        print("form is valid?: ", form.is_valid())
-        if form.is_valid():
-            data_raw_file = form.cleaned_data['file']
-            info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
-            header, result = handle_uploaded_file(data_raw_file, filter_lst=info_needed)
-            parameters = json.loads(form.cleaned_data['parameters'])
-            return header, result, parameters
-        else:
-            print('upload file form is not valid')
-            raise Http404
-
-    else:
-        print('request of upload is not POST')
-        raise Http404
-
-def process_read(file_hash):
-    pass
 
 
 
@@ -185,6 +181,30 @@ def upload_and_save(request):
     (header, results, file_type, species) = process_upload(request, filename)
     caseid = save(header, results, file_type, species)
     return redirect('render_display', caseid=caseid)
+
+
+# ======================== UPLOAD & SAVE ==============================
+
+def check_status(request):
+    if request.method == 'GET':
+        md5 = request.GET['caseid']
+        try:
+            md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
+            process_status = md5ob.status
+            if process_status:
+                status = 200
+            else:
+                status = 101
+            return JsonResponse([{'status': status}], safe=False)
+        except:
+            print("check status error: No object returned or attribute is not correct")
+            return JsonResponse([{'status': 404}], safe=False)
+    else:
+        raise Http404
+
+
+
+
 
 # ===================== HANDLE AJAX CALL =================================
 # ---------------------handle_file1---------------------------------------
