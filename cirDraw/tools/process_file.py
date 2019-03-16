@@ -6,6 +6,7 @@ def handle_uploaded_file(f, filter_lst, md5ob):
     """
     >>> filter_list = ['CIRI_one_column_name']
     """
+    saves = []
     f_iter = iter(f)
     header = next(f_iter).decode("utf-8").split("\t")
     for line in f_iter:
@@ -13,8 +14,9 @@ def handle_uploaded_file(f, filter_lst, md5ob):
         line_sep, head = fil_lst(line_sep, header, filter_lst)
         info_ob = RNAob(head, line_sep)
         save_status = save_line(md5ob, head, info_ob)
+        saves.append(save_status)
     #header_ob = Header(head)
-    return save_status
+    return all(saves)
 
 
 

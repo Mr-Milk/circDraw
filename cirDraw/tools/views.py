@@ -24,14 +24,21 @@ def render_upload_page(request):
     context = {}
     return render(request, 'tools/upload.html', context)
 
-def render_display_page(request, caseid):
-    context = {"caseid":caseid}
+def render_display_page(request, md5):
+    context = {"md5": md5}
     return render(request, 'tools/tools.html', context)
 
 # ======================== UPLOAD & SAVE ==============================
 
 @csrf_exempt
 def save_to_files(request):
+    try:
+        return_httpresponse, md5 = save_to_files_try(request)
+        return return_httpresponse
+    finally:
+        handle_file5(md5)
+
+def save_to_files_try(request):
     if request.method == "POST":
         form = UploadFileForm(data=request.POST, files=request.FILES)
         if form.is_valid():
@@ -82,9 +89,9 @@ def save_to_files(request):
             save_status = call_process(form_file, md5ob, parameters)
 
             if not save_status:
-                return_json = [{'md5': "File process failed...", 'time': time_, 'save_status': False}]
+                return_json = [{'md5': "Saving File failed...", 'time': time_, 'save_status': False}]
 
-            return JsonResponse(return_json, safe=False)
+            return (JsonResponse(return_json, safe=False), md5)
 
 
 def call_process(form_file, md5ob, parameters):
@@ -437,6 +444,14 @@ def handle_file5(request):
 
 
         #final_out = [results, gene_box]
+
+        # Write result to a file
+        result_sub_path = 'density_result/'
+        result_path = result_sub_path + md5
+
+        r_path = default_storage.save(result_path, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+
+
         return JsonResponse(results, safe=False)
 
 

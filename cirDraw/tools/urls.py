@@ -7,7 +7,7 @@ urlpatterns = [
 
     # Render pages
 	url(r'^$', views.render_upload_page, name='tools'),
-    url(r'^display/(?P<caseid>[0-9a-f-]+)$', views.render_display_page, name="render_display"),
+    url(r'^display/(?P<md5>[0-9a-f-]+)$', views.render_display_page, name="render_display"),
 
     # Upload
     # url(r'^upload/$', views.upload_and_save, name='upload&save'),
@@ -17,9 +17,9 @@ urlpatterns = [
     url(r'^statusfile/$', views.check_status),
 
     # Ajax call functions
-    # url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
-    # url(r'^display/tools_file2/$', views.handle_file2, name="tools_file2"),
-    # url(r'^tools_file4/$', views.handle_file4, name="tools_file4"),
+    url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
+    url(r'^display/tools_file2/$', views.handle_file2, name="tools_file2"),
+    url(r'^tools_file4/$', views.handle_file4, name="tools_file4"),
     # url(r'^tools_file5/$', views.handle_file5, name="tools_file5"),
 
     # charts
