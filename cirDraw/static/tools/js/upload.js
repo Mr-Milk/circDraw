@@ -110,28 +110,23 @@ $(document).ready(function () {
                 function (reportID) {
                     $('#submit').text('✓ Submitted').prop('disabled', true);
                     var md5 = reportID[0].md5,
-                        systime = reportID[0].time
+                        systime = reportID[0].time.toString()
                     $('#processtip').html('Your process ID is ' + '<b><i>' + md5 + '</i></b>')
                     $('#resultbutton').show()
+
+                    $.getJSON("run/", {'md5': md5})
                     var sec;
                     interval_1 = setInterval(
                         function () {
-                            var d = new Data()
+                            var d = new Date()
+                            console.log(d.getTime(), systime)
                             sec = d.getTime().toString().substr(0,10) - systime.substr(0,10)
                             $('#processtip').text('Processing time: ' + sec + 's')
                         }, 1000);
 
                     interval_2 = setInterval(function(){
                         $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
-                            $.ajax({
-                                url: 'tools/run',
-                                type: 'POST',
-                                cache: false,
-                                dataType: "json",
-                                data: {'md5':md5},
-                                processData: false,
-                                contentType: false
-                            })
+
                             var status = processStatus[0].status
                             if (status == 200) {
                                 clearInterval(interval_1)

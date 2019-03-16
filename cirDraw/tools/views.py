@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.http import Http404, HttpResponse, JsonResponse
 from annoying.functions import get_object_or_None
 from .forms import UploadFileForm, JsonTestFile
-from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5
+from .models import ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5
 from .process_file import handle_uploaded_file
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
@@ -32,13 +33,6 @@ def render_display_page(request, md5):
 
 @csrf_exempt
 def save_to_files(request):
-    try:
-        return_httpresponse, md5 = save_to_files_try(request)
-        return return_httpresponse
-    finally:
-        handle_file5(md5)
-
-def save_to_files_try(request):
     if request.method == "POST":
         form = UploadFileForm(data=request.POST, files=request.FILES)
         if form.is_valid():
@@ -57,18 +51,20 @@ def save_to_files_try(request):
 
             sub_base = "md5_data/"
             path = sub_base + md5
-            time_ = time.time()
-            return_json = [{'md5': md5, 'time': time_}]
-            print("return: ", return_json)
+
             # check if the file exists
             md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
 
             if md5ob:
                 print("existed in databse")
+                time_ = md5ob.time
+                return_json = [{'md5': md5, 'time': time_}]
                 return JsonResponse(return_json, safe=False)
-            elif default_storage.exists(path):
-                print("existed in saved file")
-                return JsonResponse(return_json, safe=False)
+            if default_storage.exists(path):
+                default_storage.delete(path)
+
+            time_ = time.time()
+            return_json = [{'md5': md5, 'time': time_}]
 
             # store md5 value and parameters into database
             path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
@@ -86,20 +82,20 @@ def save_to_files_try(request):
 
 
             # calling for process
-            save_status = call_process(form_file, md5ob, parameters)
+            save_status = call_process(form_file, md5ob, parameters, toCHR, get_chr_num, circ_isin)
 
             if not save_status:
                 return_json = [{'md5': "Saving File failed...", 'time': time_, 'save_status': False}]
 
-            return (JsonResponse(return_json, safe=False), md5)
+            return JsonResponse(return_json, safe=False)
 
 
-def call_process(form_file, md5ob, parameters):
+def call_process(form_file, md5ob, parameters, toCHR, get_chr_num, circ_isin):
     """Function to control the file process precedure"""
     assert md5ob, "Md5 object should be valid"
 
     info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
-    save_status = handle_uploaded_file(form_file, info_needed, md5ob)
+    save_status = handle_uploaded_file(form_file, info_needed, md5ob, toCHR, get_chr_num, circ_isin)
     print("saved?: ", save_status)
     return save_status
 
@@ -300,6 +296,31 @@ def chr_lengths(queryset):
 
 # -------------handle_file5----------------------------------
 
+def handle_file5(request):
+    if request.method == "GET":
+        md5 = request.GET['case_id']
+        sub_path = "density_result/"
+        read_path = sub_path + md5
+        if default_storage.exists(read_path):
+            results = default_storage.open(read_path).read()
+            results_ob = json.loads(results)
+            print("This is the head of results: ", results_ob[:2])
+            return JsonResponse(results_ob, safe=False)
+        else:
+            print("No file for path: ", read_path)
+            raise Http404
+
+
+    else:
+        print("Handle file5's method is not GET")
+        raise Http404
+
+
+
+
+
+# -------------Density computation----------------------------------
+
 def toCHR(num):
     """convert a number to a chr string"""
     assert type(num) == int, "Wrong input in toCHR"
@@ -346,12 +367,12 @@ def circ_isin(geneob, circob, overlap_rate=0.5):
         else:
             return False
 
-
-def handle_file5(request):
+@csrf_exempt
+def run_density(request):
     # Databse used: ToolsChromosome, ToolsScalegenome
     # results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
     if request.method == "GET":
-        caseid = request.GET['case_id']
+        caseid = request.GET['md5']
 
         # =========================================================================================================
         # Get basic information
@@ -361,7 +382,8 @@ def handle_file5(request):
         data_groups = [[] for _ in range(2)]
         results = []
         # chr exist in the uploaded file
-        chr_exist = ToolsChromosome.objects.filter(caseid_id__exact=caseid)
+        chr_exist = ToolsChromosome.objects.filter(caseid__exact=caseid)
+        print("chr_exist: ", chr_exist)
         chrs = [get_chr_num(r.chr_ci)-1 for r in chr_exist]
         results = [{'chrnum': len(chrs)}]
         # max in gene:
@@ -393,7 +415,9 @@ def handle_file5(request):
             density_box = [] # list to contain the pixels appeared
             chr_ccc = toCHR(chr_num_now + 1)
             data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
+            print("circ: ", len(data_groups[0]))
             data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ccc)
+            print("gene: ", len(data_groups[1]))
             gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
             min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
             gene_chr_lens = max_gene_end - min_gene_start
@@ -447,12 +471,26 @@ def handle_file5(request):
 
         # Write result to a file
         result_sub_path = 'density_result/'
-        result_path = result_sub_path + md5
+        result_path = result_sub_path + caseid
+        if default_storage.exists(result_path):
+            default_storage.delete(result_path)
 
-        r_path = default_storage.save(result_path, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+        json_result = json.dumps(results)
+
+        r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+        print(r_path)
+
+        # Change status in database
+        md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
+        md5ob.status = True
+        md5ob.save()
 
 
-        return JsonResponse(results, safe=False)
+
+        return JsonResponse([], safe=False)
+
+    else:
+        raise Http404
 
 
 
@@ -489,7 +527,8 @@ def lenChart(request):
 
 def exonChart(request):
     if request.method == 'GET':
-        pass
+        caseid = request.GET['caseid']
+
     else:
         raise Http404
 

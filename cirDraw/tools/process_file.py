@@ -1,21 +1,60 @@
-from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5
+from .models import ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5
+# from .views import toCHR, get_chr_num, circ_isin
+import sys
 
 # processing file module
 
-def handle_uploaded_file(f, filter_lst, md5ob):
+def handle_uploaded_file(f, filter_lst, md5ob, toCHR, get_chr_num, circ_isin):
     """
     >>> filter_list = ['CIRI_one_column_name']
     """
     saves = []
     f_iter = iter(f)
     header = next(f_iter).decode("utf-8").split("\t")
+
+    # initiate basic chromosome_info
+    chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(25)]
+    max_length = 0
+    chr_order = 0
+    md5 = md5ob.md5
+
+    # The loop
     for line in f_iter:
         line_sep = line.decode().split('\t')
         line_sep, head = fil_lst(line_sep, header, filter_lst)
         info_ob = RNAob(head, line_sep)
         save_status = save_line(md5ob, head, info_ob)
         saves.append(save_status)
-    #header_ob = Header(head)
+
+
+        # update chromosome max end and min start
+        now_chr = info_ob['chr_ci']
+        chr_num = get_chr_num(now_chr)
+        now_start = int(info_ob['circRNA_start'])
+        now_end = int(info_ob['circRNA_end'])
+        if chr_num >= 0:
+            if now_start < get_start_point(chromosome_info[chr_num-1]):
+                update_chromosome_start(chromosome_info[chr_num-1],now_start)
+            if now_end > get_end_point(chromosome_info[chr_num - 1]):
+                update_chromosome_end(chromosome_info[chr_num-1], now_end)
+        else:
+            print("one of Your input of chr from the handle file is crap")
+
+        # update max length of circle RNA
+        length = now_end - now_start
+        now_max = get_max_len(chromosome_info[chr_num - 1])
+        now_min = get_min_len(chromosome_info[chr_num - 1])
+        if length > max_length:
+            if now_max < length:
+                update_circlen_max(chromosome_info[chr_num - 1], length)
+            if now_min > length:
+                update_circlen_min(chromosome_info[chr_num - 1], length)
+    # create object in ToolsChromosome
+    print("THIS is CHROMOSOME_INFO: ", chromosome_info)
+    for i,each_chr in enumerate(chromosome_info):
+        if get_start_point(each_chr) < get_end_point(each_chr):
+            ob_chr = ToolsChromosome(caseid = md5ob, chr_ci = toCHR(i+1),chr_start = get_start_point(each_chr), chr_end = get_end_point(each_chr), max_length_circ = get_max_len(each_chr), min_length_circ = get_min_len(each_chr))
+            ob_chr.save()
     return all(saves)
 
 
@@ -89,32 +128,30 @@ def save_line(md5ob, header, info_ob):
 
 
 
+def get_start_point(lst):
+    """get the start point of [xxx, xxx]"""
+    return lst[0][0]
+def get_end_point(lst):
+    return lst[0][1]
+def get_max_len(lst):
+    return lst[1][1]
+def get_min_len(lst):
+    return lst[1][0]
+
+def update_chromosome_start(lst, update_to):
+    lst[0][0] = update_to
+def update_chromosome_end(lst, update_to):
+    lst[0][1] = update_to
+def update_circlen_max(lst, update_to):
+    lst[1][1] = update_to
+def update_circlen_min(lst, update_to):
+    lst[1][0] = update_to
 
 
 def save(md5, header, results, file_type, species):
     """Save file"""
     chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(25)]
     max_length = 0
-
-    def get_start_point(lst):
-        """get the start point of [xxx, xxx]"""
-        return lst[0][0]
-    def get_end_point(lst):
-        return lst[0][1]
-    def get_max_len(lst):
-        return lst[1][1]
-    def get_min_len(lst):
-        return lst[1][0]
-
-    def update_chromosome_start(lst, update_to):
-        lst[0][0] = update_to
-    def update_chromosome_end(lst, update_to):
-        lst[0][1] = update_to
-    def update_circlen_max(lst, update_to):
-        lst[1][1] = update_to
-    def update_circlen_min(lst, update_to):
-        lst[1][0] = update_to
-
     chr_order = 0
     for e in results:
         # save each observation

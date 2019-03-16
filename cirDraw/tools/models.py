@@ -10,7 +10,7 @@ import uuid
 
 
 class ToolsChromosome(models.Model):
-    caseid = models.ForeignKey('ToolsUploadcase', models.DO_NOTHING, blank=True, null=True)
+    caseid = models.ForeignKey('UploadParametersMD5', on_delete=models.CASCADE, blank=True, null=True)
     chr_ci = models.CharField(max_length=50)
     chr_start = models.IntegerField()
     chr_end = models.IntegerField()
@@ -64,12 +64,6 @@ class ToolsEachobservation(models.Model):
     class Meta:
         db_table = 'tools_eachobservation'
 
-
-class ToolsUploadcase(models.Model):
-    whichcase = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    class Meta:
-        db_table = 'tools_uploadcase'
 
 
 class UploadParametersMD5(models.Model):

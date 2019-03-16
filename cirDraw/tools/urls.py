@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^upload/$', views.save_to_files, name='upload&save'),
 
     # Run pre-process
-    url(r'^run/$', views.handle_file5)
+    url(r'^run/$', views.run_density),
 
     # Check Status
     url(r'^statusfile/$', views.check_status),
@@ -23,12 +23,12 @@ urlpatterns = [
     url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
     url(r'^display/tools_file2/$', views.handle_file2, name="tools_file2"),
     url(r'^tools_file4/$', views.handle_file4, name="tools_file4"),
-    # url(r'^tools_file5/$', views.handle_file5, name="tools_file5"),
+    url(r'^tools_file5/$', views.handle_file5, name="tools_file5"),
 
     # charts
     url(r'^display/lenChart_URL/$', views.lenChart),
-    #url(r'^display/exonChart_URL/$', views.exonChart),
-    #url(r'^isoChart_URL/$', views.isoChart),
+    url(r'^display/exonChart_URL/$', views.exonChart),
+    # url(r'^isoChart_URL/$', views.isoChart),
 
     # dev testing urls
     # url(r'^test/$', views.render_display_page_test),
