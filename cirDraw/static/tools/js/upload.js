@@ -24,10 +24,20 @@ $(document).ready(function () {
         var a = $('#myfile').val().toString().split('\\');
         console.log(a)
         $('#filename').text(a[a.length - 1])
+        if ($('#myfile').val() !== ""){
         $('#cancel').show().click(function () {
             $('#filename').text('');
             $('#cancel').hide()
-        });
+            $('#processtip').children('p').remove()
+            $('#myfile').value = ""
+            $('#submit').removeAttr('disabled')
+        });}
+        console.log("File size: ", document.getElementById('myfile').files[0].size)
+        if (document.getElementById('myfile').files[0].size >= 30 * 1024 ) {
+            $('#submit').prop('disabled', true)
+            $('#processtip').append('<p>File size are limited to 50MB. Try following steps to reduce file size: </p>').css("color", "#000")
+            $('#processtip').append('<p> 1. Filter your Data</p>' + '<p> 2. Remove useless info</p>' + '<p> 3. Contact us for help</p>').css("color", "#000")
+        }
     });
 
     $('.textarea').bind('input propertychange', function () {
@@ -53,6 +63,10 @@ $(document).ready(function () {
     $('#submit').click(function (e) {
         e.preventDefault();
         //e.stopPropagation();
+        if ($('#myfile').val() === "") {
+            $('#processtip').text('Please choose a file to upload.').css("color", "#CB4042")
+        }
+        else {
         var formdata = new FormData(),
             parameters = {
                 "FileType": $("#software").val(),
@@ -123,13 +137,9 @@ $(document).ready(function () {
                     },2000)
                 }).fail(
                 function () {
-                    if ($('#myfile').val() === "") {
-                        $('#processtip').text('Please choose a file to upload.').css("color", "#CB4042")
-                    } else {
                         $('#processtip').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")
-                    }
                 }
             )
-
+            }
     })
 })
