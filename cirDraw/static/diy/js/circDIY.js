@@ -1,47 +1,49 @@
 // 若出现输入信息未显示，可能为错误输入被circDraw忽略
 
 // declare jQuery function
-$.fn.extend({          
-    errorAfter:function(error) {            
-          $(this).after("<span id='error' class='ml-3'></span>")
-          $('#error').html(error).addClass('text-danger').show().fadeOut(1000, function(){
+$.fn.extend({
+    errorAfter: function (error) {
+        $(this).after("<span id='error' class='ml-3'></span>")
+        $('#error').html(error).addClass('text-danger').show().fadeOut(1000, function () {
             $('#error').remove()
         })
-     }      
-}); 
+    }
+});
 
 $.fn.extend({
-    alphaNumOnly: function(){
-        $(this).on("keydown", function(e){
-            var arr = [8,16,17,20,35,36,37,38,39,40,45,46];
+    alphaNumOnly: function () {
+        $(this).on("keydown", function (e) {
+            var arr = [8, 16, 17, 20, 35, 36, 37, 38, 39, 40, 45, 46];
             // Allow letters
-            for(var i = 65; i <= 90; i++){
+            for (var i = 65; i <= 90; i++) {
                 arr.push(i);
             }
             // Allow number
-            for(var t = 48; t <= 57; t++){
+            for (var t = 48; t <= 57; t++) {
                 arr.push(t);
             }
-            if(jQuery.inArray(event.which, arr) === -1){
+            if (jQuery.inArray(event.which, arr) === -1) {
                 event.preventDefault();
             }
         })
-}})
+    }
+})
 
 $.fn.extend({
-    numOnly: function(){
-        $(this).on("keydown", function(e){
-            var arr = [8,16,17,20,35,36,37,38,39,40,45,46];
+    numOnly: function () {
+        $(this).on("keydown", function (e) {
+            var arr = [8, 16, 17, 20, 35, 36, 37, 38, 39, 40, 45, 46];
             // Allow number
-            for(var t = 48; t <= 57; t++){
+            for (var t = 48; t <= 57; t++) {
                 arr.push(t);
             }
 
-            if(jQuery.inArray(event.which, arr) === -1){
+            if (jQuery.inArray(event.which, arr) === -1) {
                 event.preventDefault();
             }
         })
-}})
+    }
+})
 
 var svg = Snap("#svg");
 
@@ -54,167 +56,184 @@ var background = svg.paper.rect(0, 0, $("#svg").attr('width'), $("#svg").attr('h
 $('.alpha-num-only').alphaNumOnly()
 $('.num-only').numOnly()
 
-$('#exonAdd').click(function(){$('#exon').append(
-    "\n<div class='input-group mb-3' id='exon'>\n"+
-    "<input type='text' class='form-control alpha-num-only' placeholder='name' id='exonName'>\n"+
-    "<input type='text' class='form-control num-only' placeholder='start' id='exonStart'>\n"+
-    "<input type='text' class='form-control num-only' placeholder='end' id='exonEnd'>\n"+
-    "<div class='input-group-append'>\n"+
-    "<button class='btn btn-sm btn-outline-secondary' type='button' " + 'onclick="document.getElementById(' + "'exonAdd'" + ').click()">+</button>\n'+
-    "<button class='btn btn-sm btn-outline-secondary' type='button' onclick='this.parentElement.parentElement.remove()'>-</button>\n"+
-    "</div></div>"
-).ready(function(){
-    $('.alpha-num-only').alphaNumOnly()
-    $('.num-only').numOnly()
-})})
+$('#exonAdd').click(function () {
+    $('#exon').append(
+        "\n<div class='input-group mb-3' id='exon'>\n" +
+        "<input type='text' class='form-control alpha-num-only' placeholder='name' id='exonName'>\n" +
+        "<input type='text' class='form-control num-only' placeholder='start' id='exonStart'>\n" +
+        "<input type='text' class='form-control num-only' placeholder='end' id='exonEnd'>\n" +
+        "<div class='input-group-append'>\n" +
+        "<button class='btn btn-sm btn-outline-secondary' type='button' " + 'onclick="document.getElementById(' + "'exonAdd'" + ').click()">+</button>\n' +
+        "<button class='btn btn-sm btn-outline-secondary' type='button' onclick='this.parentElement.parentElement.remove()'>-</button>\n" +
+        "</div></div>"
+    ).ready(function () {
+        $('.alpha-num-only').alphaNumOnly()
+        $('.num-only').numOnly()
+    })
+})
 
-$('#modAdd').click(function(){$('#mod').append(
-    "<div class='input-group mb-3' id='mod'>\n"+
-    "<select class='custom-select' id='inputGroupSelect01'>\n"+
-    "<option selected>Type</option>\n"+
-    "<option value='m6A'>m6A</option>\n"+
-    "<option value='m1C'>m1C</option>\n"+
-    "<option value='m1A'>m1A</option>\n"+
-    "<option value='SNP'>SNP</option>\n"+
-    "</select>\n"+
-    "<input type='text' class='form-control num-only' placeholder='site' id='modsite'>\n"+
-    "<div class='input-group-append'>\n"+
-    "<button class='btn btn-sm btn-outline-secondary' type='button' " + 'onclick="document.getElementById(' + "'modAdd'" + ').click()">+</button>\n'+
-    "<button class='btn btn-sm btn-outline-secondary' type='button' onclick='this.parentElement.parentElement.remove()'>-</button>\n"+
-    "</div></div>"
-).ready(function(){
-    $('.alpha-num-only').alphaNumOnly()
-    $('.num-only').numOnly()
-})})
+$('#modAdd').click(function () {
+    $('#mod').append(
+        "<div class='input-group mb-3' id='mod'>\n" +
+        "<select class='custom-select' id='inputGroupSelect01'>\n" +
+        "<option selected>Type</option>\n" +
+        "<option value='m6A'>m6A</option>\n" +
+        "<option value='m1C'>m1C</option>\n" +
+        "<option value='m1A'>m1A</option>\n" +
+        "<option value='SNP'>SNP</option>\n" +
+        "</select>\n" +
+        "<input type='text' class='form-control num-only' placeholder='site' id='modsite'>\n" +
+        "<div class='input-group-append'>\n" +
+        "<button class='btn btn-sm btn-outline-secondary' type='button' " + 'onclick="document.getElementById(' + "'modAdd'" + ').click()">+</button>\n' +
+        "<button class='btn btn-sm btn-outline-secondary' type='button' onclick='this.parentElement.parentElement.remove()'>-</button>\n" +
+        "</div></div>"
+    ).ready(function () {
+        $('.alpha-num-only').alphaNumOnly()
+        $('.num-only').numOnly()
+    })
+})
 
-$('#fAdd').click(function(){$('#f').append(
-    "<div class='input-group mb-3' id='f'>\n"+
-    "<select class='custom-select' id='inputGroupSelect01'>\n"+
-    "<option selected>Type</option>\n"+
-    "<option value='MRE'>MRE</option>\n"+
-    "<option value='ORF'>ORF</option>\n"+
-    "</select>\n"+
-    "<input type='text' class='form-control num-only' placeholder='start' id='modstart'>\n"+
-    "<input type='text' class='form-control num-only' placeholder='end' id='modend'>\n"+
-    "<div class='input-group-append'>\n"+
-    "<button class='btn btn-sm btn-outline-secondary' type='button' " + 'onclick="document.getElementById(' + "'fAdd'" + ').click()">+</button>\n'+
-    "<button class='btn btn-sm btn-outline-secondary' type='button' onclick='this.parentElement.parentElement.remove()'>-</button>\n"+
-    "</div></div>"
-).ready(function(){
-    $('.alpha-num-only').alphaNumOnly()
-    $('.num-only').numOnly()
-})})
+$('#fAdd').click(function () {
+    $('#f').append(
+        "<div class='input-group mb-3' id='f'>\n" +
+        "<select class='custom-select' id='inputGroupSelect01'>\n" +
+        "<option selected>Type</option>\n" +
+        "<option value='MRE'>MRE</option>\n" +
+        "<option value='ORF'>ORF</option>\n" +
+        "</select>\n" +
+        "<input type='text' class='form-control num-only' placeholder='start' id='modstart'>\n" +
+        "<input type='text' class='form-control num-only' placeholder='end' id='modend'>\n" +
+        "<div class='input-group-append'>\n" +
+        "<button class='btn btn-sm btn-outline-secondary' type='button' " + 'onclick="document.getElementById(' + "'fAdd'" + ').click()">+</button>\n' +
+        "<button class='btn btn-sm btn-outline-secondary' type='button' onclick='this.parentElement.parentElement.remove()'>-</button>\n" +
+        "</div></div>"
+    ).ready(function () {
+        $('.alpha-num-only').alphaNumOnly()
+        $('.num-only').numOnly()
+    })
+})
 
-var circList = [], exonList = [], modList = [], exonJSON = [], circJSON = []
+var circList = [],
+    exonList = [],
+    modList = [],
+    exonJSON = [],
+    circJSON = []
 
-$('#addcirc').click(function(){
-    var circName = $('#circName').val(),circStart = parseInt($('#circStart').val()), circEnd = parseInt($('#circEnd').val())
+$('#addcirc').click(function () {
+    var circName = $('#circName').val(),
+        circStart = parseInt($('#circStart').val()),
+        circEnd = parseInt($('#circEnd').val())
     var exons = [],
         mods = [],
         fs = []
-    $('#exon input').each(function(i,e){
-        if (e.value != ""){
+    $('#exon input').each(function (i, e) {
+        if (e.value != "") {
             exons.push(e.value)
         }
     });
 
-    $('#mod').children('div').children().each(function(i,e){
-        if (e.value != "" && e.value != undefined && e.value != "Type"){
+    $('#mod').children('div').children().each(function (i, e) {
+        if (e.value != "" && e.value != undefined && e.value != "Type") {
             mods.push(e.value)
         }
     });
 
-    $('#f').children('div').children().each(function(i,e){
-        if (e.value != "" && e.value != undefined && e.value != "Type"){
+    $('#f').children('div').children().each(function (i, e) {
+        if (e.value != "" && e.value != undefined && e.value != "Type") {
             fs.push(e.value)
         }
     });
     // 1. 检查circ信息是否有空
     console.log("exons: " + exons + "\n",
-    "mods: " + mods + "\n",
-    "fs: " + fs + "\n",)
+        "mods: " + mods + "\n",
+        "fs: " + fs + "\n", )
     var ifCircFilled = (circName != "" && $('#circStart').val() != "" && $('#circEnd').val() != ""),
-    // 2. 检查exon信息是否有空
-        ifExonFilled = (exons.length%3) == 0 && exons.length > 0,
-        ifModFilled = ((mods.length%2) == 0),
-        ifFFilled = ((fs.length%3) == 0),
-    // 3. 检查是否满足start<end
+        // 2. 检查exon信息是否有空
+        ifExonFilled = (exons.length % 3) == 0 && exons.length > 0,
+        ifModFilled = ((mods.length % 2) == 0),
+        ifFFilled = ((fs.length % 3) == 0),
+        // 3. 检查是否满足start<end
         ifCircSE = circStart < circEnd || !(circStart == "" && circEnd == ""),
-        ifExonSE = (function(){var condition = true
-            for (i=0;i<exons.length/3;i++){
-                if (parseInt(exons[3*i+1]) > parseInt(exons[3*i+2])) {
+        ifExonSE = (function () {
+            var condition = true
+            for (i = 0; i < exons.length / 3; i++) {
+                if (parseInt(exons[3 * i + 1]) > parseInt(exons[3 * i + 2])) {
                     condition = false
-                }
-            }
-            return condition})(),
-        ifFSE = (function(){var condition = true
-            for (i=0;i<mods.length/3;i++){
-                if (parseInt(mods[3*i+1]) > parseInt(mods[3*i+2])) {
-                    condition = false
-                }
-            }
-            return condition})(),
-        // 4. 检查exon是否有重叠区域
-        ifOverlap = (function(){
-        for (i=0;i<exons.length/3;i++) {
-            condition = false
-            start = parseInt(exons[3*i+1])
-            end = parseInt(exons[3*i+2])
-            for (t=0;t<exons.length/3;t++) {
-                comp = parseInt(exons[3*t+1])
-                if (start < comp && comp < end){
-                    condition = true
                 }
             }
             return condition
-        }})(),
+        })(),
+        ifFSE = (function () {
+            var condition = true
+            for (i = 0; i < mods.length / 3; i++) {
+                if (parseInt(mods[3 * i + 1]) > parseInt(mods[3 * i + 2])) {
+                    condition = false
+                }
+            }
+            return condition
+        })(),
+        // 4. 检查exon是否有重叠区域
+        ifOverlap = (function () {
+            for (i = 0; i < exons.length / 3; i++) {
+                condition = false
+                start = parseInt(exons[3 * i + 1])
+                end = parseInt(exons[3 * i + 2])
+                for (t = 0; t < exons.length / 3; t++) {
+                    comp = parseInt(exons[3 * t + 1])
+                    if (start < comp && comp < end) {
+                        condition = true
+                    }
+                }
+                return condition
+            }
+        })(),
 
         // 5. 检查circ的start和end是否与exon匹配
-        ifExonInCirc = (function(){
+        ifExonInCirc = (function () {
             condition = true
-            for (i=0;i<exons.length/3;i++){
-                if (parseInt(exons[3*i+1]) < circStart || parseInt(exons[3*i+2]) > circEnd) {
+            for (i = 0; i < exons.length / 3; i++) {
+                if (parseInt(exons[3 * i + 1]) < circStart || parseInt(exons[3 * i + 2]) > circEnd) {
                     condition = false
                 }
             }
             return condition
         })(),
 
-        ifModInCirc = (function(){
+        ifModInCirc = (function () {
             condition = true
-            for (i=0;i<mods.length/2;i++){
-                if ( mods[2*i+1] < circStart || mods[2*i+1] > circEnd){
+            for (i = 0; i < mods.length / 2; i++) {
+                if (mods[2 * i + 1] < circStart || mods[2 * i + 1] > circEnd) {
                     condition = false
                 }
             }
             return condition
         })(),
 
-        ifFInCirc = (function(){
+        ifFInCirc = (function () {
             condition = true
             start = parseInt(circStart)
             end = parseInt(circEnd)
-            for (i=0;i<fs.length/3;i++){
-                if ( fs[3*i+1] < circStart || fs[3*i+2] > circEnd){
+            for (i = 0; i < fs.length / 3; i++) {
+                if (fs[3 * i + 1] < circStart || fs[3 * i + 2] > circEnd) {
                     condition = false
                 }
             }
             return condition
         })()
 
-        console.log(
-            "circfilled: ", ifCircFilled + "\n",
-            "exonfilled: ", ifExonFilled + "\n",
-            "modfilled: ",  ifModFilled + "\n",
-            "Ffilled: ", ifFFilled + "\n",
-            "circSE: ", ifCircSE + "\n",
-            "exonSE: ", ifExonSE + "\n",
-            "fSE: ", ifFSE + "\n",
-            "!overlap: ", !ifOverlap + "\n",
-            "exonInCirc: ", ifExonInCirc + "\n",
-            "modInCirc: ", ifModInCirc + "\n",
-            "FInCirc: ", ifFInCirc + "\n"
-        )
+    console.log(
+        "circfilled: ", ifCircFilled + "\n",
+        "exonfilled: ", ifExonFilled + "\n",
+        "modfilled: ", ifModFilled + "\n",
+        "Ffilled: ", ifFFilled + "\n",
+        "circSE: ", ifCircSE + "\n",
+        "exonSE: ", ifExonSE + "\n",
+        "fSE: ", ifFSE + "\n",
+        "!overlap: ", !ifOverlap + "\n",
+        "exonInCirc: ", ifExonInCirc + "\n",
+        "modInCirc: ", ifModInCirc + "\n",
+        "FInCirc: ", ifFInCirc + "\n"
+    )
 
     var condition = ifCircFilled && ifExonFilled && ifModFilled && ifFFilled && ifCircSE && ifExonSE && ifFSE && !ifOverlap && ifExonInCirc && ifModInCirc && ifFInCirc
 
@@ -222,15 +241,19 @@ $('#addcirc').click(function(){
         if ($('#addcirc').text() == 'Done') {
             $('#addcirc').text('Add Gene')
         }
-        $('#addcirc').parent().parent().after("<div><p class='d-inline-block'>circRNA: " + "<b>" + circName + "   " + circStart + " - " + circEnd + "</b>" + 
-        "</p>\n" + "<p class='d-inline-block ml-1' style='cursor: pointer;' id='delete" + circName + "'><u>Delete</u></p>"+
-        "<p class='d-inline-block ml-1' style='cursor: pointer;' id='edit" + circName + "'><u>Edit</u></p></div>")
-        
+        $('#addcirc').parent().parent().after("<div><p class='d-inline-block'>circRNA: " + "<b>" + circName + "   " + circStart + " - " + circEnd + "</b>" +
+            "</p>\n" + "<p class='d-inline-block ml-1' style='cursor: pointer;' id='delete" + circName + "'><u>Delete</u></p>" +
+            "<p class='d-inline-block ml-1' style='cursor: pointer;' id='edit" + circName + "'><u>Edit</u></p></div>")
+
         // updata circRNA
 
-        circList.push({'name': circName, 'start': parseInt(circStart), 'end': parseInt(circEnd)})
+        circList.push({
+            'name': circName,
+            'start': parseInt(circStart),
+            'end': parseInt(circEnd)
+        })
         let seencircNames = {}
-        circList = circList.filter(function(e) {
+        circList = circList.filter(function (e) {
             if (e.name in seencircNames) {
                 return false;
             } else {
@@ -243,15 +266,21 @@ $('#addcirc').click(function(){
 
         console.log(exons)
 
-        for (i=0;i<exons.length/3;i++){
-            exonList.push({'name':exons[3*i], 'start':parseInt(exons[3*i+1]), 'end':parseInt(exons[3*i+2])})
+        for (i = 0; i < exons.length / 3; i++) {
+            exonList.push({
+                'name': exons[3 * i],
+                'start': parseInt(exons[3 * i + 1]),
+                'end': parseInt(exons[3 * i + 2])
+            })
         }
 
         console.log("exonList not filtered: ", exonList)
 
         // check if duplicates
-        let seenexonNames = {}, seenexonStart = {}, seenexonEnd = {}
-        exonList = exonList.filter(function(e) {
+        let seenexonNames = {},
+            seenexonStart = {},
+            seenexonEnd = {}
+        exonList = exonList.filter(function (e) {
             if (e.start in seenexonStart && e.end in seenexonEnd) {
                 return false;
             } else {
@@ -264,15 +293,25 @@ $('#addcirc').click(function(){
 
         console.log("exonList filtered: ", exonList)
 
-        for (i=0;i<mods.length/2;i++){
-            modList.push({'type': mods[2*i], 'start': parseInt(mods[2*i+1]), 'end': parseInt(mods[2*i+1])+1})
+        for (i = 0; i < mods.length / 2; i++) {
+            modList.push({
+                'type': mods[2 * i],
+                'start': parseInt(mods[2 * i + 1]),
+                'end': parseInt(mods[2 * i + 1]) + 1
+            })
         }
-        
-        for (i=0;i<fs.length/3;i++){
-            modList.push({'type': fs[3*i], 'start': parseInt(fs[3*i+1]), 'end': parseInt(fs[3*i+2])})
+
+        for (i = 0; i < fs.length / 3; i++) {
+            modList.push({
+                'type': fs[3 * i],
+                'start': parseInt(fs[3 * i + 1]),
+                'end': parseInt(fs[3 * i + 2])
+            })
         }
-        let seenmodNames = {}, seenmodStart = {}, seenmodEnd = {}
-        modList = modList.filter(function(e) {
+        let seenmodNames = {},
+            seenmodStart = {},
+            seenmodEnd = {}
+        modList = modList.filter(function (e) {
             if (e.start in seenmodStart && e.end in seenmodEnd) {
                 return false;
             } else {
@@ -289,32 +328,32 @@ $('#addcirc').click(function(){
         console.log(exonList)
 
         // generate exonJSON
-        exonJSON = (function(){
+        exonJSON = (function () {
             var exons = []
-            for (i=0;i<exonList.length;i++) {
+            for (i = 0; i < exonList.length; i++) {
                 var exon = $.extend([], exonList[i])
                 exon.mod = []
-                for (t=0;t<modList.length;t++){
-                    if (modList[t].start >= exon.start && modList[t].end <= exon.end){
+                for (t = 0; t < modList.length; t++) {
+                    if (modList[t].start >= exon.start && modList[t].end <= exon.end) {
                         exon.mod.push(modList[t])
                     }
                 }
                 exons.push(exon)
-        }
+            }
             return exons
-    })()
+        })()
 
         console.log(exonJSON)
 
         // generate circJSON
-        
-        circJSON = (function(){
+
+        circJSON = (function () {
             var circs = []
-            for (i=0;i<circList.length;i++){
+            for (i = 0; i < circList.length; i++) {
                 var circ = circList[i]
                 circ.exon = []
-                for (t=0;t<exonJSON.length;t++){
-                    if (exonJSON[t].start >= circ.start && exonJSON[t].end <= circ.end){
+                for (t = 0; t < exonJSON.length; t++) {
+                    if (exonJSON[t].start >= circ.start && exonJSON[t].end <= circ.end) {
                         circ.exon.push(exonJSON[t])
                     }
                 }
@@ -326,41 +365,71 @@ $('#addcirc').click(function(){
         console.log(circJSON)
 
         // if click edit & delete
-        $("#delete" + circName).click(function(){
+        $("#delete" + circName).click(function () {
             $(this).parent().remove()
-            circList = circList.filter(function(i){if (i.name != circName){return i}})
+            circList = circList.filter(function (i) {
+                if (i.name != circName) {
+                    return i
+                }
+            })
 
-            let deleteCirc = circJSON.filter(function(i){if (i.name == circName){return i}})[0]
+            let deleteCirc = circJSON.filter(function (i) {
+                if (i.name == circName) {
+                    return i
+                }
+            })[0]
             console.log(deleteCirc)
-            let exon = (function(){var exon = [];for(i=0;i<deleteCirc.exon.length;i++){exon.push(deleteCirc.exon[i].name)} return exon })()
-            let mod = (function(){
-                    var mod = [];
-                    for(i=0;i<deleteCirc.exon.length;i++){
-                        mod.concat(deleteCirc.exon[i].mod)}
-                    return mod })()
+            let exon = (function () {
+                var exon = [];
+                for (i = 0; i < deleteCirc.exon.length; i++) {
+                    exon.push(deleteCirc.exon[i].name)
+                }
+                return exon
+            })()
+            let mod = (function () {
+                var mod = [];
+                for (i = 0; i < deleteCirc.exon.length; i++) {
+                    mod.concat(deleteCirc.exon[i].mod)
+                }
+                return mod
+            })()
             console.log("delete exon list:", exon)
-            exonList = exonList.filter(function(i){if (($.inArray(i.name, exon) === -1)){return i}})
+            exonList = exonList.filter(function (i) {
+                if (($.inArray(i.name, exon) === -1)) {
+                    return i
+                }
+            })
             console.log("After delete exonList: ", exonList)
-            let seenmodTypes = {}, seenmodStart = {}, seenmodEnd = {}
-            modList = modList.filter(function(e) {
-            if (e.type in seenmodTypes && e.start in seenmodStart && e.end in seenmodEnd) {
-                return false;
-            } else {
-                seenmodTypes[e.type] = true;
-                seenmodStart[e.start] = true;
-                seenmodEnd[e.end] = true;
-                return true;
-            }
-        })
+            let seenmodTypes = {},
+                seenmodStart = {},
+                seenmodEnd = {}
+            modList = modList.filter(function (e) {
+                if (e.type in seenmodTypes && e.start in seenmodStart && e.end in seenmodEnd) {
+                    return false;
+                } else {
+                    seenmodTypes[e.type] = true;
+                    seenmodStart[e.start] = true;
+                    seenmodEnd[e.end] = true;
+                    return true;
+                }
+            })
 
-            circJSON = circJSON.filter(function(i){if (i.name != circName){return i}})
+            circJSON = circJSON.filter(function (i) {
+                if (i.name != circName) {
+                    return i
+                }
+            })
 
             redraw()
         })
 
-        $("#edit" + circName).click(function(){
+        $("#edit" + circName).click(function () {
             $('#addcirc').text('Done')
-            editCirc = circJSON.filter(function(i){if (i.name == circName){return i}})[0]
+            editCirc = circJSON.filter(function (i) {
+                if (i.name == circName) {
+                    return i
+                }
+            })[0]
             console.log("editCirc: ", editCirc)
             $("#delete" + circName).click()
             console.log("Edit Status, after delete, exonList: ", exonList)
@@ -370,26 +439,26 @@ $('#addcirc').click(function(){
 
             console.log($('#circName').val())
             $('#exon div').siblings('div').slice(1).remove()
-            var modNum = 0, fNum = 0
-            for (i=0;i<editCirc.exon.length;i++) {
-                setExon = $('#exon div').siblings('div input').slice(i*3,i*3+3)
+            var modNum = 0,
+                fNum = 0
+            for (i = 0; i < editCirc.exon.length; i++) {
+                setExon = $('#exon div').siblings('div input').slice(i * 3, i * 3 + 3)
                 setExon[0].value = editCirc.exon[i].name
                 setExon[1].value = editCirc.exon[i].start
                 setExon[2].value = editCirc.exon[i].end
                 $('#exonAdd').click()
 
-                for (t=0;t<editCirc.exon[i].mod.length;t++){
-                    console.log("modName: ", editCirc.exon[i].mod[t].type, " Type: ", typeof(editCirc.exon[i].mod[t].start))
-                    if ($.inArray(editCirc.exon[i].mod[t].type, ['m6A', 'm1A', 'm1C', 'SNP']) !== -1){
+                for (t = 0; t < editCirc.exon[i].mod.length; t++) {
+                    console.log("modName: ", editCirc.exon[i].mod[t].type, " Type: ", typeof (editCirc.exon[i].mod[t].start))
+                    if ($.inArray(editCirc.exon[i].mod[t].type, ['m6A', 'm1A', 'm1C', 'SNP']) !== -1) {
                         $('#mod div').children('select')[modNum].value = editCirc.exon[i].mod[t].type
                         $('#mod div').children('input')[modNum].value = editCirc.exon[i].mod[t].start
                         $('#modAdd').click()
                         modNum += 1
-                    }
-                    else if ($.inArray(editCirc.exon[i].mod[t].type, ['MRE', 'ORF']) !== -1){
+                    } else if ($.inArray(editCirc.exon[i].mod[t].type, ['MRE', 'ORF']) !== -1) {
                         $('#f div').children('select')[fNum].value = editCirc.exon[i].mod[t].type
-                        $('#f div').children('input')[fNum*2].value = editCirc.exon[i].mod[t].start
-                        $('#f div').children('input')[fNum*2+1].value = editCirc.exon[i].mod[t].end
+                        $('#f div').children('input')[fNum * 2].value = editCirc.exon[i].mod[t].start
+                        $('#f div').children('input')[fNum * 2 + 1].value = editCirc.exon[i].mod[t].end
                         $('#fAdd').click()
                         fNum += 1
                     }
@@ -404,46 +473,51 @@ $('#addcirc').click(function(){
 
 
         // when finish click
-            // reset all the blank
+        // reset all the blank
         $('#exon div').siblings('div').slice(1).remove()
-        $('#exon div').children('input').each(function(i,e){e.value = ""})
+        $('#exon div').children('input').each(function (i, e) {
+            e.value = ""
+        })
 
         $('#mod div').siblings('div').slice(1).remove()
-        $('#mod div').children('input').each(function(i,e){e.value = ""})
+        $('#mod div').children('input').each(function (i, e) {
+            e.value = ""
+        })
         $('#mod div').children('select').val("Type")
 
         $('#f div').siblings('div').slice(1).remove()
-        $('#f div').children('input').each(function(i,e){e.value = ""})
+        $('#f div').children('input').each(function (i, e) {
+            e.value = ""
+        })
         $('#f div').children('select').val("Type")
 
-        $('#circInput').children('input').each(function(i,e){e.value = ""})
+        $('#circInput').children('input').each(function (i, e) {
+            e.value = ""
+        })
 
         redraw()
-            }
-    else if ( (ifCircFilled && ifExonFilled && ifModFilled && ifFFilled) == false ) {
+    } else if ((ifCircFilled && ifExonFilled && ifModFilled && ifFFilled) == false) {
         $('#addcirc').errorAfter('Incomplete input')
-    }
-    else if ( (ifCircSE && ifExonSE && ifFSE) == false ) {
+    } else if ((ifCircSE && ifExonSE && ifFSE) == false) {
         $('#addcirc').errorAfter('Error: start > end')
-    }
-    else if ( (!ifOverlap) == false ) {
+    } else if ((!ifOverlap) == false) {
         $('#addcirc').errorAfter('Error: Exon Overlap')
-    }
-    else if ( (ifExonInCirc && ifModInCirc && ifFInCirc) == false ) {
+    } else if ((ifExonInCirc && ifModInCirc && ifFInCirc) == false) {
         $('#addcirc').errorAfter('Error: Out of range')
     }
-        
+
 })
 
 var geneList = []
 var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2", "#FF881D", '#e30067', '#924900', '#ab9c00',
-'#ccd0d2', '#075800', '#5e0094', '#f28600', '#a327ea', '#ff8cc6', '#d60000', '#fff97a', '#ff0081', '#8aa0ae',
-'#87d1ff', '#7f00b8', '#2ab3e7', '#bd0056', '#0c9200', '#ffe85b', '#d27400', '#3f2e27', '#846a5b', '#004ac7',
-'#490063', '#ff5757', '#007aea', '#88cc66', '#ff4848', '#73aeff', '#ae5800', '#c1b900', '#c36cff', '#39b03b',
-'#244c66', '#9c0000', '#6d0000', '#877400', '#002065', '#000cae', '#ecd600', '#ff44a2', '#ffa254', '#ff0000',
-'#1a6f00', '#ffa12c']
+    '#ccd0d2', '#075800', '#5e0094', '#f28600', '#a327ea', '#ff8cc6', '#d60000', '#fff97a', '#ff0081', '#8aa0ae',
+    '#87d1ff', '#7f00b8', '#2ab3e7', '#bd0056', '#0c9200', '#ffe85b', '#d27400', '#3f2e27', '#846a5b', '#004ac7',
+    '#490063', '#ff5757', '#007aea', '#88cc66', '#ff4848', '#73aeff', '#ae5800', '#c1b900', '#c36cff', '#39b03b',
+    '#244c66', '#9c0000', '#6d0000', '#877400', '#002065', '#000cae', '#ecd600', '#ff44a2', '#ffa254', '#ff0000',
+    '#1a6f00', '#ffa12c'
+]
 
-$('#addgene').click(function(){
+$('#addgene').click(function () {
     var geneName = $('#geneName').val(),
         geneStart = $('#geneStart').val(),
         geneEnd = $('#geneEnd').val()
@@ -452,40 +526,43 @@ $('#addgene').click(function(){
         if ($('#addgene').text() == 'Done') {
             $('#addgene').text('Add Gene')
         }
-        geneList.push({'Name': geneName, 'start': parseInt(geneStart), 'end': parseInt(geneEnd)})
+        geneList.push({
+            'Name': geneName,
+            'start': parseInt(geneStart),
+            'end': parseInt(geneEnd)
+        })
         $('#geneName').val("")
         $('#geneStart').val("")
         $('#geneEnd').val("")
-        $('#addgene').parent().parent().after("<div><p class='d-inline-block'>Gene: " + "<b>" + geneName + "   " + geneStart + " - " + geneEnd + "</b>" + "</p>\n" + 
-        "<p style='cursor: pointer;' class='ml-1 d-inline-block' id='delete" + geneName + "'><u>Delete</u></p>"+
-        "<p style='cursor: pointer;' class='ml-1 d-inline-block' id='edit" + geneName + "'><u>Edit</u></p></div>")
-        $('#edit' + geneName).click(function(){
+        $('#addgene').parent().parent().after("<div><p class='d-inline-block'>Gene: " + "<b>" + geneName + "   " + geneStart + " - " + geneEnd + "</b>" + "</p>\n" +
+            "<p style='cursor: pointer;' class='ml-1 d-inline-block' id='delete" + geneName + "'><u>Delete</u></p>" +
+            "<p style='cursor: pointer;' class='ml-1 d-inline-block' id='edit" + geneName + "'><u>Edit</u></p></div>")
+        $('#edit' + geneName).click(function () {
             if ($('#addgene').text() != 'Done') {
                 $('#addgene').text('Done')
                 $('#geneName').val(geneName)
                 $('#geneStart').val(geneStart)
                 $('#geneEnd').val(geneEnd)
                 $('#edit' + geneName).parent().remove()
-                geneList = geneList.filter(function(i){
+                geneList = geneList.filter(function (i) {
                     if (i.Name != geneName) {
                         return i
                     }
                 })
             }
         })
-        $('#delete' + geneName).click(function(){
+        $('#delete' + geneName).click(function () {
             $(this).parent().remove()
-            geneList = geneList.filter(function(i){
+            geneList = geneList.filter(function (i) {
                 if (i.Name != geneName) {
                     return i
                 }
             })
             redraw()
         })
-    }
-    else {
+    } else {
         $('#addgene').after("<span id='error' class='ml-3'></span>")
-        $('#error').html("Missing Info").addClass('text-danger').show().fadeOut(1000, function(){
+        $('#error').html("Missing Info").addClass('text-danger').show().fadeOut(1000, function () {
             $('#error').remove()
         })
     }
@@ -495,108 +572,107 @@ $('#addgene').click(function(){
 
 })
 
-function redraw(){
-    if (circList.length == 0 && geneList.length == 0){
+function redraw() {
+    if (circList.length == 0 && geneList.length == 0) {
         svg.clear()
         var background = svg.paper.rect(0, 0, $("#svg").attr('width'), $("#svg").attr('height')).attr({
             fill: "#fff",
             stroke: "none",
             //strokeWidth: 1
         })
-    }
-    else{
-    svg.clear()
-    var background = svg.paper.rect(0, 0, $("#svg").attr('width'), $("#svg").attr('height')).attr({
-        fill: "#fff",
-        stroke: "none",
-        //strokeWidth: 1
-    })
-    var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
-        stroke: "#000",
-        strokeWidth: 1
-    });
+    } else {
+        svg.clear()
+        var background = svg.paper.rect(0, 0, $("#svg").attr('width'), $("#svg").attr('height')).attr({
+            fill: "#fff",
+            stroke: "none",
+            //strokeWidth: 1
+        })
+        var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
+            stroke: "#000",
+            strokeWidth: 1
+        });
 
-    var scStart, scEnd, drawArc = [], exons = [], currentStat
+        var scStart, scEnd, drawArc = [],
+            exons = [],
+            currentStat
 
-    if (exonList.length == 0 || circList.length == 0) {
-        gmm = getMinMax(geneList)
-        scStart = gmm[0]
-        scEnd = gmm[1]
-    }
-    else if (geneList.length == 0) {
-        cmm = getMinMax(circList)
-        emm = getMinMax(exonList)
-        mm = cmm.concat(emm)
-        scStart = Math.min.apply(null,mm)
-        scEnd = Math.max.apply(null,mm)
-    }
-    else {
-        cmm = getMinMax(circList)
-        gmm = getMinMax(geneList)
-        emm = getMinMax(exonList)
-        mm = gmm.concat(emm).concat(cmm)
-        scStart = Math.min.apply(null,mm)
-        scEnd = Math.max.apply(null,mm)
-    }
-
-    console.log("start: " + scStart + " end: " + scEnd)
-
-    range = scEnd - scStart
-    var colorIndex = 0
-    for (i=0;i<geneList.length;i++) {
-        console.log(geneList[i])
-        x = 50 + 700 * (geneList[i].start - scStart) / range
-        end = 50 + 700 * (geneList[i].end - scStart) / range
-        len = end-x
-        console.log(x, end, len)
-        gene_block(x, len, colorList[colorIndex], geneList[i].name)
-        colorIndex += 1
-    }
-
-    console.log(exonJSON)
-
-    for (r = 0; r < exonJSON.length; r++) {
-        scaleStart = 50 + 700 * (exonJSON[r].start - scStart) / range
-        scaleEnd = 50 + 700 * (exonJSON[r].end - scStart) / range
-        scaleLen = scaleEnd - scaleStart
-        //console.log("scale start: ", scaleStart, ", scale end: ", scaleEnd, ", scale len: ", scaleLen)
-        colorIndex += 1
-        if (colorIndex < 50) {
-            //console.log(exonJSON[i].name)
-            exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[r].name)
-            exons[r] = {
-                "start": exonJSON[r].start,
-                "end": exonJSON[r].end,
-                "color": colorList[colorIndex],
-                "mod": exonJSON[r].mod
-            }
-            console.log(exons[r])
+        if (exonList.length == 0 || circList.length == 0) {
+            gmm = getMinMax(geneList)
+            scStart = gmm[0]
+            scEnd = gmm[1]
+        } else if (geneList.length == 0) {
+            cmm = getMinMax(circList)
+            emm = getMinMax(exonList)
+            mm = cmm.concat(emm)
+            scStart = Math.min.apply(null, mm)
+            scEnd = Math.max.apply(null, mm)
         } else {
-            colorIndex = 0
-            exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[r].name)
+            cmm = getMinMax(circList)
+            gmm = getMinMax(geneList)
+            emm = getMinMax(exonList)
+            mm = gmm.concat(emm).concat(cmm)
+            scStart = Math.min.apply(null, mm)
+            scEnd = Math.max.apply(null, mm)
         }
-    }
 
-    console.log(exons)
+        console.log("start: " + scStart + " end: " + scEnd)
 
-    for (i=0;i<circList.length;i++){
-        s = circList[i].start
-        e = circList[i].end
-        drawArc[i] = []
-        for (t=0;t<exons.length;t++){
-            if (exons[t].start >= s && exons[t].end <= e) {
-                drawArc[i].push(exons[t])
+        range = scEnd - scStart
+        var colorIndex = 0
+        for (i = 0; i < geneList.length; i++) {
+            console.log(geneList[i])
+            x = 50 + 700 * (geneList[i].start - scStart) / range
+            end = 50 + 700 * (geneList[i].end - scStart) / range
+            len = end - x
+            console.log(x, end, len)
+            gene_block(x, len, colorList[colorIndex], geneList[i].name)
+            colorIndex += 1
+        }
+
+        console.log(exonJSON)
+
+        for (r = 0; r < exonJSON.length; r++) {
+            scaleStart = 50 + 700 * (exonJSON[r].start - scStart) / range
+            scaleEnd = 50 + 700 * (exonJSON[r].end - scStart) / range
+            scaleLen = scaleEnd - scaleStart
+            //console.log("scale start: ", scaleStart, ", scale end: ", scaleEnd, ", scale len: ", scaleLen)
+            colorIndex += 1
+            if (colorIndex < 50) {
+                //console.log(exonJSON[i].name)
+                exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[r].name)
+                exons[r] = {
+                    "start": exonJSON[r].start,
+                    "end": exonJSON[r].end,
+                    "color": colorList[colorIndex],
+                    "mod": exonJSON[r].mod
+                }
+                console.log(exons[r])
+            } else {
+                colorIndex = 0
+                exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[r].name)
             }
         }
+
+        console.log(exons)
+
+        for (i = 0; i < circList.length; i++) {
+            s = circList[i].start
+            e = circList[i].end
+            drawArc[i] = []
+            for (t = 0; t < exons.length; t++) {
+                if (exons[t].start >= s && exons[t].end <= e) {
+                    drawArc[i].push(exons[t])
+                }
+            }
+        }
+        console.log(drawArc)
+        for (u = 0; u < circList.length; u++) {
+            x = 50 + 700 * (circList[u].start - scStart) / range
+            end = 50 + 700 * (circList[u].end - scStart) / range
+            console.log(drawArc[u])
+            arc(x, end, drawArc[u])
+        }
     }
-    console.log(drawArc)
-    for (u=0;u<circList.length;u++){
-        x = 50 + 700 * (circList[u].start - scStart) / range
-        end = 50 + 700 * (circList[u].end - scStart) / range
-        console.log(drawArc[u])
-        arc(x, end, drawArc[u])
-    }
-}
 
 }
 
@@ -621,7 +697,7 @@ $("#geneName, .exonName, #circName").keypress(function (e) {
 //----------------------------------------- Functions For Drawing --------------------------------------
 
 // draw an junction block
-function junction_block(x, color){
+function junction_block(x, color) {
     var junction_block = svg.paper.rect(x, 445, 2, 10).attr({
         fill: color,
         stroke: 'none',
@@ -631,7 +707,7 @@ function junction_block(x, color){
 }
 
 // draw an exon
-function exon_block(x, len, color, name){
+function exon_block(x, len, color, name) {
 
     var exon_name
     var display = false
@@ -640,38 +716,40 @@ function exon_block(x, len, color, name){
         fill: color,
         stroke: 'none',
         cursor: 'pointer'
-    }).click(function(){
+    }).click(function () {
         if (display == true) {
             exon_name.remove();
-            display = false ;}
-        else if (display == false) {
+            display = false;
+        } else if (display == false) {
             exon_name = svg.paper.text(x, 465, name).attr({
-                'font-family': 'arial',
-                'font-size': 10,
-                'cursor': 'pointer'})
-                .drag(); 
-            display = true;}
-        }).mouseover(function(){
-            Snap.animate(0, 1.5, function (val) {
-                exon_block.attr({
-                    stroke: '#33A6B8',
-                    strokeWidth: val,
-                });
-            }, 200);
-        }).mouseout(function(){
-            Snap.animate(1.5, 0, function (val) {
-                exon_block.attr({
-                    stroke: '#33A6B8',
-                    strokeWidth: val,
-                });
-            }, 200);
-        })
-    
+                    'font-family': 'arial',
+                    'font-size': 10,
+                    'cursor': 'pointer'
+                })
+                .drag();
+            display = true;
+        }
+    }).mouseover(function () {
+        Snap.animate(0, 1.5, function (val) {
+            exon_block.attr({
+                stroke: '#33A6B8',
+                strokeWidth: val,
+            });
+        }, 200);
+    }).mouseout(function () {
+        Snap.animate(1.5, 0, function (val) {
+            exon_block.attr({
+                stroke: '#33A6B8',
+                strokeWidth: val,
+            });
+        }, 200);
+    })
+
     return exon_block
 }
 
 // draw a gene
-function gene_block(x, len, color, name){
+function gene_block(x, len, color, name) {
 
     var gene_name
     var display = false
@@ -680,63 +758,64 @@ function gene_block(x, len, color, name){
         fill: color,
         stroke: 'none',
         cursor: 'pointer'
-    }).click(function(){
+    }).click(function () {
         if (display == true) {
             gene_name.remove();
-            display = false ;}
-        else if (display == false) {
+            display = false;
+        } else if (display == false) {
             gene_name = svg.paper.text(x, 465, name).attr({
-                'font-family': 'arial',
-                'font-size': 10,
-                'cursor': 'pointer'})
+                    'font-family': 'arial',
+                    'font-size': 10,
+                    'cursor': 'pointer'
+                })
                 .drag();
-            display = true;}
-        }).mouseover(function(){
-            Snap.animate(0, 1.5, function (val) {
-                gene_block.attr({
-                    stroke: '#33A6B8',
-                    strokeWidth: val,
-                });
-            }, 200);
-        }).mouseout(function(){
-            Snap.animate(1.5, 0, function (val) {
-                gene_block.attr({
-                    stroke: '#33A6B8',
-                    strokeWidth: val,
-                });
-            }, 200);
-        })
-    
+            display = true;
+        }
+    }).mouseover(function () {
+        Snap.animate(0, 1.5, function (val) {
+            gene_block.attr({
+                stroke: '#33A6B8',
+                strokeWidth: val,
+            });
+        }, 200);
+    }).mouseout(function () {
+        Snap.animate(1.5, 0, function (val) {
+            gene_block.attr({
+                stroke: '#33A6B8',
+                strokeWidth: val,
+            });
+        }, 200);
+    })
+
     return gene_block
 }
 
 // calculate the range of an array
 function getRange(arr) {
     var range = 0
-    for (var i=0 ; i<arr.length ; i++) {
-        range += parseInt(arr[i].end) - parseInt(arr[i].start) 
+    for (var i = 0; i < arr.length; i++) {
+        range += parseInt(arr[i].end) - parseInt(arr[i].start)
     }
     return range;
 }
 
 // calculate the min and max value of an array
-function getMinMax(exonJSON){
-    if (exonJSON.length == 0){
+function getMinMax(exonJSON) {
+    if (exonJSON.length == 0) {
         return null
-    }
-    else {
-    var arr = []
-    for (i=0 ; i<exonJSON.length ; i++) {
-        arr.push(exonJSON[i].start)
-        arr.push(exonJSON[i].end)
-    }
+    } else {
+        var arr = []
+        for (i = 0; i < exonJSON.length; i++) {
+            arr.push(exonJSON[i].start)
+            arr.push(exonJSON[i].end)
+        }
 
-    max = Math.max.apply(null, arr)
-    min = Math.min.apply(null, arr)
+        max = Math.max.apply(null, arr)
+        min = Math.min.apply(null, arr)
 
-    mm = [min, max]
+        mm = [min, max]
 
-    return mm
+        return mm
     }
 }
 
@@ -857,7 +936,7 @@ function textCenter(centerX, centerY, text, fontSize, color) {
     textW = cText.getBBox().w
     textH = cText.getBBox().h
     cText.remove()
-    cText = svg.paper.text(centerX-textW/2, centerY+textH/2, text).attr({
+    cText = svg.paper.text(centerX - textW / 2, centerY + textH / 2, text).attr({
         "font-family": "arial",
         "font-size": fontSize,
         fill: color
@@ -869,70 +948,80 @@ function textCenter(centerX, centerY, text, fontSize, color) {
 // Adding animation for epi-tag on circRNA
 function epiAnimate(epi, name, color, centerX, centerY, exonJSON) {
     var c = epi.getBBox()
-    epi.mouseover(function(){
-        epi.animate({
-            transform: 's1.5,' + c.cx + ',' + c.cy
-        }, 200)
-        text = textCenter(centerX, centerY, name, 15, color)})
-    .mouseout(function(){
-        epi.animate({
-            transform: 's1,' + c.cx + ',' + c.cy
-        }, 200)
-        text.remove()})
-    .click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+    epi.mouseover(function () {
+            epi.animate({
+                transform: 's1.5,' + c.cx + ',' + c.cy
+            }, 200)
+            text = textCenter(centerX, centerY, name, 15, color)
+        })
+        .mouseout(function () {
+            epi.animate({
+                transform: 's1,' + c.cx + ',' + c.cy
+            }, 200)
+            text.remove()
+        })
+        .click(function () {
+            openNewTab(exonJSON[i]['mod'][t].link)
+        })
 }
 
 // Draw circRNA when clicking the arc
-function drawCircRNA(exonJSON){
-    var modCirc = [], circle = [], realStart = getMinMax(exonJSON)[0], realEnd = getMinMax(exonJSON)[1]
-    var startAngle = 180, endAngle = 180, centerX = 400, centerY = 140
+function drawCircRNA(exonJSON) {
+    var modCirc = [],
+        circle = [],
+        realStart = getMinMax(exonJSON)[0],
+        realEnd = getMinMax(exonJSON)[1]
+    var startAngle = 180,
+        endAngle = 180,
+        centerX = 400,
+        centerY = 140
     var range = getRange(exonJSON),
         modType = []
 
     // circRNA background
-    var arcBackGround = svg.paper.rect(0,0,800,250).attr({
+    var arcBackGround = svg.paper.rect(0, 0, 800, 250).attr({
         stroke: "none",
         fill: "#fff"
     });
 
     // circRNA ID
     circText = "chr" + $('#chr').val() + ": " + realStart + " - " + realEnd
-    circName = textCenter(centerX, centerY-110, circText, 15, "#000")
+    circName = textCenter(centerX, centerY - 110, circText, 15, "#000")
 
     // draw epi mod of circRNA
-    for (i=0;i<exonJSON.length;i++) {
+    for (i = 0; i < exonJSON.length; i++) {
         circle[i] = 'circExon' + i;
         modCirc[i] = 'modCirc' + i;
         modCirc[i] = []
-        endAngle += 360*(exonJSON[i].end - exonJSON[i].start)/range
+        endAngle += 360 * (exonJSON[i].end - exonJSON[i].start) / range
         console.log(centerX, centerY, startAngle, endAngle)
-        for (t=0;t<exonJSON[i]['mod'].length;t++) {
+        for (t = 0; t < exonJSON[i]['mod'].length; t++) {
             if ($.inArray(exonJSON[i]['mod'][t]['type'], modType) === -1) {
                 modType.push(exonJSON[i]['mod'][t]['type'])
             }
             modCirc[i][t] += "mod" + t;
-            modStartAngle = startAngle + 360*(exonJSON[i]['mod'][t].start - exonJSON[i].start)/range
-            modEndAngle = startAngle + 360*(exonJSON[i]['mod'][t].end - exonJSON[i].start)/range
+            modStartAngle = startAngle + 360 * (exonJSON[i]['mod'][t].start - exonJSON[i].start) / range
+            modEndAngle = startAngle + 360 * (exonJSON[i]['mod'][t].end - exonJSON[i].start) / range
             if (exonJSON[i]['mod'][t].type == 'm6A') {
-                var m6A = triTagOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                var m6A = triTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
                 epiAnimate(m6A, 'm6A', '#E98B2A', centerX, centerY, exonJSON)
                 modCirc[i][t] = m6A
-                }
+            }
             if (exonJSON[i]['mod'][t].type == 'm1C') {
-                var m1C = squareTagOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                var m1C = squareTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
                 epiAnimate(m1C, 'm1C', '#E16B8C', centerX, centerY, exonJSON)
                 modCirc[i][t] = m1C
             }
             if (exonJSON[i]['mod'][t].type == 'm1A') {
-                var m1A = circleTagOnCircle(centerX, centerY, 85, 180+modStartAngle, '#64363C')
+                var m1A = circleTagOnCircle(centerX, centerY, 85, 180 + modStartAngle, '#64363C')
                 epiAnimate(m1A, 'm1A', '#64363C', centerX, centerY, exonJSON)
                 modCirc[i][t] = m1A
-                }
+            }
             if (exonJSON[i]['mod'][t].type == 'SNP') {
-                var SNP = arrowOnCircle(centerX, centerY, 85, 180+modStartAngle)
+                var SNP = arrowOnCircle(centerX, centerY, 85, 180 + modStartAngle)
                 epiAnimate(SNP, 'SNP', '#000', centerX, centerY, exonJSON)
                 modCirc[i][t] = SNP
-                }
+            }
             if (exonJSON[i]['mod'][t].type == 'MRE') {
                 modPath = describeArc(centerX, centerY, 70, modStartAngle, modEndAngle)
                 var MRE = svg.paper.path(modPath).attr({
@@ -940,7 +1029,7 @@ function drawCircRNA(exonJSON){
                     strokeWidth: 5,
                     fill: 'none',
                     "cursor": "pointer"
-                }).mouseover(function(){
+                }).mouseover(function () {
                     Snap.animate(5, 6.5, function (val) {
                         MRE.attr({
                             stroke: '#6D2E5B',
@@ -949,7 +1038,7 @@ function drawCircRNA(exonJSON){
                         });
                     }, 200);
                     text = textCenter(centerX, centerY, "MRE", 15, '#6D2E5B')
-                }).mouseout(function(){
+                }).mouseout(function () {
                     Snap.animate(6.5, 5, function (val) {
                         MRE.attr({
                             stroke: '#6D2E5B',
@@ -958,7 +1047,9 @@ function drawCircRNA(exonJSON){
                         });
                     }, 200);
                     text.remove()
-                }).click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                }).click(function () {
+                    openNewTab(exonJSON[i]['mod'][t].link)
+                })
                 modCirc[i][t] = MRE
             }
             if (exonJSON[i]['mod'][t].type == 'ORF') {
@@ -968,7 +1059,7 @@ function drawCircRNA(exonJSON){
                     strokeWidth: 5,
                     fill: 'none',
                     "cursor": "pointer"
-                }).mouseover(function(){
+                }).mouseover(function () {
                     Snap.animate(5, 6.5, function (val) {
                         ORF.attr({
                             stroke: '#516E41',
@@ -977,7 +1068,7 @@ function drawCircRNA(exonJSON){
                         });
                     }, 200);
                     text = text = textCenter(centerX, centerY, "ORF", 15, '#516E41')
-                }).mouseout(function(){
+                }).mouseout(function () {
                     Snap.animate(6.5, 5, function (val) {
                         ORF.attr({
                             stroke: '#516E41',
@@ -986,10 +1077,12 @@ function drawCircRNA(exonJSON){
                         });
                     }, 200);
                     text.remove()
-                }).click(function(){openNewTab(exonJSON[i]['mod'][t].link)})
+                }).click(function () {
+                    openNewTab(exonJSON[i]['mod'][t].link)
+                })
                 modCirc[i][t] = ORF
             }
-        //console.log(i, t, modCirc[i][t])
+            //console.log(i, t, modCirc[i][t])
         }
         if (endAngle - startAngle == 360) {
             circle[i] = svg.paper.circle(centerX, centerY, 80).attr({
@@ -997,24 +1090,25 @@ function drawCircRNA(exonJSON){
                 strokeWidth: 10,
                 fill: 'none'
             })
+        } else {
+            p = describeArc(centerX, centerY, 80, startAngle, endAngle)
+            startAngle = endAngle
+            circle[i] = svg.paper.path(p).attr({
+                stroke: exonJSON[i].color,
+                strokeWidth: 10,
+                fill: 'none'
+            })
         }
-        else {
-        p = describeArc(centerX, centerY, 80, startAngle, endAngle)
-        startAngle = endAngle
-        circle[i] = svg.paper.path(p).attr({
-            stroke: exonJSON[i].color,
-            strokeWidth: 10,
-            fill: 'none'
-        })}
     }
 
-    var juncX = centerX-2, juncY = centerY+75
-    junction_point1 = svg.paper.rect(juncX-2.3, juncY, 4, 10).attr({
+    var juncX = centerX - 2,
+        juncY = centerY + 75
+    junction_point1 = svg.paper.rect(juncX - 2.3, juncY, 4, 10).attr({
         fill: "#00AA90",
         stroke: "#000",
         strokeWidth: 0.2,
     })
-    junction_point2 = svg.paper.rect(juncX+2.3, juncY, 4, 10).attr({
+    junction_point2 = svg.paper.rect(juncX + 2.3, juncY, 4, 10).attr({
         fill: "#D0104C",
         stroke: "#000",
         strokeWidth: 0.2
@@ -1028,18 +1122,18 @@ function drawCircRNA(exonJSON){
     var group
     if (legend == undefined) {
         group = svg.group(arcBackGround, circName)
-    }
-    else {
+    } else {
         group = svg.group(arcBackGround, circName, legend)
     }
 
-    for (i=0;i<modCirc.length;i++) {
-        for (t=0;t<modCirc[i].length;t++){
-        var cx = group
-        group = svg.group(cx, modCirc[i][t])
-    }}
+    for (i = 0; i < modCirc.length; i++) {
+        for (t = 0; t < modCirc[i].length; t++) {
+            var cx = group
+            group = svg.group(cx, modCirc[i][t])
+        }
+    }
 
-    for (i=0;i<circle.length;i++) {
+    for (i = 0; i < circle.length; i++) {
         var cc = group
         group = svg.group(cc, circle[i])
     }
@@ -1048,41 +1142,40 @@ function drawCircRNA(exonJSON){
 }
 
 // CORE FUNCTION! draw the arc and its circRNA
-function arc(start, end, exonJSON){
+function arc(start, end, exonJSON) {
     console.log("Call Functino arc")
     console.log("print exonJSON", exonJSON)
-    var rx = (end-start)/2,
-        ry = rx/2,
+    var rx = (end - start) / 2,
+        ry = rx / 2,
         startBlock = junction_block(start, "#00AA90"),
         endBlock = junction_block(end, "#D0104C"),
         realStart = getMinMax(exonJSON)[0],
         realEnd = getMinMax(exonJSON)[1],
         circ
 
-    var path = "M" + (start+1) + " 443A" +  rx + " " + ry + " 0 0 1 " + (end+1) + " 443"
+    var path = "M" + (start + 1) + " 443A" + rx + " " + ry + " 0 0 1 " + (end + 1) + " 443"
     var c = svg.paper.path(path).attr({
         stroke: "#000",
         strokeWidth: 1,
-        fill:'none',
+        fill: 'none',
         cursor: 'pointer'
     });
     console.log('Drawing Arc: ' + c)
 
-    c.click(function(){
+    c.click(function () {
         var x = svg.select("g")
-            if (x != null) {
-                x.remove()
-            }
+        if (x != null) {
+            x.remove()
+        }
         circ = drawCircRNA(exonJSON)
         id = "circ" + start + end
         if (id == window.currentStat) {
             circ.remove()
             window.currentStat = null
-        }
-        else {
+        } else {
             window.currentStat = id
         }
-    }).mouseover(function(){
+    }).mouseover(function () {
         Snap.animate(1, 6, function (val) {
             c.attr({
                 stroke: "#33A6B8",
@@ -1100,17 +1193,19 @@ function arc(start, end, exonJSON){
         startText = textCenter(start, 470, realStart, 10, '#000')
 
         endText = textCenter(end, 470, realEnd, 10, '#000')
-    }).mouseout(function(){
+    }).mouseout(function () {
         Snap.animate(6, 1, function (val) {
             c.attr({
                 stroke: "#33A6B8",
                 strokeWidth: val,
             });
-        }, 200, function(){c.attr({
+        }, 200, function () {
+            c.attr({
                 stroke: "#000",
                 strokeWidth: 1,
-                fill:'none',
-            });})
+                fill: 'none',
+            });
+        })
         startBlock.attr({
             fill: "#00AA90",
             stroke: "none"
@@ -1128,15 +1223,15 @@ function arc(start, end, exonJSON){
 // draw an sector
 // from an answer in stackflow
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-    var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
-  
-    return {
-      x: centerX + (radius * Math.cos(angleInRadians)),
-      y: centerY + (radius * Math.sin(angleInRadians))
-    };
-  }
+    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
 
-function describeArc(x, y, radius, startAngle, endAngle){
+    return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians))
+    };
+}
+
+function describeArc(x, y, radius, startAngle, endAngle) {
 
     var start = polarToCartesian(x, y, radius, endAngle);
     var end = polarToCartesian(x, y, radius, startAngle);
@@ -1144,50 +1239,52 @@ function describeArc(x, y, radius, startAngle, endAngle){
     var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
 
     var d = [
-        "M", start.x, start.y, 
+        "M", start.x, start.y,
         "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
     ].join(" ");
 
-    return d;       
+    return d;
 }
 
-function backSplicing(exonJSON, arcJSON){
+function backSplicing(exonJSON, arcJSON) {
     var exonList = []
     var mm = getMinMax(exonJSON)
     var range = mm[1] - mm[0]
     var colorIndex = 0
-    for (i=0;i<exonJSON.length;i++){
-        scaleStart = 50+700*(exonJSON[i].start-mm[0])/range
-        scaleEnd = 50+700*(exonJSON[i].end-mm[0])/range
+    for (i = 0; i < exonJSON.length; i++) {
+        scaleStart = 50 + 700 * (exonJSON[i].start - mm[0]) / range
+        scaleEnd = 50 + 700 * (exonJSON[i].end - mm[0]) / range
         scaleLen = scaleEnd - scaleStart
         if (exonJSON[i].type == "exon") {
-            if (colorIndex<7) {
+            if (colorIndex < 7) {
                 exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-                exonList[i] = {"chr": parseInt($('#chrSelector').val()),
-                                "start": exonJSON[i].start,
-                                "end": exonJSON[i].end,
-                                "circid": "chr" + parseInt($('#chrSelector').val()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
-                                "color": colorList[colorIndex],
-                                "mod": exonJSON[i].mod,
-                                "source": exonJSON[i].source,
-                                "detail": exonJSON[i].detail}
+                exonList[i] = {
+                    "chr": parseInt($('#chrSelector').val()),
+                    "start": exonJSON[i].start,
+                    "end": exonJSON[i].end,
+                    "circid": "chr" + parseInt($('#chrSelector').val()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
+                    "color": colorList[colorIndex],
+                    "mod": exonJSON[i].mod,
+                    "source": exonJSON[i].source,
+                    "detail": exonJSON[i].detail
+                }
                 colorIndex += 1
-            }
-            else {
+            } else {
                 colorIndex = 0
                 exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-                exonList[i] = {"chr": parseInt($('#chrSelector').val()),
-                                "start": exonJSON[i].start,
-                                "end": exonJSON[i].end,
-                                "circid": "chr" + parseInt($('#chrSelector').val()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
-                                "color": colorList[colorIndex],
-                                "mod": exonJSON[i].mod,
-                                "source": exonJSON[i].source,
-                                "detail": exonJSON[i].detail}
+                exonList[i] = {
+                    "chr": parseInt($('#chrSelector').val()),
+                    "start": exonJSON[i].start,
+                    "end": exonJSON[i].end,
+                    "circid": "chr" + parseInt($('#chrSelector').val()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
+                    "color": colorList[colorIndex],
+                    "mod": exonJSON[i].mod,
+                    "source": exonJSON[i].source,
+                    "detail": exonJSON[i].detail
+                }
                 colorIndex += 1
             }
-        }
-        else if (exonJSON[i].type == "gene") {
+        } else if (exonJSON[i].type == "gene") {
             gene_block(scaleStart, scaleLen, geneColor[geneColorIndex], exonJSON[i].name)
         }
 
@@ -1195,15 +1292,14 @@ function backSplicing(exonJSON, arcJSON){
 
     console.log("arc num: ", arcJSON.length)
 
-    for (i=0;i<arcJSON.length;i++) {
+    for (i = 0; i < arcJSON.length; i++) {
         arcStart = arcJSON[i].start
         arcEnd = arcJSON[i].end
         console.log("exonlist len: ", exonList.length)
-        for (t=0;t<exonList.length;t++) {
+        for (t = 0; t < exonList.length; t++) {
             if (exonList[t].start >= arcStart && exonList[t].end <= arcEnd) {
                 drawArc.push(exonList[t])
-            }
-            else {
+            } else {
                 x = 1
             }
         }
@@ -1211,47 +1307,47 @@ function backSplicing(exonJSON, arcJSON){
 
     console.log(drawArc)
 
-    for (i=0;i<arcJSON.length;i++) {
-        scaleArcStart = 50+700*(arcStart-mm[0])/range
-        scaleArcEnd = 50+700*(arcEnd-mm[0])/range
+    for (i = 0; i < arcJSON.length; i++) {
+        scaleArcStart = 50 + 700 * (arcStart - mm[0]) / range
+        scaleArcEnd = 50 + 700 * (arcEnd - mm[0]) / range
         console.log(1)
         arc(scaleArcStart, scaleArcEnd, drawArc)
     }
 
     return drawArc
-}; 
+};
 
 // get the cordinate triangle around circle
 function triCord(centerX, centerY, r, triDegree, triHeight, triType) {
-    rad_triDegree = (triDegree-270)*Math.PI/180
-    side = Math.sqrt((r + triHeight)**2 + triHeight**2)
-    rad_deviateDegree = Math.atan(Math.sqrt(triType)*triHeight/side)
+    rad_triDegree = (triDegree - 270) * Math.PI / 180
+    side = Math.sqrt((r + triHeight) ** 2 + triHeight ** 2)
+    rad_deviateDegree = Math.atan(Math.sqrt(triType) * triHeight / side)
 
-    x1 = centerX + (r)*Math.cos(rad_triDegree)
-    y1 = centerY + (r)*Math.sin(rad_triDegree)
-    x2 = centerX + (side)*Math.cos(rad_triDegree+rad_deviateDegree)
-    y2 = centerY + (side)*Math.sin(rad_triDegree+rad_deviateDegree)
-    x3 = centerX + (side)*Math.cos(rad_triDegree-rad_deviateDegree)
-    y3 = centerY + (side)*Math.sin(rad_triDegree-rad_deviateDegree)
-    x4 = centerX + (r + 2*triHeight)*Math.cos(rad_triDegree)
-    y4 = centerY + (r + 2*triHeight)*Math.sin(rad_triDegree)
+    x1 = centerX + (r) * Math.cos(rad_triDegree)
+    y1 = centerY + (r) * Math.sin(rad_triDegree)
+    x2 = centerX + (side) * Math.cos(rad_triDegree + rad_deviateDegree)
+    y2 = centerY + (side) * Math.sin(rad_triDegree + rad_deviateDegree)
+    x3 = centerX + (side) * Math.cos(rad_triDegree - rad_deviateDegree)
+    y3 = centerY + (side) * Math.sin(rad_triDegree - rad_deviateDegree)
+    x4 = centerX + (r + 2 * triHeight) * Math.cos(rad_triDegree)
+    y4 = centerY + (r + 2 * triHeight) * Math.sin(rad_triDegree)
 
     return [x1, y1, x2, y2, x3, y3, x4, y4]
 }
- 
+
 // get the cordinate of a stick
 function stickCord(centerX, centerY, r, Degree, Height) {
-    rad_Degree = (Degree-270)*Math.PI/180
-    x1 = centerX + (r)*Math.cos(rad_Degree)
-    y1 = centerY + (r)*Math.sin(rad_Degree)
-    x2 = centerX + (r+Height)*Math.cos(rad_Degree)
-    y2 = centerY + (r+Height)*Math.sin(rad_Degree)
+    rad_Degree = (Degree - 270) * Math.PI / 180
+    x1 = centerX + (r) * Math.cos(rad_Degree)
+    y1 = centerY + (r) * Math.sin(rad_Degree)
+    x2 = centerX + (r + Height) * Math.cos(rad_Degree)
+    y2 = centerY + (r + Height) * Math.sin(rad_Degree)
 
     return [x1, y1, x2, y2]
 }
 
-function triangelOnCircle(centerX, centerY, r, triDegree, triHeight, color){
-    cords = triCord(centerX, centerY, r, triDegree, triHeight, 1/3)
+function triangelOnCircle(centerX, centerY, r, triDegree, triHeight, color) {
+    cords = triCord(centerX, centerY, r, triDegree, triHeight, 1 / 3)
     triangele = svg.paper.polygon(cords[0], cords[1], cords[2], cords[3], cords[4], cords[5]).attr({
         stroke: color,
         fill: color,
@@ -1261,7 +1357,7 @@ function triangelOnCircle(centerX, centerY, r, triDegree, triHeight, color){
     return triangele
 }
 
-function rhoOnCircle(centerX, centerY, r, rhoDegree, rhoHalfHeight, color){
+function rhoOnCircle(centerX, centerY, r, rhoDegree, rhoHalfHeight, color) {
     cords = triCord(centerX, centerY, r, rhoDegree, rhoHalfHeight, 1)
     rho = svg.paper.polygon(cords[0], cords[1], cords[2], cords[3], cords[6], cords[7], cords[4], cords[5]).attr({
         stroke: color,
@@ -1272,8 +1368,8 @@ function rhoOnCircle(centerX, centerY, r, rhoDegree, rhoHalfHeight, color){
     return rho
 }
 
-function arrowOnCircle(centerX, centerY, r, Degree){
-    tri = triangelOnCircle(centerX, centerY, r+1, Degree, 1, "#000")
+function arrowOnCircle(centerX, centerY, r, Degree) {
+    tri = triangelOnCircle(centerX, centerY, r + 1, Degree, 1, "#000")
     cords = stickCord(centerX, centerY, r, Degree, 10)
     arrowLine = svg.paper.line(cords[0], cords[1], cords[2], cords[3]).attr({
         stroke: "#000",
@@ -1307,7 +1403,7 @@ function triTagOnCircle(centerX, centerY, r, Degree) {
         stroke: "#E98B2A",
         strokeWidth: 1
     })
-    tri = triangelOnCircle(centerX, centerY, r+10, Degree, 4.5, "#E98B2A")
+    tri = triangelOnCircle(centerX, centerY, r + 10, Degree, 4.5, "#E98B2A")
     triTag = svg.group(tri, line)
 
     return triTag
@@ -1320,7 +1416,7 @@ function squareTagOnCircle(centerX, centerY, r, Degree) {
         stroke: "#E16B8C",
         strokeWidth: 1
     })
-    square = rhoOnCircle(centerX, centerY, r+5, Degree, 2.5, "#E16B8C")
+    square = rhoOnCircle(centerX, centerY, r + 5, Degree, 2.5, "#E16B8C")
     squareTag = svg.group(square, line)
 
     return squareTag
