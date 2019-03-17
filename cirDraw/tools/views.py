@@ -44,7 +44,6 @@ def save_to_files(request):
             parameters = json.loads(str_parameters)
 
             b_file = form_file.read()
-            print(type(b_file))
             file_parameters = str_parameters.encode('utf-8') + b_file
             md5 = hashlib.md5(file_parameters).hexdigest()
 
@@ -54,6 +53,7 @@ def save_to_files(request):
 
             # check if the file exists
             md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
+            print("Md5 existed in DB?: ", md5ob)
 
             if md5ob:
                 print("existed in databse")
@@ -85,7 +85,9 @@ def save_to_files(request):
             save_status = call_process(form_file, md5ob, parameters, toCHR, get_chr_num, circ_isin)
 
             if not save_status:
-                return_json = [{'md5': "Saving File failed...", 'time': time_, 'save_status': False}]
+                return_json = [{'message': "Saving File failed...", 'md5': md5, 'time': time_, 'save_status': save_status}]
+            elif save_status == "Format404":
+                return_json = [{'message': "Your data format is not supported for now. Please re-select the right format from the above...", 'md5': md5, 'time': time_, 'save_status': save_status}]
 
             return JsonResponse(return_json, safe=False)
 
@@ -95,8 +97,8 @@ def call_process(form_file, md5ob, parameters, toCHR, get_chr_num, circ_isin):
     assert md5ob, "Md5 object should be valid"
 
     info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
-    save_status = handle_uploaded_file(form_file, info_needed, md5ob, toCHR, get_chr_num, circ_isin)
-    print("saved?: ", save_status)
+    save_status = handle_uploaded_file(form_file, info_needed, md5ob, parameters, toCHR, get_chr_num, circ_isin)
+    print("Saved?: {} {}".format(save_status, md5ob.md5))
     return save_status
 
 
@@ -228,7 +230,7 @@ def handle_file1(request):
                 'end': ob.circRNA_end
             }
             results.append(result_draw)
-        print(results)
+        print("Handle_file1 results: ", results)
         return JsonResponse(results, safe=False)
     else:
         print("your request for file1 is not get")
@@ -457,9 +459,33 @@ def run_density(request):
         """
         print("THIS ++++++++++++++ IS FILE5")
 
+        max_den = 1
+        min_den = 100
         for res in results[1:]:
-            res['density'] = (res['density'] / densitys) * 1000
-            #print(res)
+            density = res['density']
+            real_den = (density / densitys) * 100
+
+            if max_den < real_den:
+                max_den = real_den
+            if min_den > real_den:
+                min_den = real_den
+
+            res['density'] = real_den
+        print("Max den, Min den: ", max_den, min_den)
+        length = max_den - min_den
+
+
+        for rs in results[1:]:
+            if int(length) == 0:
+                rs['density'] = 100
+            else:
+                rs_den = int((rs['density'] - min_den) / length * 100)
+                if rs_den > 100:
+                    rs_den = 100
+                elif rs_den < 1:
+                    rs_den = 1
+                rs['density'] = rs_den
+
         print("file5 has been handled with lens of returning list: ",len(results))
 
         ######################################
@@ -478,7 +504,7 @@ def run_density(request):
         json_result = json.dumps(results)
 
         r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
-        print(r_path)
+        print("density_result save path: ", r_path)
 
         # Change status in database
         md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
@@ -514,7 +540,7 @@ def lenChart(request):
                 group -= 1
             results[group] += 1
         re = {'x': points, 'y': results}
-        print(re)
+        print("result of lenChart", re)
         return JsonResponse(re, safe=False)
     else:
         raise Http404

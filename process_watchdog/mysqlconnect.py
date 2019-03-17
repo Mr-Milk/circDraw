@@ -16,7 +16,7 @@ class Connector:
         self.host = self.admin['host']
         self.database = self.admin['database']
         self._connect_to_db()
-        self.checkpoint = Checkpoint(self)
+        self.checkpoint = CheckpointConnector(self)
 
     def get_current_login(self, lst):
         return lst[0]
@@ -41,21 +41,104 @@ class Connector:
 
     def commit_close_db(self):
         self.cnx.commit()
-        self.origin_cursor.close()
         self.cnx.close()
+
+
+class Cursor:
+    def __init__(self, connector):
+        self.connector = connector
+        self.inuse = False
+        self.get_cursor()
+
+    def get_cursor(self):
+        if not self.inuse:
+            self.cursor = self.connector.cnx.cursor(buffered=True)
+            self.inuse = True
+        else:
+            print("cursor is in use")
+    def terminate(self):
+        assert self.inuse, "Nothing to terminate, no cursor in use"
+        self.cursor.close()
+        self.connector.cnx.commit()
+        self.insue = False
+
+
 
 
 class Operator:
     def __init__(self, connector):
         self.connector = connector
 
+    def terminate(self):
+        self.connector.cnx.commit()
+
     def get_objects(self, table_name, query_map):
         """Use the connection to get objects out of a table of database
         >>> query_map = {'column_name': "some value", "column2": "values"}
         """
-        if self.connector.checkpoint.is_exist_table(table_name):
 
+        if self.connector.checkpoint.is_exist_table(table_name):
+            cursor_ob = Cursor(self.connector)
+            cursor = cursor_ob.cursor
             select = """SELECT * from """ + str(table_name) + """ WHERE """
+            """*** YOUR CODE HERE ***"""
+
+    def drop_table(self, table_name):
+        """Drop table by its name"""
+        drop_sql = """drop table """ + str(table) + """;"""
+        if self.connector.checkpoint.is_exist_table(table_name):
+            cursor_ob = Cursor(self.connector)
+            cursor = cursor_ob.cursor
+            cursor.execute(drop_sql)
+            cursor_ob.terminate()
+        else:
+            print("Drop table Failed: Table name {} not found in database {}".format(table_name, self.connector.database))
+
+    def clean_table(self, table_name, conditions=None):
+        """empty an existed table
+        >>> conditions = None
+        >>> conditions = {'colname1': 'colvalue'}
+        """
+        delete_sql_base = """delete from """ + str(table_name)
+        if (not conditions) or (conditions == {}):
+            delete_sql = delete_sql_base + """;"""
+
+        else:
+            assert type(conditions) == dict, "Conditions in clean_table should be dict"
+            delete_sql_base += """ where"""
+            num = 0
+            for i in conditions:
+                colname = i
+                value = conditions[colname]
+                if num == 0:
+                    adds = """ """ + str(colname) + """ = """ + str(value)
+                else:
+                    adds = """ AND """ + str(colname) + """ = """ + str(value)
+                delete_sql_base += adds
+                num += 1
+            delete_sql = delete_sql_base + """;"""
+        # execute
+        if self.connector.checkpoint.is_exist_table(table_name):
+            cursor_ob = Cursor(self.connector)
+            cursor = cursor_ob.cursor
+            cursor.execute(delete_sql)
+            cursor_ob.terminate()
+        else:
+            print("Failed: Delete table Failed: Table name {} not found in database {}".format(table_name, self.connector.database))
+
+
+        # report status
+        if (not conditions) or (conditions == {}):
+            status = self.connector.checkpoint.is_having_data(table_name)
+            if not status:
+                print("Success: Empty table {} from {} success!".format(table_name, self.connector.database))
+            else:
+                print("Failed: Empty table {} from {} Failed...".format(table_name, self.connector.database))
+
+
+
+
+
 
 
 
@@ -68,16 +151,21 @@ class Operator:
 
 
 class Checkpoint:
+    def __init__(self, checkobject):
+        self.checkobject = checkobject
+
+class CheckpointConnector(Checkpoint):
     """A class that serves as checkpoint agent"""
-    def __init__(self, connector):
-        self.connector = connector
 
     def is_having_data(self, table_name):
         """Check if there is data in the table"""
         try:
             count_sql = """SELECT count(*) FROM """ + str(table_name) + """;"""
-            self.connector.cursor.execute(count_sql)
-            result = self.connector.cursor.fetchone()[0]
+            cursor_ob = Cursor(self.checkobject)
+            cursor = cursor_ob.cursor
+            cursor.execute(count_sql)
+            result = cursor.fetchone()[0]
+            cursor_ob.terminate()
             if result > 0:
                 return True
             return False
@@ -88,8 +176,11 @@ class Checkpoint:
         """Check if the table is exist"""
         try:
             query_sql = """SHOW TABLES LIKE '""" + str(table_name) + """';"""
-            self.connector.cursor.execute(query_sql)
-            result = self.connector.cursor.fetchone()
+            cursor_ob = Cursor(self.checkobject)
+            cursor = cursor_ob.cursor
+            cursor.execute(query_sql)
+            result = cursor.fetchone()
+            cursor_ob.terminate()
             if result:
                 return True
             else:
@@ -101,8 +192,11 @@ class Checkpoint:
         """ check if specific column name has existed """
         try:
             query_sql = """SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '""" + str(table_name) + """' and column_name = '"""  + str(column_name) + """';"""
-            self.connector.cursor.execute(query_sql)
-            result = self.connector.cursor.fetchone()
+            cursor_ob = Cursor(self.checkobject)
+            cursor = cursor_ob.cursor
+            cursor.execute(query_sql)
+            result = cursor.fetchone()
+            cursor_ob.terminate()
             if result:
                 return True
             else:
@@ -116,14 +210,18 @@ class Checkpoint:
             assert self.is_exist_column(self, table_name, column_name), "Column name doesn't existed"
             query_sql = """ SELECT """ + str(column_name) + """ FROM `"""  + str(table_name) + """` WHERE """ + str(column_name) +  """ = {};"""
             final_sql = query_sql.format(value)
-            self.connector.cursor.execute(query_sql)
-            result = self.connector.cursor.fetchone()
+            cursor = cursor_ob.cursor
+            cursor.execute(query_sql)
+            result = cursor.fetchone()
+            cursor_ob.terminate()
             if result:
                 return True
             else:
                 return False
         except mysql.connector.Error as err:
             print('is_exist_species fail: {}'.format(err))
+
+
 
 
 
