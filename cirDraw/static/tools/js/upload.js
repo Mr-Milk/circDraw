@@ -33,7 +33,7 @@ $(document).ready(function () {
             $('#submit').removeAttr('disabled')
         });}
         console.log("File size: ", document.getElementById('myfile').files[0].size)
-        if (document.getElementById('myfile').files[0].size >= 30 * 1024 ) {
+        if (document.getElementById('myfile').files[0].size >= 30 * 1024 * 1024 ) {
             $('#submit').prop('disabled', true)
             $('#processtip').append('<p>File size are limited to 50MB. Try following steps to reduce file size: </p>').css("color", "#000")
             $('#processtip').append('<p> 1. Filter your Data</p>' + '<p> 2. Remove useless info</p>' + '<p> 3. Contact us for help</p>').css("color", "#000")
