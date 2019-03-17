@@ -11,7 +11,7 @@ def empty_db(connector):
     operator.terminate()
 
 def empty_file():
-    path_box = ["../cirDraw/media/density_result/", "../cirDraw/media/md5_data/"]
+    path_box = ["../cirDraw/media/density_result/", "../cirDraw/media/md5_data/", "../cirDraw/media/tops_result/"]
     for path in path_box:
         file_lst = os.listdir(path)
         if file_lst != []:
