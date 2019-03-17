@@ -153,14 +153,14 @@ $("#next").click(
         }
     }
 )
-
+/*
 $("#dendownload").click(function () {
     var saveSvgAsSvg = svg2.paper.toString(),
         blob = new Blob([saveSvgAsSvg], {
             type: 'text/plain'
         })
     $("#dendownload").attr("href", window.URL.createObjectURL(blob))
-})
+})*/
 
 // get index of an array
 function getIndex() {

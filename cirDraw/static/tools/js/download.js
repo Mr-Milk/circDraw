@@ -1,19 +1,24 @@
 $("#dendownload").click(function(){
     var filetype = $("#fileType_2").val()
+    var den = Snap("#svg2");
     if (filetype == "SVG") {
-        var saveSvgAsSvg = svg.paper.toString(),
+        console.log('dendownload SVG')
+        var saveSvgAsSvg = den.paper.toString(),
             blob = new Blob([saveSvgAsSvg], { type: 'text/plain' })
-        $("#download").attr({"href": window.URL.createObjectURL(blob),
+        console.log(saveSvgAsSvg, blob)
+        $("#dendownload").attr({"href": window.URL.createObjectURL(blob),
                             "download": "circ.svg" })}
   
     else if (filetype == "PNG") {
-        var saveSvgAsPng = svg2png(svg)
-        $("#download").attr({"href": saveSvgAsPng,
+        console.log('dendownload PNG')
+        var saveSvgAsPng = svg2png(den)
+        $("#dendownload").attr({"href": saveSvgAsPng,
                             "download": "circ.png" })}
     
     else if (filetype == "PDF") {
+        console.log('dendownload PDF')
         var doc = new jsPDF('l', 'mm', [291, 210]),
-            imgData = svg2png(svg)
+            imgData = svg2png(den)
         doc.addImage(imgData, 'PNG', 10, 10, 80, 50);
         doc.save("circ.pdf")
     }
@@ -21,15 +26,16 @@ $("#dendownload").click(function(){
 
 $("#drawdownload").click(function(){
 var filetype = $("#fileType_1").val()
+var svg = Snap("#svg");
 if (filetype == "SVG") {
     var saveSvgAsSvg = svg.paper.toString(),
         blob = new Blob([saveSvgAsSvg], { type: 'text/plain' })
-    $("#download").attr({"href": window.URL.createObjectURL(blob),
+    $("#drawdownload").attr({"href": window.URL.createObjectURL(blob),
                         "download": "circ.svg" })}
 
 else if (filetype == "PNG") {
     var saveSvgAsPng = svg2png(svg)
-    $("#download").attr({"href": saveSvgAsPng,
+    $("#drawdownload").attr({"href": saveSvgAsPng,
                         "download": "circ.png" })}
 
 else if (filetype == "PDF") {
