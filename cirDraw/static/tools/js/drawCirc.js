@@ -38,7 +38,7 @@ $gene.ionRangeSlider({
 }).hide();
 
 function initSlider(){
-    $.getJSON("genelist for gene_selector", {
+    $.getJSON("genList/", {
         "caseid": case_id,
         "start": val1,
         "end": val2,

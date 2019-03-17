@@ -272,6 +272,28 @@ def handle_file2(request):
         print("your request for file2 is not get")
         raise Http404
 
+# ------------------------genList---------------------------------
+def genList(request):
+    if request.method == "GET":
+        md5 = request['caseid']
+        start = request['start']
+        end = request['end']
+        chr_ci = request['chr']
+        ob = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact="gene").filter(gene_start__gt=start).filter(gene_end__lt=end)
+        results = []
+        for ob in obs:
+            result = {
+                    'name': ob.gene_name,
+                    'start': ob.gene_start,
+                    'end': ob.gene_end
+                    }
+            results.append(result)
+        return JsonResponse(results, safe=False)
+
+    else:
+        print("genList method is not GET")
+        raise Http404
+
 # -------------------handle_file_4 (no file3 required) ------------------------------
 def handle_file4(request):
     # Database used: ToolsChromosome, ToolsScalegenome
@@ -619,6 +641,5 @@ def isoChart(request):
         raise Http404
 
 
-def geneList(request):
-    pass
+
 
