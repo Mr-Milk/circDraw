@@ -1,9 +1,15 @@
 // Get URL and split to caseid
 var url = $(location).attr('href').split("/")
-var caseid = url[url.length - 1]
+var case_id = url[url.length - 1].split("#")[0]
 
 // Initiate Density Plot
 var den = Snap("#svg2");
+
+var background = den.paper.rect(0, 0, 800, 500).attr({
+    stroke: "none",
+    fill: "#fff"
+});
+
 var palette = ['#ff0000',
 '#fe0500',
 '#fc0a00',

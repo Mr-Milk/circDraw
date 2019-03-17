@@ -1,6 +1,8 @@
 $("#dendownload").click(function(){
     var filetype = $("#fileType_2").val()
-    var den = Snap("#svg2");
+    var den = Snap("#svg2"),
+        c = $('#svg2').children('text')[0];
+    c.remove()
     if (filetype == "SVG") {
         console.log('dendownload SVG')
         var saveSvgAsSvg = den.paper.toString(),
@@ -22,6 +24,11 @@ $("#dendownload").click(function(){
         doc.addImage(imgData, 'PNG', 10, 10, 80, 50);
         doc.save("circ.pdf")
     }
+
+    $("#dendownload").attr({"href": "",
+                            "download": "" })
+
+    $('#svg2').append(c)
   })
 
 $("#drawdownload").click(function(){
@@ -54,7 +61,7 @@ function svg2png(svgCanvas){
     canvas.width = 2000;
     canvas.height = 1250;
     context.clearRect(0, 0, canvas.width, canvas.height);
-    canvg(canvas, svg.paper.toString(), {ignoreDimensions: true, scaleWidth: 2000, scaleHeight: 1250})
+    canvg(canvas, svgCanvas.paper.toString(), {ignoreDimensions: true, scaleWidth: 2000, scaleHeight: 1250})
     var imgData = canvas.toDataURL('image/png');
     $("<canvas></canvas>").remove()
     return imgData

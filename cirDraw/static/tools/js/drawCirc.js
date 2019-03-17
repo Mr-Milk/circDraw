@@ -12,7 +12,7 @@ var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2
 
 // Get URL and split to caseid
 var url = $(location).attr('href').split("/")
-var case_id = url[url.length - 1]
+var case_id = url[url.length - 1].split("#")[0]
 
 // Get which region the user want to draw
 var start, end

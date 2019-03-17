@@ -105,6 +105,8 @@ $(document).ready(function () {
             }
         }
 
+        $('#submit').text('Uploading...')
+
         $.ajax(ajaxParameters)
             .done(
                 function (reportID) {
@@ -114,7 +116,13 @@ $(document).ready(function () {
                     $('#processtip').html('Your process ID is ' + '<b><i>' + md5 + '</i></b>')
                     $('#resultbutton').show()
 
-                    $.getJSON("run/", {'md5': md5})
+                    $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
+                        var status = processStatus[0].save_status
+                        if (status === 404) {
+                            $.getJSON("run/", {'md5': md5})
+                        }
+                    })
+
                     var sec;
                     interval_1 = setInterval(
                         function () {
@@ -127,7 +135,7 @@ $(document).ready(function () {
                     interval_2 = setInterval(function(){
                         $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
 
-                            var status = processStatus[0].status
+                            var status = processStatus[0].save_status
                             if (status == 200) {
                                 clearInterval(interval_1)
                                 $('#processtip').text('Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b>' + '\n')
@@ -141,10 +149,15 @@ $(document).ready(function () {
                                 clearInterval(interval_2)
                             }
 
-                            else if (status == 102) {
+                            else if (status == 101) {
+                            }
+
+                            else if (status == 'Format404') {
+                                clearInterval(interval_1)
+                                $('#processtip').text('Upload file format is different from your claim')
                             }
                         })
-                    },2000)
+                    },2500)
                 }).fail(
                 function () {
                         $('#processtip').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")
