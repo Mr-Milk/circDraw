@@ -131,3 +131,5 @@ gencode.v29.annotation.gtf
 gencode.v19.annotation.gtf
 RMBase_hg19_all_m5C_site.txt
 
+# Django migration
+migrations/

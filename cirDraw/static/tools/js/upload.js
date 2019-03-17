@@ -207,6 +207,7 @@ $(document).ready(function () {
                 }).fail(
                 function () {
                         $('#processtip  ').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")
+                        $('#submit').text('Submit')
                 }
             )
             }
