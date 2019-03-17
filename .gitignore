@@ -117,3 +117,7 @@ dmypy.json
 
 # vscode
 .vscode/
+
+# circDraw storage file
+density_result/
+md5_data/
