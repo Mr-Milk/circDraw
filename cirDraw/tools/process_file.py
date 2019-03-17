@@ -67,6 +67,11 @@ def handle_uploaded_file(f, filter_lst, md5ob, parameters, toCHR, get_chr_num, c
     zero_length = 0
 
     data_valid = True
+    validation_lines = 100
+    check_index = 0
+    valid_num = 0
+    invalid_num = 0
+    do_check = True
 
     # md5 value
     md5 = md5ob.md5
@@ -75,7 +80,7 @@ def handle_uploaded_file(f, filter_lst, md5ob, parameters, toCHR, get_chr_num, c
 
     header, f_iter = make_header(f_iter, data_format)
     if header == []:
-        return "Format404"
+        return 405
 
     # The process loop
     for line in f_iter:
@@ -85,23 +90,50 @@ def handle_uploaded_file(f, filter_lst, md5ob, parameters, toCHR, get_chr_num, c
 
         # check object is valid:
         if check_object_valid(info_ob, data_format):
+            # add valid index
+            if do_check:
+                valid_num += 1
+                check_index += 1
+
             # save into tools_eachobservation
             save_status = save_line(md5ob, head, info_ob)
             saves.append(save_status)
 
-
             # clean up code for tools_chromosome
             chromosome_info = change_chromosome_info(chromosome_info, zero_length, info_ob)
         else:
+            if do_check:
+                invalid_num += 1
+                check_index += 1
             print("Failed: Refuse to insert to database, invalid line: ", info_ob)
+
+         # check stop point
+        if check_index == validation_lines:
+             if check_index == invalid_num:
+                 return 404
+             else:
+                 do_check = False
+                 check_index += 1
+
 
 
 
     # save chromsome info into database
-    save_chromosome_info(chromosome_info, md5ob, toCHR)
+    save_chromosome_status = save_chromosome_info(chromosome_info, md5ob, toCHR)
 
-
-    return all(saves)
+    # check if all saved in database
+    save_status = all(saves)
+    if save_status and save_chromosome_status:
+        return 200
+    elif not save_status and save_chromosome_status:
+        # some valid circleRNA not saved
+        return 500
+    elif save_status and not save_chromosome_status:
+        # circle saved but errors in save_chromosome_status:
+        return 501
+    else:
+        # all failed
+        return 502
 
 
 def save_line(md5ob, header, info_ob):
@@ -154,9 +186,11 @@ def save_chromosome_info(chromosome_info, md5ob, toCHR):
                 ob_chr = ToolsChromosome(caseid = md5ob, chr_ci = toCHR(i+1),chr_start = get_start_point(each_chr), chr_end = get_end_point(each_chr), max_length_circ = get_max_len(each_chr), min_length_circ = get_min_len(each_chr))
 
                 ob_chr.save()
+        return True
         print("Success!: in saving chromosome info")
     except:
         print("Failed: save chromosome info failed...")
+        return False
 
 ##  Origin functions ===================
 def fil_lst(line_lst, header, filter_lst):

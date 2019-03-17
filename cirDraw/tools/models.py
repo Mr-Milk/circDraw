@@ -68,7 +68,7 @@ class ToolsEachobservation(models.Model):
 
 class UploadParametersMD5(models.Model):
     md5 = models.CharField(db_column="MD5", max_length = 32, primary_key = True)
-    status = models.BooleanField(db_column="Status", default = False)
+    status = models.IntegerField(db_column="Status")
     file_type = models.CharField(db_column="FileType", max_length = 100)
     path = models.CharField(db_column="path", max_length=200)
     species = models.CharField(db_column="Species", max_length = 400)
