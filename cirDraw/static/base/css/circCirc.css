@@ -146,8 +146,39 @@ background: url('../../../media/close.png') no-repeat center center;
         border-top: 1px solid rgba(0,0,0,.1);
         border-right: 1px solid rgba(0,0,0,.1);
         border-bottom: 1px solid rgba(0,0,0,.1);
+        position: sticky;
+    }
+
+.sidebar-content {
+        position: relative;
+}
+
+    .bd-right {
+        border-right: 1px solid rgba(0,0,0,.1);
     }
 
 .bd-bottom {
         border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.sidebar-item {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	
+	/* Position the items */
+	// &:nth-child(2) { top: 25%; }
+	// &:nth-child(3) { top: 50%; }
+	// &:nth-child(4) { top: 75%; }
+}
+
+
+.make-me-sticky {
+  position: -webkit-sticky;
+	position: sticky;
+	top: 0;
+    
+  padding: 0 15px;
 }
