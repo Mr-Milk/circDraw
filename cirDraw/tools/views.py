@@ -457,9 +457,33 @@ def run_density(request):
         """
         print("THIS ++++++++++++++ IS FILE5")
 
+        max_den = 1
+        min_den = 100
         for res in results[1:]:
-            res['density'] = (res['density'] / densitys) * 1000
-            #print(res)
+            density = res['density']
+            real_den = (density / densitys) * 100
+
+            if max_den < real_den:
+                max_den = real_den
+            if min_den > real_den:
+                min_den = real_den
+
+            res['density'] = real_den
+        print("Max den, Min den: ", max_den, min_den)
+        length = max_den - min_den
+
+
+        for rs in results[1:]:
+            if int(length) == 0:
+                rs['density'] = 100
+            else:
+                rs_den = int((rs['density'] - min_den) / length * 100)
+                if rs_den > 100:
+                    rs_den = 100
+                elif rs_den < 1:
+                    rs_den = 1
+                rs['density'] = rs_den
+
         print("file5 has been handled with lens of returning list: ",len(results))
 
         ######################################
