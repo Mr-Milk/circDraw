@@ -4,61 +4,161 @@ import sys
 
 # processing file module
 
-def handle_uploaded_file(f, filter_lst, md5ob, toCHR, get_chr_num, circ_isin):
+## Costomize for every data format ====================
+def check_object_valid(info_ob, data_format):
+    """Check the object received has valid content"""
+    try:
+        if data_format == "CIRI2 file":
+            """['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']"""
+            assert type(info_ob['circRNA_ID']) == str and info_ob['circRNA_ID'][:3] == 'chr'
+            assert type(info_ob['chr_ci']) == str and info_ob['chr_ci'][:3] == 'chr'
+            assert int(info_ob['circRNA_start'])
+            assert int(info_ob['circRNA_end'])
+            return True
+        elif data_format == ".BED file":
+            assert type(info_ob['chr_ci']) == str and info_ob['chr_ci'][:3] == 'chr'
+            assert type(info_ob['circRNA_start']) == int
+            assert type(info_ob['circRNA_end']) == int
+            return True
+        else:
+            return False
+    except:
+        print("Failed: Check_object_valid failed...")
+        return False
+
+
+
+def make_header(f_iter, data_format):
+    if data_format == "CIRI2 file":
+        header = next(f_iter).decode("utf-8").split("\t")
+        return header, f_iter
+    elif data_format == ".BED file":
+        header = ['chr', 'circRNA_start', 'circRNA_end']
+        return header, f_iter
+    else:
+        print("Failed: in process_file.make_header, data_format is not archieved, contact need...")
+        return [], f_iter
+
+def get_chromosome_num(species):
+    if species == "Human":
+        return 25
+    elif species == "":
+        return 1
+    else:
+        print("Species input error: No species record...")
+        return 0
+
+
+#=======================================================
+
+def handle_uploaded_file(f, filter_lst, md5ob, parameters, toCHR, get_chr_num, circ_isin):
     """
     >>> filter_list = ['CIRI_one_column_name']
     """
     saves = []
     f_iter = iter(f)
-    header = next(f_iter).decode("utf-8").split("\t")
 
-    # initiate basic chromosome_info
-    chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(25)]
-    max_length = 0
-    chr_order = 0
+
+    # initiate basic info
+    data_format = parameters['FileType']
+    species = parameters['Species']
+    chromosome_num = get_chromosome_num(species)
+    chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(chromosome_num)]
+    zero_length = 0
+
+    data_valid = True
+
+    # md5 value
     md5 = md5ob.md5
 
-    # The loop
+
+
+    header, f_iter = make_header(f_iter, data_format)
+    if header == []:
+        return "Format404"
+
+    # The process loop
     for line in f_iter:
         line_sep = line.decode().split('\t')
         line_sep, head = fil_lst(line_sep, header, filter_lst)
         info_ob = RNAob(head, line_sep)
-        save_status = save_line(md5ob, head, info_ob)
-        saves.append(save_status)
+
+        # check object is valid:
+        if check_object_valid(info_ob, data_format):
+            # save into tools_eachobservation
+            save_status = save_line(md5ob, head, info_ob)
+            saves.append(save_status)
 
 
-        # update chromosome max end and min start
-        now_chr = info_ob['chr_ci']
-        chr_num = get_chr_num(now_chr)
-        now_start = int(info_ob['circRNA_start'])
-        now_end = int(info_ob['circRNA_end'])
-        if chr_num >= 0:
-            if now_start < get_start_point(chromosome_info[chr_num-1]):
-                update_chromosome_start(chromosome_info[chr_num-1],now_start)
-            if now_end > get_end_point(chromosome_info[chr_num - 1]):
-                update_chromosome_end(chromosome_info[chr_num-1], now_end)
+            # clean up code for tools_chromosome
+            chromosome_info = change_chromosome_info(chromosome_info, zero_length, info_ob)
         else:
-            print("one of Your input of chr from the handle file is crap")
+            print("Failed: Refuse to insert to database, invalid line: ", info_ob)
 
-        # update max length of circle RNA
-        length = now_end - now_start
-        now_max = get_max_len(chromosome_info[chr_num - 1])
-        now_min = get_min_len(chromosome_info[chr_num - 1])
-        if length > max_length:
-            if now_max < length:
-                update_circlen_max(chromosome_info[chr_num - 1], length)
-            if now_min > length:
-                update_circlen_min(chromosome_info[chr_num - 1], length)
-    # create object in ToolsChromosome
-    print("THIS is CHROMOSOME_INFO: ", chromosome_info)
-    for i,each_chr in enumerate(chromosome_info):
-        if get_start_point(each_chr) < get_end_point(each_chr):
-            ob_chr = ToolsChromosome(caseid = md5ob, chr_ci = toCHR(i+1),chr_start = get_start_point(each_chr), chr_end = get_end_point(each_chr), max_length_circ = get_max_len(each_chr), min_length_circ = get_min_len(each_chr))
-            ob_chr.save()
+
+
+    # save chromsome info into database
+    save_chromosome_info(chromosome_info, md5ob, toCHR)
+
+
     return all(saves)
 
 
+def save_line(md5ob, header, info_ob):
+    """save each observation"""
+    try:
+        ob = ToolsEachobservation(caseid = md5ob)
+        assert type(header) == list, "HEADER passed in to save is not a list"
+        e = info_ob
+        for each in header:
+            exec('ob.' + each +' = ' + 'e["' + each +'"]', globals(), locals())
+        ob.save()
+        return True
+    except:
+        return False
 
+def change_chromosome_info(chromosome_info, zero_length, info_ob):
+    # update chromosome max end and min start
+    now_chr = info_ob['chr_ci']
+    chr_num = get_chr_num(now_chr)
+    now_start = int(info_ob['circRNA_start'])
+    now_end = int(info_ob['circRNA_end'])
+    if chr_num >= 0:
+        if now_start < get_start_point(chromosome_info[chr_num-1]):
+            update_chromosome_start(chromosome_info[chr_num-1],now_start)
+        if now_end > get_end_point(chromosome_info[chr_num - 1]):
+            update_chromosome_end(chromosome_info[chr_num-1], now_end)
+    else:
+        print("one of Your input of chr from the handle file is crap")
+
+    # update max and min length of circle RNA
+    length = now_end - now_start
+    now_max = get_max_len(chromosome_info[chr_num - 1])
+    now_min = get_min_len(chromosome_info[chr_num - 1])
+    if length > zero_length:
+        if now_max < length:
+            update_circlen_max(chromosome_info[chr_num - 1], length)
+        if now_min > length:
+            update_circlen_min(chromosome_info[chr_num - 1], length)
+
+
+    return chromosome_info
+
+
+
+def save_chromosome_info(chromosome_info, md5ob, toCHR):
+    # create object in ToolsChromosome
+    try:
+        for i,each_chr in enumerate(chromosome_info):
+            if get_start_point(each_chr) < get_end_point(each_chr):
+                ob_chr = ToolsChromosome(caseid = md5ob, chr_ci = toCHR(i+1),chr_start = get_start_point(each_chr), chr_end = get_end_point(each_chr), max_length_circ = get_max_len(each_chr), min_length_circ = get_min_len(each_chr))
+
+                ob_chr.save()
+        print("Success!: in saving chromosome info")
+    except:
+        print("Failed: save chromosome info failed...")
+
+##  Origin functions ===================
 def fil_lst(line_lst, header, filter_lst):
     lst = []
     head = []
@@ -113,18 +213,6 @@ class Header:
         return self.name
 
 
-def save_line(md5ob, header, info_ob):
-    """save each observation"""
-    try:
-        ob = ToolsEachobservation(caseid = md5ob)
-        assert type(header) == list, "HEADER passed in to save is not a list"
-        e = info_ob
-        for each in header:
-            exec('ob.' + each +' = ' + 'e["' + each +'"]', globals(), locals())
-        ob.save()
-        return True
-    except:
-        return False
 
 
 
@@ -148,6 +236,22 @@ def update_circlen_min(lst, update_to):
     lst[1][0] = update_to
 
 
+def get_chr_num(chr_ci):
+    if chr_ci[:3] != "chr":
+        return -1
+    else:
+        c = chr_ci.lower()[3:]
+        try:
+            return int(c)
+        except ValueError:
+            if c.lower() == 'x':
+                return 23
+            elif c.lower() == 'y':
+                return 24
+            else:
+                raise ValueError
+
+###  backup
 def save(md5, header, results, file_type, species):
     """Save file"""
     chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(25)]
@@ -189,4 +293,3 @@ def save(md5, header, results, file_type, species):
             ob_chr = ToolsChromosome(caseid = case, chr_ci = toCHR(i+1),chr_start = get_start_point(each_chr), chr_end = get_end_point(each_chr), max_length_circ = get_max_len(each_chr), min_length_circ = get_min_len(each_chr))
             ob_chr.save()
     return caseid
-
