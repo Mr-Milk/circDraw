@@ -41,7 +41,6 @@ class Connector:
 
     def commit_close_db(self):
         self.cnx.commit()
-        self.origin_cursor.close()
         self.cnx.close()
 
 
@@ -60,6 +59,7 @@ class Cursor:
     def terminate(self):
         assert self.inuse, "Nothing to terminate, no cursor in use"
         self.cursor.close()
+        self.connector.cnx.commit()
         self.insue = False
 
 
@@ -68,7 +68,9 @@ class Cursor:
 class Operator:
     def __init__(self, connector):
         self.connector = connector
-        self.errors = []
+
+    def terminate(self):
+        self.connector.cnx.commit()
 
     def get_objects(self, table_name, query_map):
         """Use the connection to get objects out of a table of database
@@ -88,15 +90,57 @@ class Operator:
             cursor_ob = Cursor(self.connector)
             cursor = cursor_ob.cursor
             cursor.execute(drop_sql)
-            cursor.terminate()
+            cursor_ob.terminate()
         else:
             print("Drop table Failed: Table name {} not found in database {}".format(table_name, self.connector.database))
 
     def clean_table(self, table_name, conditions=None):
-        """empty an existed table"""
+        """empty an existed table
+        >>> conditions = None
+        >>> conditions = {'colname1': 'colvalue'}
+        """
         delete_sql_base = """delete from """ + str(table_name)
-        if not conditions:
-            delete_sql = delete
+        if (not conditions) or (conditions == {}):
+            delete_sql = delete_sql_base + """;"""
+
+        else:
+            assert type(conditions) == dict, "Conditions in clean_table should be dict"
+            delete_sql_base += """ where"""
+            num = 0
+            for i in conditions:
+                colname = i
+                value = conditions[colname]
+                if num == 0:
+                    adds = """ """ + str(colname) + """ = """ + str(value)
+                else:
+                    adds = """ AND """ + str(colname) + """ = """ + str(value)
+                delete_sql_base += adds
+                num += 1
+            delete_sql = delete_sql_base + """;"""
+        # execute
+        if self.connector.checkpoint.is_exist_table(table_name):
+            cursor_ob = Cursor(self.connector)
+            cursor = cursor_ob.cursor
+            cursor.execute(delete_sql)
+            cursor_ob.terminate()
+        else:
+            print("Failed: Delete table Failed: Table name {} not found in database {}".format(table_name, self.connector.database))
+
+
+        # report status
+        if (not conditions) or (conditions == {}):
+            status = self.connector.checkpoint.is_having_data(table_name)
+            if not status:
+                print("Success: Empty table {} from {} success!".format(table_name, self.connector.database))
+            else:
+                print("Failed: Empty table {} from {} Failed...".format(table_name, self.connector.database))
+
+
+
+
+
+
+
 
 
 
