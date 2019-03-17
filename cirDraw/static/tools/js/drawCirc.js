@@ -12,7 +12,7 @@ var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2
 
 // Get URL and split to caseid
 var url = $(location).attr('href').split("/")
-var case_id = url[url.length - 1]
+var case_id = url[url.length - 1].split("#")[0]
 
 // Get which region the user want to draw
 var start, end
@@ -33,8 +33,21 @@ $gene.ionRangeSlider({
     min_interval: null,
     max_interval: null,
     onFinish: updataCirc,
-    onUpdata: getGeneList
+    onUpdata: getGeneList,
+    onStart: initSlider
 }).hide();
+
+function initSlider(){
+    $.getJSON("genelist for gene_selector", {
+        "caseid": case_id,
+        "start": val1,
+        "end": val2,
+        "chr": chr
+    })
+    .done(function (genes) {
+        geneList = genes
+    })
+}
 
 function getGeneList() {
     var val1 = parseInt($inputFrom.text()),
