@@ -121,6 +121,7 @@ dmypy.json
 # circDraw storage file
 density_result/
 md5_data/
+tops_result/
 
 # ignore genome decompress data
 RMBase_hg19_all_mod_snp_disease.txt
