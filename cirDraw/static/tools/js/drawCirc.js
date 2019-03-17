@@ -33,8 +33,21 @@ $gene.ionRangeSlider({
     min_interval: null,
     max_interval: null,
     onFinish: updataCirc,
-    onUpdata: getGeneList
+    onUpdata: getGeneList,
+    onStart: initSlider
 }).hide();
+
+function initSlider(){
+    $.getJSON("genelist for gene_selector", {
+        "caseid": case_id,
+        "start": val1,
+        "end": val2,
+        "chr": chr
+    })
+    .done(function (genes) {
+        geneList = genes
+    })
+}
 
 function getGeneList() {
     var val1 = parseInt($inputFrom.text()),
