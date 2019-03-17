@@ -121,3 +121,4 @@ dmypy.json
 # circDraw storage file
 density_result/
 md5_data/
+tops_result/

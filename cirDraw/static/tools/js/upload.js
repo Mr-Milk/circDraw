@@ -112,55 +112,101 @@ $(document).ready(function () {
                 function (reportID) {
                     $('#submit').text('✓ Submitted').prop('disabled', true);
                     var md5 = reportID[0].md5,
-                        systime = reportID[0].time.toString()
-                    $('#processtip').html('Your process ID is ' + '<b><i>' + md5 + '</i></b>')
-                    $('#resultbutton').show()
-
-                    $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
-                        var status = processStatus[0].save_status
-                        if (status === 404) {
-                            $.getJSON("run/", {'md5': md5})
-                        }
-                    })
-
-                    var sec;
-                    interval_1 = setInterval(
+                        systime = reportID[0].time.toString(),
+                        status = reportID[0].save_status
+                        console.log(status)
+                    // save_status
+                    // 200: existed SUCCESS
+                    // 201: create RUN
+                    // 101: running PASS
+                    // 404: Save fail ERROR
+                    if (status === 404) {
+                        $('#processtip').text('Processing Failed!')
+                    }
+                    else if (status === 200) {
+                        $('#resultbutton').show()
+                        $('#processtip').html('<p>Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
+                        $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/display/" + md5)
+                    }
+                    else if (status === 201) {
+                        $.getJSON("/tools/run", {'md5':md5})
+                        $('#processtip').html('<p>Processing! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
+                        $('#resultbutton').show()
+                        var sec;
+                        interval_1 = setInterval(
                         function () {
                             var d = new Date()
                             console.log(d.getTime(), systime)
                             sec = d.getTime().toString().substr(0,10) - systime.substr(0,10)
-                            $('#processtip').text('Processing time: ' + sec + 's')
+                            $('#processtip').append('<p id="timer">Processing time: ' + sec + 's</p>')
                         }, 1000);
 
-                    interval_2 = setInterval(function(){
-                        $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
+                        interval_2 = setInterval(function(){
+                            $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
+    
+                                var status = processStatus[0].status
+                                console.log(status, processStatus)
+                                if (status == 200) {
+                                    clearInterval(interval_1)
+                                    $('#timer').remove()
+                                    $('#processtip').html('<p>Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
+                                    $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/display/" + md5)
+                                    clearInterval(interval_2)
+                                }
+    
+                                else if (status == 404) {
+                                    clearInterval(interval_1)
+                                    $('#timer').remove()
+                                    $('#processtip').text('Processing Failed!')
+                                    clearInterval(interval_2)
+                                }
+    
+                                else if (status == 101) {
+                                }
+                            })
+                        },2500)
+                    }
+                    else if (status === 101) {
+                        $('#processtip').html('<p>Processing! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
+                        $('#resultbutton').show()
+                        var sec;
+                        interval_1 = setInterval(
+                        function () {
+                            var d = new Date()
+                            console.log(d.getTime(), systime)
+                            sec = d.getTime().toString().substr(0,10) - systime.substr(0,10)
+                            $('#processtip').append('<p id="timer">Processing time: ' + sec + 's</p>')
+                        }, 1000);
 
-                            var status = processStatus[0].save_status
-                            if (status == 200) {
-                                clearInterval(interval_1)
-                                $('#processtip').text('Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b>' + '\n')
-                                $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/display/" + md5)
-                                clearInterval(interval_2)
-                            }
+                        interval_2 = setInterval(function(){
+                            $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
+    
+                                var status = processStatus[0].status
+                                console.log(status, processStatus)
+                                if (status == 200) {
+                                    clearInterval(interval_1)
+                                    $('#timer').remove()
+                                    $('#processtip').html('<p>Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
+                                    $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/display/" + md5)
+                                    clearInterval(interval_2)
+                                }
+    
+                                else if (status == 404) {
+                                    clearInterval(interval_1)
+                                    $('#timer').remove()
+                                    $('#processtip').text('Processing Failed!')
+                                    clearInterval(interval_2)
+                                }
+    
+                                else if (status == 101) {
+                                }
+                            })
+                        },2500)
+                    }
 
-                            else if (status == 404) {
-                                clearInterval(interval_1)
-                                $('#processtip').text('Processing Failed!')
-                                clearInterval(interval_2)
-                            }
-
-                            else if (status == 101) {
-                            }
-
-                            else if (status == 'Format404') {
-                                clearInterval(interval_1)
-                                $('#processtip').text('Upload file format is different from your claim')
-                            }
-                        })
-                    },2500)
                 }).fail(
                 function () {
-                        $('#processtip').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")
+                        $('#processtip  ').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")
                 }
             )
             }
