@@ -218,6 +218,7 @@ def handle_file1(request):
     # database needed: ToolsChromosome, ToolsEachobservation
     if request.method == 'GET':
         case_id = request.GET['caseid']
+        print("File2 caseid: ", case_id)
         chr_ci = toCHR(int(request.GET['chr']))
         start = int(request.GET['start'])
         end = int(request.GET['end'])
@@ -369,6 +370,23 @@ def circ_isin(geneob, circob, overlap_rate=0.5):
         else:
             return False
 
+def keep_tops(last_lst, now):
+    """A funtion that takes a fix length list, decide whether to keep the now"""
+
+    lst = [now] + last_lst
+    slst = sorted(lst, key=lambda x: x['density'])
+    return slst[:-1]
+
+
+
+
+
+
+
+
+
+
+
 @csrf_exempt
 def run_density(request):
     # Databse used: ToolsChromosome, ToolsScalegenome
@@ -388,6 +406,9 @@ def run_density(request):
         print("chr_exist: ", chr_exist)
         chrs = [get_chr_num(r.chr_ci)-1 for r in chr_exist]
         results = [{'chrnum': len(chrs)}]
+
+        # prepare tops
+        tops = [{'density':0, 'name': "default"}] * 50
         # max in gene:
         max_gene_len = 0
         for gg in chr_exist:
@@ -432,13 +453,13 @@ def run_density(request):
 
             # we want to divide the group so that the loop's runtime will be reduced.
 
+
+
+
             # start the loop
             for each in data_groups[1]:
                 start, end = each.gene_start, each.gene_end
-                #gene_len = end - start
-                #search_margin = max_circ_len - gene_len * overlap
-                #circ_start = start - search_margin
-                #circ_end = end + search_margin
+                name = each.gene_name
                 # THE ACTUAL loop
                 count = 0
                 #for r in data_groups[0].filter(circRNA_start__gt = circ_start).filter(circRNA_end__lt = circ_end):
@@ -446,7 +467,9 @@ def run_density(request):
                     if circ_isin(each, r):
                         count += 1
                 if count != 0:
-                    ret = {'chr': chr_num_now + 1, 'start': start, 'end': end, 'density': count}
+                    ret = {'name': name, 'chr': chr_num_now + 1, 'start': start, 'end': end, 'density': count}
+                    tops = keep_tops(tops, ret)
+
                     # record total density
                     densitys += count
                     results.append(ret)
@@ -498,13 +521,21 @@ def run_density(request):
         # Write result to a file
         result_sub_path = 'density_result/'
         result_path = result_sub_path + caseid
+
         if default_storage.exists(result_path):
             default_storage.delete(result_path)
-
         json_result = json.dumps(results)
-
         r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
         print("density_result save path: ", r_path)
+
+
+        # Write tops to a file
+        tops_sub_path = 'tops_result/'
+        tops_path = tops_sub_path + caseid
+        if default_storage.exists(tops_path):
+            default_storage.delete(tops_path)
+        json_tops = json.dumps(tops)
+        tops_path = default_storage.save(tops_path, ContentFile(json_tops)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
 
         # Change status in database
         md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
