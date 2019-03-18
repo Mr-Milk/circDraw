@@ -705,12 +705,12 @@ def run_density(request):
 
 
             # Write tops to a file
-            tops_sub_path = 'tops_result/'
-            tops_path = tops_sub_path + caseid
-            if default_storage.exists(tops_path):
-                default_storage.delete(tops_path)
-            json_tops = json.dumps(tops)
-            tops_path = default_storage.save(tops_path, ContentFile(json_tops)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+            # tops_sub_path = 'tops_result/'
+            # tops_path = tops_sub_path + caseid
+            # if default_storage.exists(tops_path):
+            #     default_storage.delete(tops_path)
+            # json_tops = json.dumps(tops)
+            # tops_path = default_storage.save(tops_path, ContentFile(json_tops)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
 
             # Change status in database
             md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
