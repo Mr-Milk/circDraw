@@ -270,14 +270,14 @@ def handle_file2(request):
         raise Http404
 
 # ------------------------genList---------------------------------
-
+@csrf_exempt
 def genList(request):
     if request.method == "GET":
-        md5 = request['caseid']
-        start = request['start']
-        end = request['end']
-        chr_ci = request['chr']
-        ob = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact="gene").filter(gene_start__gt=start).filter(gene_end__lt=end)
+        md5 = request.GET['caseid']
+        start = request.GET['start']
+        end = request.GET['end']
+        chr_ci = request.GET['chr']
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact="gene").filter(gene_start__gt=start).filter(gene_end__lt=end)
         results = []
         for ob in obs:
             result = {

@@ -1,6 +1,6 @@
 // Get URL and split to caseid
 var url = $(location).attr('href').split("/")
-var case_id = url[url.length - 1].split("#")[0]
+var caseid = url[url.length - 1].split("#")[0]
 
 // Initiate Density Plot
 var den = Snap("#svg2");
@@ -172,7 +172,7 @@ $("#dendownload").click(function () {
 function getIndex() {
     var from = $("#js-input-from").val(),
         to = $("#js-input-to").val(),
-        chr = $('#chrSelector').val();
+        chr = parseInt($('#chrSelector').text());
 
     index = denINFO.findIndex(function (item, i) {
         return item.start === from && item.chr === chr && item.end === to
@@ -259,24 +259,28 @@ function density_block(x, y, len, chr, start, end, density_value) {
     }).click(function () {
         $("#js-input-from").text(start);
         $("#js-input-to").text(end);
-        $('#chrSelector').prop("value", chr)
-        var gene_selector = $("#gene_selector").data("ionRangeSlider");
-        $.getJSON("genelist for gene_selector", {
+        $('#chrSelector').text(chr);
+        var gene_selector = $("#gene-selector").data("ionRangeSlider");
+        $.getJSON("genList/", {
                 "caseid": caseid,
                 "start": start,
                 "end": end,
                 "chr": chr
             })
             .done(function (geneList) {
+                console.log('Get genelist: ', geneList)
                 var geneValues = []
-                for (i in geneList) {
-                    geneValues.push(i.name)
+                for (i=0;i<geneList.length;i++) {
+                    geneValues.push(geneList[i].name)
                 }
+                console.log(geneValues)
                 gene_selector.update({
                     values: geneValues,
+                    from:0,
+                    to: geneValues.length
                 })
             });
-        $("#gene_selector").show()
+        $("#gene-selector").show()
     })
 
     return denBlock

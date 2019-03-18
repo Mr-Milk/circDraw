@@ -52,8 +52,8 @@ function initSlider(){
 function getGeneList() {
     var val1 = parseInt($inputFrom.text()),
         val2 = parseInt($inputTo.text()),
-        chr = parseInt($('#chrSelector').val())
-    $.getJSON("genelist for gene_selector", {
+        chr = parseInt($('#chrSelector').text())
+    $.getJSON("genList/", {
             "caseid": case_id,
             "start": val1,
             "end": val2,
@@ -94,7 +94,7 @@ function updataCirc(data) {
     });
 
     // Call Ajax
-    var chr = parseInt($('#chrSelector').val())
+    var chr = parseInt($('#chrSelector').text())
 
     $.getJSON("tools_file2/", {
         "caseid": case_id,
@@ -735,10 +735,10 @@ function backSplicing(exonJSON, arcJSON) {
             if (colorIndex < 50) {
                 exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
                 exonList[i] = {
-                    "chr": parseInt($('#chrSelector').val()),
+                    "chr": parseInt($('#chrSelector').text()),
                     "start": exonJSON[i].start,
                     "end": exonJSON[i].end,
-                    "circid": "chr" + parseInt($('#chrSelector').val()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
+                    "circid": "chr" + parseInt($('#chrSelector').text()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
                     "color": colorList[colorIndex],
                     "mod": exonJSON[i].mod,
                     "source": exonJSON[i].source,
@@ -749,10 +749,10 @@ function backSplicing(exonJSON, arcJSON) {
                 colorIndex = 0
                 exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
                 exonList[i] = {
-                    "chr": parseInt($('#chrSelector').val()),
+                    "chr": parseInt($('#chrSelector').text()),
                     "start": exonJSON[i].start,
                     "end": exonJSON[i].end,
-                    "circid": "chr" + parseInt($('#chrSelector').val()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
+                    "circid": "chr" + parseInt($('#chrSelector').text()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
                     "color": colorList[colorIndex],
                     "mod": exonJSON[i].mod,
                     "source": exonJSON[i].source,
