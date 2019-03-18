@@ -33,8 +33,21 @@ $gene.ionRangeSlider({
     min_interval: null,
     max_interval: null,
     onFinish: updataCirc,
-    onUpdata: getGeneList
+    onUpdata: getGeneList,
+    onStart: initSlider
 }).hide();
+
+function initSlider(){
+    $.getJSON("genList/", {
+        "caseid": case_id,
+        "start": val1,
+        "end": val2,
+        "chr": chr
+    })
+    .done(function (genes) {
+        geneList = genes
+    })
+}
 
 function getGeneList() {
     var val1 = parseInt($inputFrom.text()),
@@ -420,39 +433,12 @@ function epiAnimate(epi, name, color, centerX, centerY, exonJSON) {
                 transform: 's1.5,' + c.cx + ',' + c.cy
             }, 200)
             text = textCenter(centerX, centerY, name, 15, color)
-            function infoBox(x, y, SNP_id, Disease) {
-                info = svg.paper.rect(x, y, 180, 40).attr({
-                    fill: '#fed136',
-                    fillOpacity: 0.5,
-                    stroke: '#211E55',
-                    strokeWidth: 2,
-                    strokeOpacity: 0.7
-                })
-                infoCord = info.getBBox()
-                SNPID = svg.paper.text(infoCord.x+7, infoCord.y+15, 'SNP_id: ' + SNP_id).attr({
-                    'font-size': 10,
-                    'font-family': 'arial'
-                })
-                DISEASE = svg.paper.text(infoCord.x+7, infoCord.y+30, 'Disease:' + Disease).attr({
-                    'font-size': 10,
-                    'font-family': 'arial'
-                })
-                info = svg.group(info, SNPID, DISEASE)
-                return info
-            }
-            snp_disease = exonJSON[i]['mod'][t].disease
-            if (snp_disease.SNP_id.length > 0) {
-                var info = infoBox(c.cx, c.cy, snp_disease.SNP_id, snp_disease.disease)
-            }
         })
         .mouseout(function () {
             epi.animate({
                 transform: 's1,' + c.cx + ',' + c.cy
             }, 200)
             text.remove()
-            if (info !== undefined) {
-                info.remove()
-            }
         })
         .click(function () {
             openNewTab(exonJSON[i]['mod'][t].link)

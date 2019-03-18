@@ -204,11 +204,8 @@ def check_status(request):
         try:
             md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
             process_status = md5ob.status
-            if process_status:
-                status = 200
-            else:
-                status = 101
-            return JsonResponse([{'status': status}], safe=False)
+            print("STATUS CODE: ", process_status)
+            return JsonResponse([{'status': process_status}], safe=False)
         except:
             print("check status error: No object returned or attribute is not correct")
             return JsonResponse([{'status': 404}], safe=False)
@@ -273,6 +270,7 @@ def handle_file2(request):
         raise Http404
 
 # ------------------------genList---------------------------------
+
 def genList(request):
     if request.method == "GET":
         md5 = request['caseid']

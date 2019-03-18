@@ -134,6 +134,8 @@ class Operator:
                 print("Success: Empty table {} from {} success!".format(table_name, self.connector.database))
             else:
                 print("Failed: Empty table {} from {} Failed...".format(table_name, self.connector.database))
+        else:
+
 
 
 
@@ -204,12 +206,44 @@ class CheckpointConnector(Checkpoint):
         except mysql.connector.Error as err:
             print('is_exist_column fail: {}'.format(err))
 
-    def is_exist_species(self, table_name, column_name, value):
-        """ Check if a specific value is contained in a specific column"""
+    # def is_exist_row(self, table_name, ):
+    #     """ Check if a specific value is contained in a specific column"""
+    #     try:
+    #         assert self.is_exist_column(self, table_name, column_name), "Column name doesn't existed"
+    #         query_sql = """ SELECT """ + str(column_name) + """ FROM `"""  + str(table_name) + """` WHERE """ + str(column_name) +  """ = {};"""
+    #         final_sql = query_sql.format(value)
+    #         cursor = cursor_ob.cursor
+    #         cursor.execute(query_sql)
+    #         result = cursor.fetchone()
+    #         cursor_ob.terminate()
+    #         if result:
+    #             return True
+    #         else:
+    #             return False
+    #     except mysql.connector.Error as err:
+    #         print('is_exist_species fail: {}'.format(err))
+
+
+    def is_exist_rows(self, table_name, conditions):
+        """ check if rows that meet the conditions existed in table"""
         try:
-            assert self.is_exist_column(self, table_name, column_name), "Column name doesn't existed"
-            query_sql = """ SELECT """ + str(column_name) + """ FROM `"""  + str(table_name) + """` WHERE """ + str(column_name) +  """ = {};"""
-            final_sql = query_sql.format(value)
+            query_sql_base = """select * from """ + str(table_name)
+            # add where clause
+            assert type(conditions) == dict, "Conditions in is_exist_rows should be dict"
+            query_sql_base += """ where"""
+            num = 0
+            for i in conditions:
+                colname = i
+                value = conditions[colname]
+                if num == 0:
+                    adds = """ """ + str(colname) + """ = """ + str(value)
+                else:
+                    adds = """ AND """ + str(colname) + """ = """ + str(value)
+                query_sql_base += adds
+                num += 1
+            query_sql = query_sql_base + """;"""
+
+            cursor_ob = Cursor(self.checkobject)
             cursor = cursor_ob.cursor
             cursor.execute(query_sql)
             result = cursor.fetchone()
@@ -219,9 +253,7 @@ class CheckpointConnector(Checkpoint):
             else:
                 return False
         except mysql.connector.Error as err:
-            print('is_exist_species fail: {}'.format(err))
-
-
+            print('is_exist_column fail: {}'.format(err))
 
 
 
