@@ -7,24 +7,42 @@ import sys
 ## Costomize for every data format ====================
 def check_object_valid(info_ob, data_format):
     """Check the object received has valid content"""
+
+    def ok_chr(chr_ci):
+        try:
+            after = chr_ci[3:]
+            if chr_ci[:3] == 'chr' and (int(after) in range(0,40) or after in ['X','Y','M']):
+                return True
+            else:
+                return False
+        except ValueError:
+            if chr_ci[3:] in ['X','Y','M']:
+                return True
+            else:
+                return False
+
+
     try:
         if data_format == "CIRI2 file":
             """['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']"""
             assert type(info_ob['circRNA_ID']) == str and info_ob['circRNA_ID'][:3] == 'chr'
-            assert type(info_ob['chr_ci']) == str and info_ob['chr_ci'][:3] == 'chr'
+            assert type(info_ob['chr_ci']) == str 
+            assert ok_chr(info_ob['chr_ci'])
             assert int(info_ob['circRNA_start'])
             assert int(info_ob['circRNA_end'])
             return True
         elif data_format == ".BED file":
             assert type(info_ob['chr_ci']) == str and info_ob['chr_ci'][:3] == 'chr'
-            assert type(info_ob['circRNA_start']) == int
-            assert type(info_ob['circRNA_end']) == int
+            assert ok_chr(info_ob['chr_ci'])
+            assert int(info_ob['circRNA_start'])
+            assert int(info_ob['circRNA_end'])
             return True
         else:
             return False
-    except:
+    except Exception as e:
         print("Failed: Check_object_valid failed...")
-        return False
+        print("Error: ", e)
+        return False 
 
 
 
@@ -87,6 +105,7 @@ def handle_uploaded_file(f, filter_lst, md5ob, parameters, toCHR, get_chr_num, c
         line_sep = line.decode().split('\t')
         line_sep, head = fil_lst(line_sep, header, filter_lst)
         info_ob = RNAob(head, line_sep)
+       
 
         # check object is valid:
         if check_object_valid(info_ob, data_format):
@@ -151,30 +170,35 @@ def save_line(md5ob, header, info_ob):
 
 def change_chromosome_info(chromosome_info, zero_length, info_ob):
     # update chromosome max end and min start
-    now_chr = info_ob['chr_ci']
-    chr_num = get_chr_num(now_chr)
-    now_start = int(info_ob['circRNA_start'])
-    now_end = int(info_ob['circRNA_end'])
-    if chr_num >= 0:
-        if now_start < get_start_point(chromosome_info[chr_num-1]):
-            update_chromosome_start(chromosome_info[chr_num-1],now_start)
-        if now_end > get_end_point(chromosome_info[chr_num - 1]):
-            update_chromosome_end(chromosome_info[chr_num-1], now_end)
-    else:
-        print("one of Your input of chr from the handle file is crap")
+    try:
+        now_chr = info_ob['chr_ci']
+        chr_num = get_chr_num(now_chr)
+        now_start = int(info_ob['circRNA_start'])
+        now_end = int(info_ob['circRNA_end'])
+        if chr_num >= 0:
+            if now_start < get_start_point(chromosome_info[chr_num-1]):
+                update_chromosome_start(chromosome_info[chr_num-1],now_start)
+            if now_end > get_end_point(chromosome_info[chr_num - 1]):
+                update_chromosome_end(chromosome_info[chr_num-1], now_end)
+        else:
+            print("one of Your input of chr from the handle file is crap")
 
-    # update max and min length of circle RNA
-    length = now_end - now_start
-    now_max = get_max_len(chromosome_info[chr_num - 1])
-    now_min = get_min_len(chromosome_info[chr_num - 1])
-    if length > zero_length:
-        if now_max < length:
-            update_circlen_max(chromosome_info[chr_num - 1], length)
-        if now_min > length:
-            update_circlen_min(chromosome_info[chr_num - 1], length)
+        # update max and min length of circle RNA
+        length = now_end - now_start
+        now_max = get_max_len(chromosome_info[chr_num - 1])
+        now_min = get_min_len(chromosome_info[chr_num - 1])
+        if length > zero_length:
+            if now_max < length:
+                update_circlen_max(chromosome_info[chr_num - 1], length)
+            if now_min > length:
+                update_circlen_min(chromosome_info[chr_num - 1], length)
 
 
-    return chromosome_info
+        return chromosome_info
+    except:
+        print("change_chromosome compromised")
+        raise ValueError
+
 
 
 
@@ -214,7 +238,7 @@ def RNAob(header, data_lst):
             if header[i] == 'junction_reads_ID':
                 ob[str(header[i])] = data_lst[i][:-2]
             else:
-                ob[str(header[i])] = data_lst[i]
+                ob[str(header[i])] = noslash(data_lst[i])
         return ob
     else:
         return {"NO": [header, data_lst]}

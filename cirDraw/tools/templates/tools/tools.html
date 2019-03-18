@@ -108,22 +108,34 @@
                             <button class="btn btn-primary btn-sm text-center" id="next">Next Gene &raquo;</button>
                         </div>
 
-                    <h2 id="BaTable">Table</h2>
-                    <div id="table">
-                        <table id="circTable" class="display" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>circID</th>
-                                    <th>Chr</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                    <th>Source Gene</th>
-                                    <th>Details</th>
-                                </tr>
-                            </thead>
-                        </table>
+                    <h2 id="BaTable">circRNA Table</h2>
+                    <div class="row justify-content-center">
+                        <div class="col-8">
+                            <div id="table">
+                                <table id="circTable" class="display" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>circRNA</th>
+                                            <th>Exon Name</th>
+                                            <th>Source Gene</th>
+                                            <th class="none">Modifications</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr>
+                                                <td>chr20: 3000000-4000000</td>
+                                                <td>milk</td>
+                                                <td>ENSG34600000</td>
+                                                <td>m6A | 4000-5000 | <a onclick="windows.open('www.m6a.com', '_blank')">link</a></td>
+                                                <td>m6A | 4000-5000 | <a onclick="windows.open('www.m6a.com', '_blank')">link</a></td>
+                                                <td>m6A | 4000-5000 | <a onclick="windows.open('www.m6a.com', '_blank')">link</a></td>
+                                            </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
+
             </div>
         </div>
     </div>
@@ -167,6 +179,8 @@
               target: navSelector
             });
           });
+
+        $('#circTable').DataTable();
 </script>
 
 {% endblock %}
