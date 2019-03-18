@@ -17,7 +17,6 @@ var case_id = url[url.length - 1].split("#")[0]
 // Get which region the user want to draw
 var start, end
 var exonList, arcList
-<<<<<<< HEAD
 var $name = $('#geneNameSelect'),
     $chr = $('#chrSelector'),
     $start = $("#js-input-from"),
@@ -33,40 +32,6 @@ $name.on('DOMSubtreeModified', function(){
 })
 
 /*
-=======
-var $gene = $("#gene-selector"),
-    $inputFrom = $("#js-input-from"),
-    $inputTo = $("#js-input-to"),
-    geneList = [],
-    gene_selector = $gene.data("ionRangeSlider");
-
-$gene.ionRangeSlider({
-    type: "double",
-    grid: true,
-    from: geneList[0],
-    to: geneList[0],
-    values: geneList,
-    drag_interval: true,
-    min_interval: null,
-    max_interval: null,
-    onFinish: updataCirc,
-    onUpdata: getGeneList,
-    onStart: initSlider
-}).hide();
-
-function initSlider(){
-    $.getJSON("genList/", {
-        "caseid": case_id,
-        "start": val1,
-        "end": val2,
-        "chr": chr
-    })
-    .done(function (genes) {
-        geneList = genes
-    })
-}
-
->>>>>>> 9e6f39917706df44d5f41b93b95d2e47cb22b67e
 function getGeneList() {
     var val1 = parseInt($inputFrom.text()),
         val2 = parseInt($inputTo.text()),

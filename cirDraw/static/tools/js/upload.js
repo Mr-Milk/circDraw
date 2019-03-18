@@ -118,11 +118,10 @@ $(document).ready(function () {
                         console.log(reportID)
 
                     if (status === false) {
-                        $('#processtip').text('Processing Failed!')
+                        $('#processtip').text('Processing Failed! Wrong file type or server failed.')
                     }
                     else if (status === true) {
                         $.getJSON("/tools/run", {'md5':md5})
-                        $('#processtip').html('<p>Processing! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
                         $('#resultbutton').show()
                         var sec;
                         interval_1 = setInterval(
@@ -130,7 +129,7 @@ $(document).ready(function () {
                             var d = new Date()
                             console.log(d.getTime(), systime)
                             sec = d.getTime().toString().substr(0,10) - systime.substr(0,10)
-                            $('#processtip').append('<p id="timer">Processing time: ' + sec + 's</p>')
+                            $('#processtip').html('<p id="timer">Processing time: ' + sec + 's</p>')
                         }, 1000);
 
                         interval_2 = setInterval(function(){
@@ -141,7 +140,7 @@ $(document).ready(function () {
                                 if (status == 200) {
                                     clearInterval(interval_1)
                                     $('#timer').remove()
-                                    $('#processtip').html('<p>Processing Completed! Please remember your result URL (Accessible for next 24h)' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
+                                    $('#processtip').html('<p>Processing Completed! Please remember your result URL (Accessible for next 24h) ' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
                                     $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/display/" + md5)
                                     clearInterval(interval_2)
                                 }
@@ -149,7 +148,7 @@ $(document).ready(function () {
                                 else if (status == 404) {
                                     clearInterval(interval_1)
                                     $('#timer').remove()
-                                    $('#processtip').text('Processing Failed!')
+                                    $('#processtip').text('Server Error!')
                                     clearInterval(interval_2)
                                 }
     
