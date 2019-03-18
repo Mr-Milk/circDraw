@@ -17,6 +17,23 @@ var case_id = url[url.length - 1].split("#")[0]
 // Get which region the user want to draw
 var start, end
 var exonList, arcList
+<<<<<<< HEAD
+var $name = $('#geneNameSelect'),
+    $chr = $('#chrSelector'),
+    $start = $("#js-input-from"),
+    $end = $("#js-input-to")
+
+$name.on('DOMSubtreeModified', function(){
+    name = $name.text()
+    chr = $chr.text()
+    start = $start.text()
+    end = $end.text()
+    console.log('Refreshing circRNA canvas: ', name, chr, start, end)
+    redraw(case_id, start, end, chr)
+})
+
+/*
+=======
 var $gene = $("#gene-selector"),
     $inputFrom = $("#js-input-from"),
     $inputTo = $("#js-input-to"),
@@ -49,6 +66,7 @@ function initSlider(){
     })
 }
 
+>>>>>>> 9e6f39917706df44d5f41b93b95d2e47cb22b67e
 function getGeneList() {
     var val1 = parseInt($inputFrom.text()),
         val2 = parseInt($inputTo.text()),
@@ -62,9 +80,9 @@ function getGeneList() {
         .done(function (genes) {
             geneList = genes
         })
-}
+}*/
 
-function updataCirc(data) {
+function redraw(case_id, start, end, chr) {
     svg.clear()
     // draw a straight line
     var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
@@ -72,48 +90,28 @@ function updataCirc(data) {
         strokeWidth: 1
     });
 
-    start_gene = data.from;
-    end_gene = data.to;
-
-    for (i in geneList) {
-        if (i.name == start_gene) {
-            start = i.start
-        };
-        if (i.name == end_gene) {
-            end = i.end
-        };
-    };
-
-    $inputFrom.text(start);
-    $inputTo.text(end);
-
-    // draw a straight line
-    var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
-        stroke: "#000",
-        strokeWidth: 1
-    });
+    var addRange = Math.round((end - start)/2)
 
     // Call Ajax
-    var chr = parseInt($('#chrSelector').text())
-
     $.getJSON("tools_file2/", {
         "caseid": case_id,
-        "start": start,
-        "end": end,
+        "start": start + addRange,
+        "end": end + addRange,
         "chr": chr
     }).done(function (exon) {
         exonList = exon;
         console.log("exon number: ", exon.length)
         $.getJSON("tools_file1/", {
             "caseid": case_id,
-            "start": start,
-            "end": end,
+            "start": start + addRange,
+            "end": end + addRange,
             "chr": chr
         }).done(function (arc) {
             arcList = arc;
             console.log("circ number: ", arc.length)
             var tableContent = backSplicing(exonList, arcList)
-
+            console.log('Things in Table: ', tableContent)
+            /*
             $('#circTable').DataTable({
                 "data": tableContent,
                 "columns": [{
@@ -159,7 +157,7 @@ function updataCirc(data) {
                     row.child((row.data())).show();
                     tr.addClass('shown');
                 }
-            });
+            });*/
 
         });
     });
@@ -723,7 +721,7 @@ function describeArc(x, y, radius, startAngle, endAngle) {
 }
 
 function backSplicing(exonJSON, arcJSON) {
-    var exonList = []
+    var exonList = [], drawArc = []
     var mm = getMinMax(exonJSON)
     var range = mm[1] - mm[0]
     var colorIndex = 0
@@ -776,9 +774,9 @@ function backSplicing(exonJSON, arcJSON) {
 
     console.log("arc num: ", arcJSON.length)
 
-    for (i = 0; i < arcJSON.length; i++) {
-        arcStart = arcJSON[i].start
-        arcEnd = arcJSON[i].end
+    for (r = 0; r < arcJSON.length; r++) {
+        arcStart = arcJSON[r].start
+        arcEnd = arcJSON[r].end
         console.log("exonlist len: ", exonList.length)
         for (t = 0; t < exonList.length; t++) {
             if (exonList[t].start >= arcStart && exonList[t].end <= arcEnd) {
@@ -791,10 +789,9 @@ function backSplicing(exonJSON, arcJSON) {
 
     console.log(drawArc)
 
-    for (i = 0; i < arcJSON.length; i++) {
+    for (s = 0; s < arcJSON.length; s++) {
         scaleArcStart = 50 + 700 * (arcStart - mm[0]) / range
         scaleArcEnd = 50 + 700 * (arcEnd - mm[0]) / range
-        console.log(1)
         arc(scaleArcStart, scaleArcEnd, drawArc)
     }
 

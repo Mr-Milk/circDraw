@@ -2,6 +2,33 @@
 var url = $(location).attr('href').split("/")
 var caseid = url[url.length - 1].split("#")[0]
 
+
+// handle range slider
+var $den = $('#den-selector'),
+    denSelector = $den.data("ionRangeSlider");
+
+$den.ionRangeSlider({
+    min: 0,
+    max: 100,
+    from: 0,
+    step: 1,
+    onFinish: function(data){
+        denLimit = data.from
+        console.log('Setting limit at: ', denLimit)
+        den.clear()
+        background = den.paper.rect(0, 0, 800, 500).attr({
+            stroke: "none",
+            fill: "#fff"
+        });
+        tipInfo = den.paper.text(700, 30, "Density: ").attr({
+            'font-family': 'arial',
+            'font-size': 15
+        })
+        chrMaxLen = normChr(chrSkeleton)
+        denPlot(chrMaxLen, denINFO, denLimit)
+    }
+});
+
 // Initiate Density Plot
 var den = Snap("#svg2");
 
@@ -116,19 +143,23 @@ var tipInfo = den.paper.text(700, 30, "Density: ").attr({
 })
 
 // Draw Density Plot
-var chrMaxLen, denINFO, densityBlock = []
+var chrMaxLen, denINFO, densityBlock = [], denLimit = 0, chrSkeleton, species, filterBlock = []
 $("#svg2").hide()
 $.getJSON('/tools/tools_file4', {
     'case_id': caseid
 }).done(function (chrJSON) {
+    chrSkeleton = chrJSON
 
     chrMaxLen = normChr(chrJSON)
 
     $.getJSON('/tools/tools_file5', {
         'case_id': caseid
     }).done(function (densityJSON) {
-        denINFO = normden(densityJSON)
-        denPlot(chrMaxLen, densityJSON)
+        denINFO = densityJSON
+        species = denINFO[0].species
+        console.log('denINFO: ', denINFO)
+        console.log('Species: ', denINFO[0].species)
+        denPlot(chrMaxLen, densityJSON, denLimit)
         $("#load").hide()
         $("#svg2").show()
     })
@@ -140,7 +171,16 @@ $("#previous").click(
     function () {
         index = getIndex()
         if (index > 0) {
-            densityBlock[index - 1].click()
+            p_den = filterBlock[index-1]
+            p_start = p_den.start
+            p_end = p_den.end
+            p_chr = p_den.chr
+            p_name = p_den.name
+            $("#js-input-from").text(p_start);
+            $("#js-input-to").text(p_end);
+            $('#chrSelector').text(p_chr);
+            $('#geneNameSelect').text(p_name);
+
             $("#next").removeAttr("disabled")
         } else {
             $("#previous").attr("disabled", "")
@@ -151,8 +191,18 @@ $("#previous").click(
 $("#next").click(
     function () {
         index = getIndex()
-        if (index < denINFO.length - 1) {
-            densityBlock[index + 1].click()
+        console.log('Next index:', index)
+        if (index < filterBlock.length - 1) {
+            n_den = filterBlock[index+1]
+            n_start = n_den.start
+            n_end = n_den.end
+            n_chr = n_den.chr
+            n_name = n_den.name
+            $("#js-input-from").text(n_start);
+            $("#js-input-to").text(n_end);
+            $('#chrSelector').text(n_chr);
+            $('#geneNameSelect').text(n_name);
+
             $("#previous").removeAttr("disabled")
         } else {
             $("#next").attr("disabled", "")
@@ -170,11 +220,11 @@ $("#dendownload").click(function () {
 
 // get index of an array
 function getIndex() {
-    var from = $("#js-input-from").val(),
-        to = $("#js-input-to").val(),
+    var from = parseInt($("#js-input-from").text()),
+        to = parseInt($("#js-input-to").text()),
         chr = parseInt($('#chrSelector').text());
 
-    index = denINFO.findIndex(function (item, i) {
+    index = filterBlock.findIndex(function (item, i) {
         return item.start === from && item.chr === chr && item.end === to
     })
 
@@ -225,7 +275,7 @@ function normden(denJSON) {
     return denJSON
 }
 
-function density_block(x, y, len, chr, start, end, density_value) {
+function density_block(x, y, len, chr, start, end, density_value, name) {
     var fillColor = palette[Math.round(density_value - 1)]
     var denBlock = den.paper.rect(x, y + 0.3, len + 1, 9.5).attr({
         fill: fillColor,
@@ -260,6 +310,8 @@ function density_block(x, y, len, chr, start, end, density_value) {
         $("#js-input-from").text(start);
         $("#js-input-to").text(end);
         $('#chrSelector').text(chr);
+        $('#geneNameSelect').text(name);
+        /*
         var gene_selector = $("#gene-selector").data("ionRangeSlider");
         $.getJSON("genList/", {
                 "caseid": caseid,
@@ -279,8 +331,7 @@ function density_block(x, y, len, chr, start, end, density_value) {
                     from:0,
                     to: geneValues.length
                 })
-            });
-        $("#gene-selector").show()
+            });*/
     })
 
     return denBlock
@@ -306,17 +357,29 @@ function normChr(chrJSON) {
     var svgHeight = 60 + len * 20
     $("#svg2").attr("height", svgHeight)
     for (i = 0; i < normChr.length; i++) {
-        chr = chr_block(20 + 20 * (i + 1), normChr[i].len, normChr[i].chr)
+        var chrSkeName = normChr[i].chr
+        if (parseInt(chrSkeName) === 23){
+            chrSkeName = ' X'
+        }
+        else if (parseInt(chrSkeName) === 24){
+            chrSkeName = ' Y'
+        }
+        else if (parseInt(chrSkeName) === 25){
+            chrSkeName = ' M'
+        }
+        chr = chr_block(20 + 20 * (i + 1), normChr[i].len, chrSkeName)
     }
     return max
 };
 
-function denPlot(chrMaxLen, densityJSON) {
+function denPlot(chrMaxLen, densityJSON, denLimit) {
+    filterBlock = []
     for (i = 0; i < densityJSON.length; i++) {
-        densityBlock[i] = "density_block" + i
+        if (densityJSON[i].density > denLimit) {
         var xAxis = 50 + 640 * densityJSON[i].start / chrMaxLen,
             len = 640 * (densityJSON[i].end - densityJSON[i].start) / chrMaxLen
-
-        densityBlock[i] = density_block(xAxis, 20 + 20 * densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density)
+        filterBlock.push(densityJSON[i])
+        density_block(xAxis, 20 + 20 * densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density, densityJSON[i].name)
     }
+}
 }
