@@ -204,11 +204,8 @@ def check_status(request):
         try:
             md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
             process_status = md5ob.status
-            if process_status:
-                status = 200
-            else:
-                status = 101
-            return JsonResponse([{'status': status}], safe=False)
+            print("STATUS CODE: ", process_status)
+            return JsonResponse([{'status': process_status}], safe=False)
         except:
             print("check status error: No object returned or attribute is not correct")
             return JsonResponse([{'status': 404}], safe=False)
@@ -273,13 +270,14 @@ def handle_file2(request):
         raise Http404
 
 # ------------------------genList---------------------------------
+@csrf_exempt
 def genList(request):
     if request.method == "GET":
-        md5 = request['caseid']
-        start = request['start']
-        end = request['end']
-        chr_ci = request['chr']
-        ob = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact="gene").filter(gene_start__gt=start).filter(gene_end__lt=end)
+        md5 = request.GET['caseid']
+        start = request.GET['start']
+        end = request.GET['end']
+        chr_ci = request.GET['chr']
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact="gene").filter(gene_start__gt=start).filter(gene_end__lt=end)
         results = []
         for ob in obs:
             result = {
