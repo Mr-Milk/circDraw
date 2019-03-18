@@ -15,6 +15,10 @@ urlpatterns = [
 
     # Run pre-process
     url(r'^run/$', views.run_density),
+    # url(r'^run/$', views.pixel_run_density),
+    #pixel_run_density
+
+
 
     # Check Status
     url(r'^statusfile/$', views.check_status),
