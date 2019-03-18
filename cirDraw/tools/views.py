@@ -229,7 +229,7 @@ def fake_handle_file1(request):
         chr_ci = "chr20"
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).order_by('-circRNA_start')[:2]
+        obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).order_by('-circRNA_start')[:1]
         print("fake file1 obs length:",len(obs))
         print("file1 parameters: ", chr_ci, start, end)
         print("obs file1:", obs)
@@ -245,6 +245,42 @@ def fake_handle_file1(request):
     else:
         print("your request for file1 is not get")
         raise Http404
+# ------------------------fake handle_flie2---------------------------------
+def fake_handle_file2(request):
+    if request.method == 'GET':
+        case_id = request.GET['caseid']
+        # chr_ci = toCHR(int(request.GET['chr']))
+        chr_ci = "chr20"
+        # start = int(request.GET['start'])
+        # end = int(request.GET['end'])
+        # print(start)
+        # print(end)
+        # print(chr_ci)
+        gene_type = "exon"
+        circ_ob = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).order_by('-circRNA_start').first()
+        start = circ_ob.circRNA_start
+        end = circ_ob.circRNA_end
+
+        print("\n")
+        print("Fakefile2 start end:", start, end)
+        print("\n")
+
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact=gene_type).filter(gene_start__gte=start).filter(gene_end__lte=end)
+        print("file2 obs: ", obs)
+        results = []
+        for ob in obs:
+            result = {
+                    'name': ob.gene_name,
+                    'start': ob.gene_start,
+                    'end': ob.gene_end
+                    }
+            results.append(result)
+        print("fake_file2 results: ", results)
+        return JsonResponse(results,safe=False)
+    else:
+        print("your request for file2 is not get")
+        raise Http404
+
 # ---------------------handle_file1---------------------------------------
 @csrf_exempt
 def handle_file1(request):
@@ -424,7 +460,7 @@ def circ_isin(geneob, circob, overlap_rate=0.5):
         over = sort_lst[2] - sort_lst[1]
         #print(sort_lst, over, gene_len, over/gene_len)
         #print(over >= (gene_len * overlap_rate))
-        if over >= (gene_len * overlap_rate):
+        if over >= (gene_len * overlap_rate) :
             return True
         else:
             return False
@@ -639,6 +675,7 @@ def run_density(request):
 
             # sort density
             values = results[1:]
+            print("NO EAT: in run:", results[:1])
             results_sort = sorted(values, key=lambda x: x['density'])
             results = results[:1] + results_sort
 
@@ -662,7 +699,7 @@ def run_density(request):
 
             if default_storage.exists(result_path):
                 default_storage.delete(result_path)
-            json_result = json.dumps(results_sort)
+            json_result = json.dumps(results)
             r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
             print("density_result save path: ", r_path)
 

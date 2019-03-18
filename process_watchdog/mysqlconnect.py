@@ -1,1 +1,1 @@
-../related_genome_info/mysqlconnect.py
+../related_genome_info/process_pkg/mysqlconnect.py

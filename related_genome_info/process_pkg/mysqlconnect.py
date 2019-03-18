@@ -85,55 +85,66 @@ class Operator:
 
     def drop_table(self, table_name):
         """Drop table by its name"""
-        drop_sql = """drop table """ + str(table) + """;"""
+        drop_sql = """drop table """ + str(table_name) + """;"""
         if self.connector.checkpoint.is_exist_table(table_name):
             cursor_ob = Cursor(self.connector)
             cursor = cursor_ob.cursor
             cursor.execute(drop_sql)
             cursor_ob.terminate()
         else:
-            print("Drop table Failed: Table name {} not found in database {}".format(table_name, self.connector.database))
+            print("Success: Table name {} doesn't exist in database {}".format(table_name, self.connector.database))
 
     def clean_table(self, table_name, conditions=None):
         """empty an existed table
         >>> conditions = None
         >>> conditions = {'colname1': 'colvalue'}
         """
-        delete_sql_base = """delete from """ + str(table_name)
-        if (not conditions) or (conditions == {}):
-            delete_sql = delete_sql_base + """;"""
+        try:
+            delete_sql_base = """delete from """ + str(table_name)
+            if (not conditions) or (conditions == {}):
+                delete_sql = delete_sql_base + """;"""
 
-        else:
-            assert type(conditions) == dict, "Conditions in clean_table should be dict"
-            delete_sql_base += """ where"""
-            num = 0
-            for i in conditions:
-                colname = i
-                value = conditions[colname]
-                if num == 0:
-                    adds = """ """ + str(colname) + """ = """ + str(value)
-                else:
-                    adds = """ AND """ + str(colname) + """ = """ + str(value)
-                delete_sql_base += adds
-                num += 1
-            delete_sql = delete_sql_base + """;"""
-        # execute
-        if self.connector.checkpoint.is_exist_table(table_name):
-            cursor_ob = Cursor(self.connector)
-            cursor = cursor_ob.cursor
-            cursor.execute(delete_sql)
-            cursor_ob.terminate()
-        else:
-            print("Failed: Delete table Failed: Table name {} not found in database {}".format(table_name, self.connector.database))
-
-
-        # report status
-        if (not conditions) or (conditions == {}):
-            status = self.connector.checkpoint.is_having_data(table_name)
-            if not status:
-                print("Success: Empty table {} from {} success!".format(table_name, self.connector.database))
             else:
-                print("Failed: Empty table {} from {} Failed...".format(table_name, self.connector.database))
+                assert type(conditions) == dict, "Conditions in clean_table should be dict"
+                delete_sql_base += """ where"""
+                num = 0
+                for i in conditions:
+                    colname = i
+                    value = conditions[colname]
+                    if num == 0:
+                        adds = """ """ + str(colname) + """ = """ + value.__repr__()
+                    else:
+                        adds = """ AND """ + str(colname) + """ = """ + value.__repr__()
+                    delete_sql_base += adds
+                    num += 1
+                delete_sql = delete_sql_base + """;"""
+            # execute
+            if self.connector.checkpoint.is_exist_table(table_name):
+                cursor_ob = Cursor(self.connector)
+                cursor = cursor_ob.cursor
+                cursor.execute(delete_sql)
+                cursor_ob.terminate()
+            else:
+                print("Failed: Delete table Failed: Table name {} not found in database {}".format(table_name, self.connector.database))
+
+
+            # report status
+            if (not conditions) or (conditions == {}):
+                status = self.connector.checkpoint.is_having_data(table_name)
+                if not status:
+                    print("Success: Empty table {} from {} success!".format(table_name, self.connector.database))
+                else:
+                    print("Failed: Empty table {} from {} Failed...".format(table_name, self.connector.database))
+            else:
+                status = self.connector.checkpoint.is_exist_rows(table_name, conditions)
+                if not status:
+                    print("Success: Delete rows from {} success!".format(table_name))
+                else:
+                    print("Failed: Delete rows from {} Failed...".format(table_name))
+
+        except Exception as e:
+            print("Failed: Empty table {} failed, raise Expections:")
+            print("Error: ", e)
 
 
 
@@ -204,12 +215,27 @@ class CheckpointConnector(Checkpoint):
         except mysql.connector.Error as err:
             print('is_exist_column fail: {}'.format(err))
 
-    def is_exist_species(self, table_name, column_name, value):
-        """ Check if a specific value is contained in a specific column"""
+
+    def is_exist_rows(self, table_name, conditions):
+        """ check if rows that meet the conditions existed in table"""
         try:
-            assert self.is_exist_column(self, table_name, column_name), "Column name doesn't existed"
-            query_sql = """ SELECT """ + str(column_name) + """ FROM `"""  + str(table_name) + """` WHERE """ + str(column_name) +  """ = {};"""
-            final_sql = query_sql.format(value)
+            query_sql_base = """select * from """ + str(table_name)
+            # add where clause
+            assert type(conditions) == dict, "Conditions in is_exist_rows should be dict"
+            query_sql_base += """ where"""
+            num = 0
+            for i in conditions:
+                colname = i
+                value = conditions[colname]
+                if num == 0:
+                    adds = """ """ + str(colname) + """ = """ + value.__repr__()
+                else:
+                    adds = """ AND """ + str(colname) + """ = """ + value.__repr__()
+                query_sql_base += adds
+                num += 1
+            query_sql = query_sql_base + """;"""
+
+            cursor_ob = Cursor(self.checkobject)
             cursor = cursor_ob.cursor
             cursor.execute(query_sql)
             result = cursor.fetchone()
@@ -219,17 +245,12 @@ class CheckpointConnector(Checkpoint):
             else:
                 return False
         except mysql.connector.Error as err:
-            print('is_exist_species fail: {}'.format(err))
+            print('is_exist_column fail: {}'.format(err))
 
 
 
 
 
-
-
-# class Loop:
-#     """A class that provides looping power and controls during the process."""
-#     def __init__(self, )
 
 
 
