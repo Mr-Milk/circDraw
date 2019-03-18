@@ -227,8 +227,9 @@ def handle_file1(request):
         chr_ci = toCHR(int(request.GET['chr']))
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
+        obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gte=start).filter(circRNA_end__lte=end)
         print("!!!1:",len(obs))
+        print("parameters: ", chr_ci, start, end)
         results = []
         for ob in obs:
             result_draw = {
@@ -425,6 +426,8 @@ def run_density(request):
             # Change status in database to running
             md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
             md5ob.status = 101
+            species = md5ob.species
+            print("Species: ", species)
             md5ob.save()
 
             # =========================================================================================================
@@ -438,7 +441,7 @@ def run_density(request):
             chr_exist = ToolsChromosome.objects.filter(caseid__exact=caseid)
             print("chr_exist: ", chr_exist)
             chrs = [get_chr_num(r.chr_ci)-1 for r in chr_exist]
-            results = [{'chrnum': len(chrs)}]
+            results = [{'chrnum': len(chrs), 'species': species}]
 
             # prepare tops
             tops = [{'density':0, 'name': "default"}] * 50
