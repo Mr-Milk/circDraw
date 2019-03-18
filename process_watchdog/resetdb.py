@@ -2,35 +2,109 @@ import mysqlconnect as mc
 import sys, os
 
 def drop_db(connector):
-    # drop table tools_chromosome, tools_eachobservation, tools_uploadmd5
-    operator = mc.Operator(connector)
-    drop_box = ['tools_chromosome', 'tools_eachobservation', 'tools_uploadmd5']
-    for t in drop_box:
-        operator.drop_table(t)
-    operator.terminate()
+    try:
+        # drop table tools_chromosome, tools_eachobservation, tools_uploadmd5
+        operator = mc.Operator(connector)
+        drop_box = ['tools_chromosome', 'tools_eachobservation', 'tools_uploadmd5']
+        for t in drop_box:
+            operator.drop_table(t)
+        operator.terminate()
+        return True
+    except Exception as e:
+        print("Failed: drop_db in resetdb.py failed...")
+        print("Error: ", e)
+        return False
 
 def delete_row(connector):
-    # delete some lines from table
-    operator = mc.Operator(connector)
-    # table_name = 'django_migrations'
-    # conditions = {'app' : 'tools'}
-    table_name = 'tools_uploadmd5'
-    conditions = {'MD5': 'dcf1208e1926aab1af379cedec7f254c'}
+    try:
+        # delete some lines from table
+        operator = mc.Operator(connector)
+        table_name = 'django_migrations'
+        conditions = {'app' : 'tools'}
+        # table_name = 'tools_uploadmd5'
+        # conditions = {'MD5': 'dcf1208e1926aab1af379cedec7f254c'}
 
-    operator.clean_table(table_name, conditions)
-    operator.terminate()
+        operator.clean_table(table_name, conditions)
+        operator.terminate()
+        return True
+    except Exception as e:
+        print("Failed: delete_row in resetdb.py failed...")
+        print("Error: ", e)
+        return False
 
 
-def empty_db(connector):
+def remigrations(connector):
+    # clean migrations from both django and mysql, clean created tables
+    if drop_db(connector) and delete_row(connector):
+        # delete migrations from os
+        # delete __pycache__
+        delete_file('../cirDraw/tools/migrations/__pycache__/', r=True)
+        delete_file('../cirDraw/tools/migrations/0001_initial.py')
+
+        # run migrations
+        manage_dir = '../cirDraw/'
+        run_migrations(manage_dir)
+        print("Success: Remigration finished!")
+    else:
+        print("Failed: drop_table or delete_row failed...")
+
+def run_migrations(manage_dir):
+    try:
+        current = os.getcwd()
+        os.chdir(manage_dir)
+        os.system("python3 manage.py makemigrations")
+        print("Success: Makemigrations success! ")
+        os.system("python3 manage.py migrate")
+        print("Success: Migrate success! ")
+        os.chdir(current)
+    except Exception as e:
+        print("Failed: run_migrtations failed..")
+        print("Error: ", e)
+
+
+
+
+
+
+
+def delete_file(file_path, r=False):
+    # clean exact file
+    if not r:
+        # not a directory
+        os.system("rm " + file_path)
+        is_exist = os.path.isfile(file_path)
+    else:
+        os.system("rm -r " + file_path)
+        is_exist = os.path.isdir(file_path)
+    # check if file has been delete
+    if not is_exist:
+        print("Success: File/Dir {} has been deleted! :)".format(file_path))
+    else:
+        print("Failed: File/Dir remains in {}. Listing file names:".format(file_path))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def empty_db(connector, clean_box):
     # delete from tools_chromosome, tools_eachobservation, tools_uploadmd5
     operator = mc.Operator(connector)
-    clean_box = ['tools_chromosome', 'tools_eachobservation', 'tools_uploadmd5']
+
     for t in clean_box:
         operator.clean_table(t)
     operator.terminate()
 
-def empty_file():
-    path_box = ["../cirDraw/media/density_result/", "../cirDraw/media/md5_data/", "../cirDraw/media/tops_result/"]
+def empty_dir(path_box):
+
     for path in path_box:
         file_lst = os.listdir(path)
         if file_lst != []:
@@ -56,10 +130,13 @@ def empty_file():
 def main(login_file_name, inp):
     connector = mc.Connector(login_file_name)
     if inp == "migration":
-        drop_db(connector)
+        remigrations(connector)
+
     elif inp == "clean":
-        empty_db(connector)
-        empty_file()
+        clean_box = ['tools_chromosome', 'tools_eachobservation', 'tools_uploadmd5']
+        path_box = ["../cirDraw/media/density_result/", "../cirDraw/media/md5_data/", "../cirDraw/media/tops_result/"]
+        empty_db(connector, clean_box)
+        empty_dir(path_box)
     connector.commit_close_db()
 
 if __name__ == '__main__':

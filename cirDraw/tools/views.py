@@ -274,10 +274,12 @@ def handle_file2(request):
 def genList(request):
     if request.method == "GET":
         md5 = request.GET['caseid']
-        start = request.GET['start']
-        end = request.GET['end']
-        chr_ci = request.GET['chr']
-        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact="gene").filter(gene_start__gt=start).filter(gene_end__lt=end)
+        start = int(request.GET['start'])
+        end = int(request.GET['end'])
+        chr_ci = toCHR(int(request.GET['chr']))
+        print("genList parameters: ", md5, start, end, chr_ci)
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact="gene").filter(gene_start__gte=start).filter(gene_end__lte=end)
+        print("genList: ", obs)
         results = []
         for ob in obs:
             result = {
@@ -441,7 +443,7 @@ def run_density(request):
             results = [{'chrnum': len(chrs)}]
 
             # prepare tops
-            tops = [{'density':0, 'name': "default"}] * 50
+            # tops = [{'density':0, 'name': "default"}] * 50
             # max in gene:
             max_gene_len = 0
             for gg in chr_exist:
@@ -501,7 +503,7 @@ def run_density(request):
                             count += 1
                     if count != 0:
                         ret = {'name': name, 'chr': chr_num_now + 1, 'start': start, 'end': end, 'density': count}
-                        tops = keep_tops(tops, ret)
+                        # tops = keep_tops(tops, ret)
 
                         # record total density
                         densitys += count
@@ -542,6 +544,16 @@ def run_density(request):
                         rs_den = 1
                     rs['density'] = rs_den
 
+            # sort density
+            values = results[1:]
+            results_sort = sorted(values, key=lambda x: x['density'])
+            results = results[:1] + results_sort
+
+            # top chart list
+            top_num = 50
+            tops = results_sort[-top_num:]
+            tops = tops[::-1]
+
             print("file5 has been handled with lens of returning list: ",len(results))
 
             ######################################
@@ -557,7 +569,7 @@ def run_density(request):
 
             if default_storage.exists(result_path):
                 default_storage.delete(result_path)
-            json_result = json.dumps(results)
+            json_result = json.dumps(results_sort)
             r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
             print("density_result save path: ", r_path)
 
