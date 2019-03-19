@@ -63,7 +63,7 @@ function redraw(case_id, start, end, chr) {
         "chr": chr
     }).done(function (exon) {
         exonList = exon;
-        console.log("exon number: ", exon.length)
+        console.log("ajax exon: ", exonList)
         $.getJSON("tools_file1/", {
             "caseid": case_id,
             "start": start,
@@ -71,7 +71,7 @@ function redraw(case_id, start, end, chr) {
             "chr": chr
         }).done(function (arc) {
             arcList = arc;
-            console.log("circ number: ", arc.length)
+            console.log("ajax circ: ", arcList)
             var tableContent = backSplicing(exonList, arcList)
             console.log('Things in Table: ', tableContent)
 
@@ -84,7 +84,7 @@ function redraw(case_id, start, end, chr) {
                 }
             } */
 
-
+/*
             var nestedData = [
                 {id:1, make:"Ford", model:"focus", reg:"P232 NJP", color:"white", serviceHistory:[
                    {date:"01/02/2016", engineer:"Steve Boberson", actions:"Changed oli filter"},
@@ -141,7 +141,7 @@ function redraw(case_id, start, end, chr) {
                      ]
                  })
               },
-          });
+          });*/
 
         });
     });
@@ -710,6 +710,7 @@ function backSplicing(exonJSON, arcJSON) {
     var mm = getMinMax(exonJSON)
     var range = mm[1] - mm[0]
     var colorIndex = 0
+    console.log("get exonlist: ", exonJSON, "\nmm: ", mm, "\nrange: ", range)
     for (i = 0; i < exonJSON.length; i++) {
         scaleStart = 50 + 700 * (exonJSON[i].start - mm[0]) / range
         scaleEnd = 50 + 700 * (exonJSON[i].end - mm[0]) / range
@@ -727,6 +728,7 @@ function backSplicing(exonJSON, arcJSON) {
                     "source": exonJSON[i].source,
                     "detail": exonJSON[i].detail
                 }
+                console.log("exonList " + i + " :", exonList[i])
                 colorIndex += 1
             } else {
                 colorIndex = 0
@@ -756,6 +758,7 @@ function backSplicing(exonJSON, arcJSON) {
         }
 
     }
+    console.log("After clean exonlist: ", exonList)
 
     console.log("arc num: ", arcJSON.length)
 
