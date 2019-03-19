@@ -1,6 +1,6 @@
-SNPstrand
-SNPchr
-SNPstart
+SNPstrand [7]
+SNPchr [1]
+SNPstart []
 SNPend
 SNPid
 

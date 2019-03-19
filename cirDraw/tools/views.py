@@ -317,15 +317,15 @@ def handle_file2(request):
         print(start)
         print(end)
         print(chr_ci)
-        gene_type = "exon"
-        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact=gene_type).filter(gene_start__gt=start).filter(gene_end__lt=end)
-        print("file2", obs)
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
+        print("Gene/exons file2", obs)
         results = []
         for ob in obs:
             result = {
                     'name': ob.gene_name,
                     'start': ob.gene_start,
-                    'end': ob.gene_end
+                    'end': ob.gene_end,
+                    'type': ob.gene_type,
                     }
             results.append(result)
         #print("file2222", results)
