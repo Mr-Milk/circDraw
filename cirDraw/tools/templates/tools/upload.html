@@ -46,7 +46,6 @@
     </form>
   </div>
 
-
   <p id="aftersubmit"></p>
   <p id="processtip"></p>
   <button class="btn btn-primary btn-sm" id="resultbutton" disabled style="display: none">View Report</button>
@@ -67,36 +66,5 @@
 
 {% block otherJS %}
 <script src="{% static 'tools/js/upload.js' %}"></script>
-<!--<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
-    <<script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.2/jquery.fileupload.min.js"></script>
-    <script>
-    $('#myfile').change(function () {
-        var a = $('#myfile').val().toString().split('\\');
-        console.log(a)
-        $('#filename').text(a[a.length -1])
-        $('#cancel').show().click(function(){
-            $('#filename').text('');
-            $('#cancel').hide()
-        });
-    });
 
-    $(function () {
-    $('#fileupload').fileupload({
-        datatype: 'json',
-      //发送formdata
-        formdata: {"FileType": $("#software").val(), "Species": $("#species").val(), "expvalue": $("#expvalue").val(), "denvalue": $("#denvalue").val()},
-        add: function (e, data) {
-            data.url = '/path/to/upload/handler.json'; //这是上传URL
-            data.context = $('#submit').click(function () {
-                    data.context = $('#aftersubmit').text("After submitting your file, it usually takes 2-3 mins to process, thanks for your patience.");
-                    data.submit().success($('#submit').text('✓ Submitted'));
-                });
-        },
-        done: function (e, data) {
-            $("#processtip").text('Upload finished.');
-            $("#resultbutton").show();
-        }
-    });
-});
-    </script>-->
 {% endblock %}

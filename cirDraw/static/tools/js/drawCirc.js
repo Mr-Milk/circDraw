@@ -75,10 +75,14 @@ function redraw(case_id, start, end, chr) {
             var tableContent = backSplicing(exonList, arcList)
             console.log('Things in Table: ', tableContent)
 
-            [
-                {start:100, end: 200, name: 'milk', type: 'exon', mod: [
-                    {"type": 'm6A', "start": 120, "end": 121, "strand": "+", "link": 'www.m6a.com', "disease":
-                        {"SNP_id": 'rs00000', "start": 444, "end": 555, "disease": "eat too much"}}] }]
+            /* function tableData (data) {
+                var modifiedData = data.slice(0);
+                var newData = []
+                for (line=0, max=data.length;line<max;line++){
+                    l = modifiedData[line]
+                    
+                }
+            } */
 
 
             var nestedData = [
