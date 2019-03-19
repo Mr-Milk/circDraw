@@ -317,15 +317,15 @@ def handle_file2(request):
         print(start)
         print(end)
         print(chr_ci)
-        gene_type = "exon"
-        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact=gene_type).filter(gene_start__gt=start).filter(gene_end__lt=end)
-        print("file2", obs)
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
+        print("Gene/exons file2", obs)
         results = []
         for ob in obs:
             result = {
                     'name': ob.gene_name,
                     'start': ob.gene_start,
-                    'end': ob.gene_end
+                    'end': ob.gene_end,
+                    'type': ob.gene_type,
                     }
             results.append(result)
         #print("file2222", results)
@@ -670,7 +670,7 @@ def operate_scale(lst, scale, attribute):
         lst_copy = lst[:]
         for rs in lst_copy:
             new_value = scale[0] + ((rs[attribute] - min_ob[attribute]) / ob_range) * scale_range
-            rs[attribute] = new_value
+            rs[attribute] = round(new_value)
         return lst_copy
     except ZeroDivisionError:
         print("Warning: Max and min is identical in the list, scale to max_scale_value")
