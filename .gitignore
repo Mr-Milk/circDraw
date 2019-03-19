@@ -135,4 +135,4 @@ RMBase_hg19_all_m5C_site.txt
 migrations/
 
 # Macos
-.DS_Store/
+.DS_Store
