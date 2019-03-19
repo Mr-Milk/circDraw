@@ -1,0 +1,7 @@
+gene_type (all types include CDS)
+gene_name
+chr_ci
+gene_start
+gene_end
+gene_id
+species
