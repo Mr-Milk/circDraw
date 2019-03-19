@@ -37,6 +37,9 @@ urlpatterns = [
 
     # dev testing urls
     # url(r'^test/$', views.render_display_page_test),
+
+    # Biocircos
+    url(r'^display/URL.DENSITY/$', views.handle_biocircos_density)
 ]
 
 if settings.DEBUG:

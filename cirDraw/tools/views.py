@@ -414,6 +414,26 @@ def handle_file5(request):
         raise Http404
 
 
+# -------------handle_DENSITY----------------------------------
+
+def handle_biocircos_density(request):
+    if request.method == "GET":
+        md5 = request.GET['case_id']
+        sub_path = "density_result/"
+        read_path = sub_path + md5
+        if default_storage.exists(read_path):
+            results = default_storage.open(read_path).read()
+            results_ob = json.loads(results)[1:]
+            print("Hanle_biocircos_density: This is the head of results: ", results_ob[:2])
+            return JsonResponse(results_ob, safe=False)
+        else:
+            print("No file for path: ", read_path)
+            raise Http404
+
+
+    else:
+        print("Handle file5's method is not GET")
+        raise Http404
 
 
 
@@ -445,6 +465,7 @@ def get_chr_num(chr_ci):
             elif c.lower() == 'y':
                 return 24
             else:
+                print("Failed: get_chr_num error. chr_ci:", chr_ci)
                 raise ValueError
 
 def circ_isin(geneob, circob, overlap_rate=0.5):
@@ -527,8 +548,6 @@ def aggregate(dic, chr_ci):
 
 @csrf_exempt
 def run_density(request):
-    # Databse used: ToolsChromosome, ToolsScalegenome
-    # results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
     try:
         if request.method == "GET":
             caseid = request.GET['md5']
@@ -540,46 +559,30 @@ def run_density(request):
             md5ob.save()
 
             # Get basic information
-
             # create circRNA and gene group based on chr
             data_groups = [[] for _ in range(2)]
             results = []
             # chr exist in the uploaded file
             chr_exist = ToolsChromosome.objects.filter(caseid__exact=caseid)
             print("chr_exist: ", chr_exist)
-            chrs = [get_chr_num(r.chr_ci)-1 for r in chr_exist]
-            results = [{'chrnum': len(chrs), 'species': species}]
+            results = [{'chrnum': chr_exist.count(), 'species': species}]
 
-            max_gene_len = 0
-            for gg in chr_exist:
-                gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=gg.chr_ci)[0]
-                lens = gene_ob.gene_max_end - gene_ob.gene_min_start
-                if lens > max_gene_len:
-                    max_gene_len = lens
-
-            # max count, min count
+            # max density count, min count
             max_count = 0
             min_count = sys.maxsize
             densitys = 0
 
             ########## loop ##########
-
-            for i in chr_lens:
+            for i in chr_exist:
                 # get current chr length
-                chr_num_now = get_chr_num(i['chr']) - 1
-                chr_len_now = i['chrLen']
+                chr_ci = i.chr_ci
+                print("Chr: ", chr_ci)
+                chr_num_now = get_chr_num(chr_ci)
                 # static info
-
-                chr_results = []
-                chr_ccc = toCHR(chr_num_now + 1)
-                data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
+                data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ci)
                 print("circ: ", len(data_groups[0]))
-                data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ccc)
+                data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ci)
                 print("gene: ", len(data_groups[1]))
-                gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
-                min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
-                gene_chr_lens = max_gene_end - min_gene_start
-
 
                 # start the loop
                 for each in data_groups[1]:
@@ -592,7 +595,7 @@ def run_density(request):
                         if circ_isin(each, r):
                             count += 1
                     if count != 0:
-                        ret = {'name': name, 'chr': chr_num_now + 1, 'start': start, 'end': end, 'value': count}
+                        ret = {'name': name, 'chr': chr_num_now , 'start': start, 'end': end, 'value': count}
 
                         # record total density
                         densitys += count
@@ -601,35 +604,25 @@ def run_density(request):
                             max_count = count
                         elif count < min_count:
                             min_count = count
-                print("Chr: ", chr_ccc)
+
                 print("---------------------------")
 
 
-            """
-            # fake data:
-            results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
-            """
             print("THIS ++++++++++++++ IS FILE5")
 
-            print("Max count, Min count: ", max_count, min_count)
             count_range = max_count - min_count
+            print("Max count, Min count, Count_range: ", max_count, min_count, count_range)
 
-
-            results_get = results[:1]
-            for rs in results[1:]:
-                print("count_range:", count_range)
-                if length == 0:
-                    rs_den = 100
-                else:
-                    rs_den = (rs['value'] - min_den) / length * 100
-                rs['value'] = rs_den
-                results_get.append(rs)
+            # scale to 1 - 100
+            results_first = results[:1]
+            results_get = operate_scale(results[1:], (1,100), 'value')
 
             # sort density
-            values = results_get[1:]
-            print("NO EAT: in run:", results_get[:1])
+            values = results_get
+            print("NO EAT first ob: in run:", results_get[:1])
+            print(values)
             results_sort = sorted(values, key=lambda x: x['value'])
-            results = results_get[:1] + results_sort
+            results = results_first + results_sort
 
             # top chart list
             top_num = 50
@@ -638,39 +631,23 @@ def run_density(request):
 
             print("file5 has been handled with lens of returning list: ",len(results))
 
-            ######################################
-            ########## convert to pixel block ####
-            #####################################
-
-
-            #final_out = [results, gene_box]
-
             # Write result to a file
             result_sub_path = 'density_result/'
             result_path = result_sub_path + caseid
-
-            if default_storage.exists(result_path):
-                default_storage.delete(result_path)
-            json_result = json.dumps(results)
-            r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
-            print("density_result save path: ", r_path)
-
+            save_results = write_to_path(result_path, results)
 
             # Write tops to a file
             tops_sub_path = 'tops_result/'
             tops_path = tops_sub_path + caseid
-            if default_storage.exists(tops_path):
-                default_storage.delete(tops_path)
-            json_tops = json.dumps(tops)
-            tops_path = default_storage.save(tops_path, ContentFile(json_tops)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+            save_tops = write_to_path(tops_path, tops)
 
             # Change status in database
-            md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
-            md5ob.status = 200
-            md5ob.save()
-
-
-
+            if save_results and save_tops:
+                md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
+                md5ob.status = 200
+                md5ob.save()
+            else:
+                print("Failed: save results or save tops failed ...")
             return JsonResponse([], safe=False)
 
         else:
@@ -682,6 +659,46 @@ def run_density(request):
         md5ob.status = 404
         md5ob.save()
         return JsonResponse([], safe=False)
+
+
+def operate_scale(lst, scale, attribute):
+    try:
+        max_ob = max(lst, key=lambda x: x[attribute])
+        min_ob = min(lst, key=lambda x: x[attribute])
+        ob_range = max_ob[attribute] - min_ob[attribute]
+        scale_range = scale[1] - scale[0]
+        lst_copy = lst[:]
+        for rs in lst_copy:
+            new_value = scale[0] + ((rs[attribute] - min_ob[attribute]) / ob_range) * scale_range
+            rs[attribute] = new_value
+        return lst_copy
+    except ZeroDivisionError:
+        print("Warning: Max and min is identical in the list, scale to max_scale_value")
+        for i in range(len(lst)):
+            lst[i][attribute] = scale[1]
+        return lst
+    except TypeError as e:
+        print("Failed: in operate_scale check types in input list: ", e)
+    except Exception as e:
+        print("Error :", e)
+
+
+
+
+
+
+
+def write_to_path(result_path, data):
+    try:
+        if default_storage.exists(result_path):
+            default_storage.delete(result_path)
+        json_result = json.dumps(data)
+        r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+        print("Success: Write to path success!", r_path)
+        return True
+    except Exception as e:
+        print("Failed: write to path failed:", e)
+
 
 
 def scale_den(f, scale):

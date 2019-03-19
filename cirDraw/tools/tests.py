@@ -59,3 +59,24 @@ def scale_den(f, scale):
         elif f < scale[0]:
             f = f * 10
     return f
+
+
+
+
+
+def operate_scale(lst, sacle, attribute, value_range=None):
+    try:
+        max_ob = max(lst, key=lambda x: x[attribute])
+        min_ob = min(lst, key=lambda x: x[attribute])
+        ob_range = max_ob[attribute] - min_ob[attribute]
+        scale_range = scale[1] - scale[0]
+        lst_copy = lst[:]
+        for rs in lst_copy:
+            new_value = scale[0] + ((rs[attribute] - min_ob[attribute]) / ob_range) * scale_range
+            rs[attribute] = new_value
+        return lst_copy
+    except ZeroDivisionError:
+        print("Warning: Max and min is identical in the list, scale to max_scale_value")
+        for i in range(len(lst)):
+            lst[i] = scale[1]
+        return lst
