@@ -140,7 +140,36 @@ $(document).ready(function () {
                                 if (status == 200) {
                                     clearInterval(interval_1)
                                     $('#timer').remove()
-                                    $('#processtip').html('<p>Processing Completed! Please remember your result URL (Accessible for next 24h) ' + '<b><i>' + 'www.circdraw.com/tools/display/' + md5 + '</i></b></p>')
+                                    $('#processtip').append('<p>Processing Completed! Please remember your result URL (Accessible for next 24h) ' +   '<div class="input-group input-group-sm col-5" id="reportURL">'+
+                                    '<input type="text" class="form-control" value="http://www.circdraw.com/tools/display/' + md5 + '" id="copy-input">' +
+                                    '<div class="input-group-append">' +
+                                      '<button class="btn btn-primary btn-sm" id="copy-button" data-toggle="tooltip" data-placement="bottom" title="Copied!">' +
+                                        '<i class="far fa-copy"></i>' +
+                                      '</button></div></div></p>')
+                                      $('#copy-button').tooltip('hide')
+                                      $('#copy-button').bind('click', function() {
+                                        var input = document.querySelector('#copy-input');
+                                        input.select();
+                                        try {
+                                          var success = document.execCommand('copy');
+                                          if (success) {
+                                            $('#copy-button').tooltip('enable');
+                                            $('#copy-button').tooltip('show');
+                                            $('#copy-button').tooltip('disable');
+                                    
+                                          } else {
+                                            $('#copy-button').tooltip('enable');
+                                            $('#copy-button').attr('title', 'Failed to copy!');
+                                            $('#copy-button').tooltip('show');
+                                            $('#copy-button').tooltip('disable');
+                                          }
+                                        } catch (err) {
+                                          $('#copy-button').tooltip('enable');
+                                          $('#copy-button').attr('title', 'Failed to copy!');
+                                          $('#copy-button').tooltip('show');
+                                          $('#copy-button').tooltip('disable');
+                                        }
+                                      });                                    
                                     $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/display/" + md5)
                                     clearInterval(interval_2)
                                 }
