@@ -15,13 +15,17 @@ urlpatterns = [
 
     # Run pre-process
     url(r'^run/$', views.run_density),
+    # url(r'^run/$', views.pixel_run_density),
+    #pixel_run_density
+
+
 
     # Check Status
     url(r'^statusfile/$', views.check_status),
 
     # Ajax call functions
-    url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
-    url(r'^display/tools_file2/$', views.handle_file2, name="tools_file2"),
+    url(r'^display/tools_file1/$', views.fake_handle_file1, name="tools_file1"),
+    url(r'^display/tools_file2/$', views.fake_handle_file2, name="tools_file2"),
     url(r'^display/genList/$', views.genList),
     url(r'^tools_file4/$', views.handle_file4, name="tools_file4"),
     url(r'^tools_file5/$', views.handle_file5, name="tools_file5"),
@@ -33,6 +37,9 @@ urlpatterns = [
 
     # dev testing urls
     # url(r'^test/$', views.render_display_page_test),
+
+    # Biocircos
+    url(r'^display/URL.DENSITY/$', views.handle_biocircos_density)
 ]
 
 if settings.DEBUG:
