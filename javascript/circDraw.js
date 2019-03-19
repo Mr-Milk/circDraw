@@ -1,7 +1,29 @@
-// Initiate snap.SVG instance
-var svg = Snap("#svg");
+(function ( $ ) {
+$.fn.extend({
+    circDraw: function(exonArray, circArray){
+        let newSVG = $('svg')
+        newSVG_id = new Data
+        newSVG_id = 'circDraw' + newSVG_id.getTime()
+        newSVG.attr({
+            'id': newSVG_id,
+            'width': 800,
+            'height': 500
+        })
+        $(this).append(newSVG)
+        let svg = Snap('#' + newSVG_id)
+        let chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
+            stroke: "#000",
+            strokeWidth: 1
+        });
+        return backSplicing(exonArray, circArray)
+    }
+})
 
-// Define a color palette for the exon blocks
+$.fn.circDraw.clear() = function(){
+    $(this).children(svg).children().remove()
+}
+}( jQuery ));
+//----------------------------------------- Functions For Drawing --------------------------------------
 var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2", "#FF881D", '#e30067', '#924900', '#ab9c00',
     '#ccd0d2', '#075800', '#5e0094', '#f28600', '#a327ea', '#ff8cc6', '#d60000', '#fff97a', '#ff0081', '#8aa0ae',
     '#87d1ff', '#7f00b8', '#2ab3e7', '#bd0056', '#0c9200', '#ffe85b', '#d27400', '#3f2e27', '#846a5b', '#004ac7',
@@ -9,159 +31,9 @@ var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2
     '#244c66', '#9c0000', '#6d0000', '#877400', '#002065', '#000cae', '#ecd600', '#ff44a2', '#ffa254', '#ff0000',
     '#1a6f00', '#ffa12c'
 ]
-
-// Get URL and split to caseid
-var url = $(location).attr('href').split("/")
-var case_id = url[url.length - 1].split("#")[0]
-
-// Get which region the user want to draw
-var start, end
-var exonList, arcList
-var $name = $('#geneNameSelect'),
-    $chr = $('#chrSelector'),
-    $start = $("#js-input-from"),
-    $end = $("#js-input-to")
-
-$name.on('DOMSubtreeModified', function(){
-    name = $name.text()
-    chr = $chr.text()
-    start = $start.text()
-    end = $end.text()
-    console.log('Refreshing circRNA canvas: ', name, chr, start, end)
-    redraw(case_id, start, end, chr)
-})
-
-/*
-function getGeneList() {
-    var val1 = parseInt($inputFrom.text()),
-        val2 = parseInt($inputTo.text()),
-        chr = parseInt($('#chrSelector').text())
-    $.getJSON("genList/", {
-            "caseid": case_id,
-            "start": val1,
-            "end": val2,
-            "chr": chr
-        })
-        .done(function (genes) {
-            geneList = genes
-        })
-}*/
-
-function redraw(case_id, start, end, chr) {
-    svg.clear()
-    // draw a straight line
-    var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
-        stroke: "#000",
-        strokeWidth: 1
-    });
-
-    // Call Ajax
-    $.getJSON("tools_file2/", {
-        "caseid": case_id,
-        "start": start,
-        "end": end,
-        "chr": chr
-    }).done(function (exon) {
-        exonList = exon;
-        console.log("exon number: ", exon.length)
-        $.getJSON("tools_file1/", {
-            "caseid": case_id,
-            "start": start,
-            "end": end,
-            "chr": chr
-        }).done(function (arc) {
-            arcList = arc;
-            console.log("circ number: ", arc.length)
-            var tableContent = backSplicing(exonList, arcList)
-            console.log('Things in Table: ', tableContent)
-
-            [
-                {start:100, end: 200, name: 'milk', type: 'exon', mod: [
-                    {"type": 'm6A', "start": 120, "end": 121, "strand": "+", "link": 'www.m6a.com', "disease":
-                        {"SNP_id": 'rs00000', "start": 444, "end": 555, "disease": "eat too much"}}] }]
-
-
-            var nestedData = [
-                {id:1, make:"Ford", model:"focus", reg:"P232 NJP", color:"white", serviceHistory:[
-                   {date:"01/02/2016", engineer:"Steve Boberson", actions:"Changed oli filter"},
-                   {date:"07/02/2017", engineer:"Martin Stevenson", actions:"Break light broken"},
-                ]},
-                {id:2, make:"BMW", model:"m3", reg:"W342 SEF", color:"red", serviceHistory:[
-                   {date:"22/05/2017", engineer:"Jimmy Brown", actions:"Aligned wheels"},
-                   {date:"11/02/2018", engineer:"Lotty Ferberson", actions:"Changed Oil"},
-                   {date:"04/04/2018", engineer:"Franco Martinez", actions:"Fixed Tracking"},
-                ]},
-            ]
-            var linkIcon = function(cell, formatterParams){ //plain text value
-              return "<i class='fas fa-link'></i>";
-          };
-      
-            var table = new Tabulator("#table", {
-              height:"500px",
-              layout:"fitColumns",
-              resizableColumns:false,
-              data:nestedData,
-              columns:[
-                  {title:"Exon Name", field:"name"},
-                  {title:"Start", field:"start"},
-                  {title:"End", field:"end"},
-                  {title:"Type", field:"type"},
-              ],
-              rowFormatter:function(row){
-                  //create and style holder elements
-                 var holderEl = document.createElement("div");
-                 var tableEl = document.createElement("div");
-          
-                 holderEl.style.boxSizing = "border-box";
-                 holderEl.style.padding = "10px 30px 10px 10px";
-                 holderEl.style.borderTop = "1px solid rgba(0,0,0,.1)";
-                 holderEl.style.borderBotom = "1px solid rgba(0,0,0,.1)";
-                 holderEl.style.background = "#fff";
-          
-                 tableEl.style.border = "1px solid rgba(0,0,0,.1)";
-          
-                 holderEl.appendChild(tableEl);
-          
-                 row.getElement().appendChild(holderEl);
-          
-                 var subTable = new Tabulator(tableEl, {
-                     layout:"fitColumns",
-                     data:row.getData().mod,
-                     columns:[
-                     {title:"Mod Type", field:"date", sorter:"date"},
-                     {title:"Start", field:"engineer"},
-                     {title:"End", field:"actions"},
-                     {title:"Disease", field:""},
-                     {title:"Related SNP", field:""},
-                     {title:"Link", field:"link", formatter:linkIcon, width:40, align:"center", cellClick:function(e, cell){openNewTab(link, '_blank')}}
-                     ]
-                 })
-              },
-          });
-
-        });
-    });
-}
-// for table
-/*
-function subTable(modJSON) {
-    var startTable = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;"><tr>'
-    var endTable = '</tr></table>'
-
-    for (i = 0; i < modJSON.mod.length; i++) {
-        startTable += '<td>' + modJSON.mod.type + ' | ' + modJSON.mod.start + ' - ' + modJSON.mod.end + ' | ' + '<button class="btn btn-sm btn-primary' + 'href="' + modJSON.mod.link + '"></button>' + '</td>'
-    }
-
-    var subTable = startTable + endTable
-
-    return subTable
-}*/
-
-//----------------------------------------- Functions For Drawing --------------------------------------
-
 // draw an junction block
 function junction_block(x, color) {
-    var junction_block = svg.paper.rect(x, 445, 2, 10).attr({
+    let junction_block = svg.paper.rect(x, 445, 2, 10).attr({
         fill: color,
         stroke: 'none',
     });
@@ -172,10 +44,10 @@ function junction_block(x, color) {
 // draw an exon
 function exon_block(x, len, color, name) {
 
-    var exon_name
-    var display = false
+    let exon_name
+    let display = false
 
-    var exon_block = svg.paper.rect(x, 447, len, 6).attr({
+    let exon_block = svg.paper.rect(x, 447, len, 6).attr({
         fill: color,
         stroke: 'none',
         cursor: 'pointer'
@@ -214,10 +86,10 @@ function exon_block(x, len, color, name) {
 // draw a gene
 function gene_block(x, len, color, name) {
 
-    var gene_name
-    var display = false
+    let gene_name
+    let display = false
 
-    var gene_block = svg.paper.rect(x, 449, len, 2).attr({
+    let gene_block = svg.paper.rect(x, 449, len, 2).attr({
         fill: color,
         stroke: 'none',
         cursor: 'pointer'
@@ -255,8 +127,8 @@ function gene_block(x, len, color, name) {
 
 // calculate the range of an array
 function getRange(arr) {
-    var range = 0
-    for (var i = 0; i < arr.length; i++) {
+    let range = 0
+    for (let i = 0; i < arr.length; i++) {
         range += parseInt(arr[i].end) - parseInt(arr[i].start)
     }
     return range;
@@ -264,7 +136,7 @@ function getRange(arr) {
 
 // calculate the min and max value of an array
 function getMinMax(exonJSON) {
-    var arr = []
+    let arr = []
     for (i = 0; i < exonJSON.length; i++) {
         arr.push(exonJSON[i].start)
         arr.push(exonJSON[i].end)
@@ -291,12 +163,12 @@ function legendText(x, y, text, color) {
 
 function drawLegend(epiList) {
 
-    var y = 20,
+    let y = 20,
         step_y = 15,
         epi = []
 
     function range(start, step, times) {
-        var list = []
+        let list = []
         for (i = 0; i < times; i++) {
             y = start + step * i
             list.push(y)
@@ -332,7 +204,7 @@ function drawLegend(epiList) {
             stroke: '#000',
             strokeWidth: 0.5
         })
-        MREText = legendText(30, y + 8, "MRE", '#6D2E5B')
+        MREText = legendText(30, y + 8, "RBP", '#6D2E5B')
         return svg.group(MRE, MREText)
     }
 
@@ -352,7 +224,7 @@ function drawLegend(epiList) {
         return svg.group(arrow, arrowText)
     }
 
-    var yList = range(20, 15, epiList.length)
+    let yList = range(20, 15, epiList.length)
     console.log(yList)
 
     for (i = 0; i < epiList.length; i++) {
@@ -368,7 +240,7 @@ function drawLegend(epiList) {
         if (epiList[i] == 'ORF') {
             epi.push(ORF(yList[i]))
         }
-        if (epiList[i] == 'MRE') {
+        if (epiList[i] == 'RBP') {
             epi.push(MRE(yList[i]))
         }
         if (epiList[i] == 'SNP') {
@@ -377,7 +249,7 @@ function drawLegend(epiList) {
     }
 
     console.log(epi[0])
-    var legend = epi[0]
+    let legend = epi[0]
 
     for (i = 1; i < epi.length; i++) {
         legend = svg.group(legend, epi[i])
@@ -406,7 +278,7 @@ function textCenter(centerX, centerY, text, fontSize, color) {
 
 // Adding animation for epi-tag on circRNA
 function epiAnimate(epi, name, color, centerX, centerY, exonJSON) {
-    var c = epi.getBBox()
+    let c = epi.getBBox()
     epi.mouseover(function () {
             epi.animate({
                 transform: 's1.5,' + c.cx + ',' + c.cy
@@ -426,15 +298,15 @@ function epiAnimate(epi, name, color, centerX, centerY, exonJSON) {
 
 // Draw circRNA when clicking the arc
 function drawCircRNA(exonJSON) {
-    var modCirc = [],
+    let modCirc = [],
         circle = [],
         realStart = getMinMax(exonJSON)[0],
         realEnd = getMinMax(exonJSON)[1]
-    var startAngle = 180,
+    let startAngle = 180,
         endAngle = 180,
         centerX = 400,
         centerY = 140
-    var range = getRange(exonJSON),
+    let range = getRange(exonJSON),
         modType = []
 
     // circRNA background
@@ -462,28 +334,28 @@ function drawCircRNA(exonJSON) {
             modStartAngle = startAngle + 360 * (exonJSON[i]['mod'][t].start - exonJSON[i].start) / range
             modEndAngle = startAngle + 360 * (exonJSON[i]['mod'][t].end - exonJSON[i].start) / range
             if (exonJSON[i]['mod'][t].type == 'm6A') {
-                var m6A = triTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
+                let m6A = triTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
                 epiAnimate(m6A, 'm6A', '#E98B2A', centerX, centerY, exonJSON)
                 modCirc[i][t] = m6A
             }
             if (exonJSON[i]['mod'][t].type == 'm1C') {
-                var m1C = squareTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
+                let m1C = squareTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
                 epiAnimate(m1C, 'm1C', '#E16B8C', centerX, centerY, exonJSON)
                 modCirc[i][t] = m1C
             }
             if (exonJSON[i]['mod'][t].type == 'm1A') {
-                var m1A = circleTagOnCircle(centerX, centerY, 85, 180 + modStartAngle, '#64363C')
+                let m1A = circleTagOnCircle(centerX, centerY, 85, 180 + modStartAngle, '#64363C')
                 epiAnimate(m1A, 'm1A', '#64363C', centerX, centerY, exonJSON)
                 modCirc[i][t] = m1A
             }
             if (exonJSON[i]['mod'][t].type == 'SNP') {
-                var SNP = arrowOnCircle(centerX, centerY, 85, 180 + modStartAngle)
+                let SNP = arrowOnCircle(centerX, centerY, 85, 180 + modStartAngle)
                 epiAnimate(SNP, 'SNP', '#000', centerX, centerY, exonJSON)
                 modCirc[i][t] = SNP
             }
-            if (exonJSON[i]['mod'][t].type == 'MRE') {
+            if (exonJSON[i]['mod'][t].type == 'RBP') {
                 modPath = describeArc(centerX, centerY, 70, modStartAngle, modEndAngle)
-                var MRE = svg.paper.path(modPath).attr({
+                let MRE = svg.paper.path(modPath).attr({
                     stroke: '#6D2E5B',
                     strokeWidth: 5,
                     fill: 'none',
@@ -496,7 +368,7 @@ function drawCircRNA(exonJSON) {
                             cursor: 'pointer'
                         });
                     }, 200);
-                    text = textCenter(centerX, centerY, "MRE", 15, '#6D2E5B')
+                    text = textCenter(centerX, centerY, "RBP", 15, '#6D2E5B')
                 }).mouseout(function () {
                     Snap.animate(6.5, 5, function (val) {
                         MRE.attr({
@@ -513,7 +385,7 @@ function drawCircRNA(exonJSON) {
             }
             if (exonJSON[i]['mod'][t].type == 'ORF') {
                 modPath = describeArc(centerX, centerY, 63, modStartAngle, modEndAngle)
-                var ORF = svg.paper.path(modPath).attr({
+                let ORF = svg.paper.path(modPath).attr({
                     stroke: '#516E41',
                     strokeWidth: 5,
                     fill: 'none',
@@ -560,7 +432,7 @@ function drawCircRNA(exonJSON) {
         }
     }
 
-    var juncX = centerX - 2,
+    let juncX = centerX - 2,
         juncY = centerY + 75
     junction_point1 = svg.paper.rect(juncX - 2.3, juncY, 4, 10).attr({
         fill: "#00AA90",
@@ -577,7 +449,7 @@ function drawCircRNA(exonJSON) {
     legend = drawLegend(modType)
 
     // group everything together
-    var group
+    let group
     if (legend == undefined) {
         group = svg.group(arcBackGround, circName)
     } else {
@@ -586,13 +458,13 @@ function drawCircRNA(exonJSON) {
 
     for (i = 0; i < modCirc.length; i++) {
         for (t = 0; t < modCirc[i].length; t++) {
-            var cx = group
+            let cx = group
             group = svg.group(cx, modCirc[i][t])
         }
     }
 
     for (i = 0; i < circle.length; i++) {
-        var cc = group
+        let cc = group
         group = svg.group(cc, circle[i])
     }
 
@@ -601,7 +473,7 @@ function drawCircRNA(exonJSON) {
 
 // CORE FUNCTION! draw the arc and its circRNA
 function arc(start, end, exonJSON) {
-    var rx = (end - start) / 2,
+    let rx = (end - start) / 2,
         ry = rx / 2,
         startBlock = junction_block(start, "#00AA90"),
         endBlock = junction_block(end, "#D0104C"),
@@ -610,8 +482,8 @@ function arc(start, end, exonJSON) {
         display = false,
         circ
 
-    var path = "M" + (start + 1) + " 443A" + rx + " " + ry + " 0 0 1 " + (end + 1) + " 443"
-    var c = svg.paper.path(path).attr({
+    let path = "M" + (start + 1) + " 443A" + rx + " " + ry + " 0 0 1 " + (end + 1) + " 443"
+    let c = svg.paper.path(path).attr({
         stroke: "#000",
         strokeWidth: 1,
         fill: 'none',
@@ -620,7 +492,7 @@ function arc(start, end, exonJSON) {
 
     c.click(function () {
         if (display == false) {
-            var x = svg.select("g")
+            let x = svg.select("g")
             if (x != null) {
                 x.remove()
             }
@@ -678,7 +550,7 @@ function arc(start, end, exonJSON) {
 // draw an sector
 // from an answer in stackflow
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+    let angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
 
     return {
         x: centerX + (radius * Math.cos(angleInRadians)),
@@ -688,12 +560,12 @@ function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
 
 function describeArc(x, y, radius, startAngle, endAngle) {
 
-    var start = polarToCartesian(x, y, radius, endAngle);
-    var end = polarToCartesian(x, y, radius, startAngle);
+    let start = polarToCartesian(x, y, radius, endAngle);
+    let end = polarToCartesian(x, y, radius, startAngle);
 
-    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    let largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
 
-    var d = [
+    let d = [
         "M", start.x, start.y,
         "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
     ].join(" ");
@@ -702,10 +574,10 @@ function describeArc(x, y, radius, startAngle, endAngle) {
 }
 
 function backSplicing(exonJSON, arcJSON) {
-    var exonList = [], drawArc = []
-    var mm = getMinMax(exonJSON)
-    var range = mm[1] - mm[0]
-    var colorIndex = 0
+    let exonList = [], drawArc = []
+    let mm = getMinMax(exonJSON)
+    let range = mm[1] - mm[0]
+    let colorIndex = 0
     for (i = 0; i < exonJSON.length; i++) {
         scaleStart = 50 + 700 * (exonJSON[i].start - mm[0]) / range
         scaleEnd = 50 + 700 * (exonJSON[i].end - mm[0]) / range
@@ -906,4 +778,6 @@ function squareTagOnCircle(centerX, centerY, r, Degree) {
 
 function openNewTab(link) {
     window.open(link, "_blank")
+}
+
 }

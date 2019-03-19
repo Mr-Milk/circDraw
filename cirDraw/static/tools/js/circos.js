@@ -972,82 +972,64 @@ $.getJSON("URL.DENSITY").done(
         maxRadius: 237,
         minRadius: 210,
         histogramFillColor: "#c73e3a",
-      }, densityINFO];
+      }, densityINFO];})
 
-    $.getJSON("URL.M6A").done(
-        function(M6AINFO){
-            SCATTER_M6A = [ "SCATTER_M6A" , {
-                SCATTERRadius: 125,
-                innerCircleSize: 2,
-                outerCircleSize: 2,
-                innerCircleColor: "#E98B2A",
-                outerCircleColor: "#E98B2A",
-                random_data: 0
-              } , M6AINFO]
+$.getJSON("URL.M6A").done(
+    function(M6AINFO){
+        SCATTER_M6A = [ "SCATTER_M6A" , {
+            SCATTERRadius: 125,
+            innerCircleSize: 2,
+            outerCircleSize: 2,
+            innerCircleColor: "#E98B2A",
+            outerCircleColor: "#E98B2A",
+            random_data: 0
+            } , M6AINFO]})
 
-            $.getJSON("URL.M1A").done(
-                function(M1AINFO){
-                    SCATTER_M1A = [ "SCATTER_M1A" , {
-                        SCATTERRadius: 110,
-                        innerCircleSize: 2,
-                        outerCircleSize: 2,
-                        innerCircleColor: "#64363C",
-                        outerCircleColor: "#64363C",
-                        random_data: 0
-                      } , M1AINFO]
+$.getJSON("URL.M1A").done(
+    function(M1AINFO){
+        SCATTER_M1A = [ "SCATTER_M1A" , {
+            SCATTERRadius: 110,
+            innerCircleSize: 2,
+            outerCircleSize: 2,
+            innerCircleColor: "#64363C",
+            outerCircleColor: "#64363C",
+            random_data: 0
+            } , M1AINFO]})
 
-                    $.getJSON("URL.M5C").done(
-                        function(M5CINFO){
-                            SCATTER_M5C = [ "SCATTER_M5C" , {
-                                SCATTERRadius: 95,
-                                innerCircleSize: 2,
-                                outerCircleSize: 2,
-                                innerCircleColor: "#E16B8C",
-                                outerCircleColor: "#E16B8C",
-                                random_data: 0
-                              } , M5CINFO]
+$.getJSON("URL.M5C").done(
+    function(M5CINFO){
+        SCATTER_M5C = [ "SCATTER_M5C" , {
+            SCATTERRadius: 95,
+            innerCircleSize: 2,
+            outerCircleSize: 2,
+            innerCircleColor: "#E16B8C",
+            outerCircleColor: "#E16B8C",
+            random_data: 0
+            } , M5CINFO]})
 
-                            $.getJSON("URL.SNP").done(
-                                function(SNPINFO){
-                                    SNP = [ "SNP" , {
-                                        maxRadius: 161,
-                                        minRadius: 144,
-                                        SNPFillColor: "#F05E1C",
-                                        circleSize: 2,
-                                        displaySNPAxis: false,
-                                        SNPAxisColor: "#B8B8B8",
-                                        SNPAxisWidth: 0.5,
-                                        SNPAnimationDisplay: true,
-                                        SNPAnimationTime: 2000,
-                                        SNPAnimationDelay: 20,
-                                        SNPAnimationType: "elastic",  //linear,circle,elastic,bounce
-                                      } , SNPINFO]
+$.getJSON("URL.SNP").done(
+    function(SNPINFO){
+        SNP = [ "SNP" , {
+            maxRadius: 161,
+            minRadius: 144,
+            SNPFillColor: "#F05E1C",
+            circleSize: 2,
+            displaySNPAxis: false,
+            SNPAxisColor: "#B8B8B8",
+            SNPAxisWidth: 0.5,
+            SNPAnimationDisplay: true,
+            SNPAnimationTime: 2000,
+            SNPAnimationDelay: 20,
+            SNPAnimationType: "elastic",  //linear,circle,elastic,bounce
+            } , SNPINFO]})
 
-                                $.getJSON("URL.EXP").done(
-                                    function(EXPINFO){
-                                        HEATMAP_EXP = [ "HISTOGRAM_EXP" , {
-                                            maxRadius: 237,
-                                            minRadius: 210,
-                                            histogramFillColor: "#c73e3a",
-                                          } , EXPINFO]
+$.getJSON("URL.EXP").done(
+    function(EXPINFO){
+        HEATMAP_EXP = [ "HISTOGRAM_EXP" , {
+            maxRadius: 237,
+            minRadius: 210,
+            histogramFillColor: "#c73e3a",
+            } , EXPINFO]})
 
-                                    BioCircos = new BioCircos(BACKGROUND_SNP, BACKGROUND_EPI, SNP, ARC_hg19, HISTOGRAM_DENSITY, SCATTER_M6A, SCATTER_M1A, SCATTER_M5C ,HEATMAP_EXP, BioCircosGenome, circosConfig)
- 
-                                    BioCircos.draw_genome(BioCircos01.genomeLength);
-                                    }
-                                ).fail(
-                                    function(){
-                                        BioCircos = new BioCircos(BACKGROUND_SNP, BACKGROUND_EPI, SNP, ARC_hg19, HISTOGRAM_DENSITY, SCATTER_M6A, SCATTER_M1A, SCATTER_M5C ,BioCircosGenome, circosConfig)
-                                        BioCircos.draw_genome(BioCircos01.genomeLength)
-                                    }
-                                );
-                                }
-                            ).fail(function(){alert("SNPINFO loading failed.")});
-                        }
-                    ).fail(function(){alert("m5CINFO loading failed.")});
-                }
-            ).fail(function(){alert("m1AINFO loading failed.")});
-        }
-    ).fail(function(){alert("m6AINFO loading failed.")});
-    }
-).fail(function(){alert("densityINFO loading failed.")});
+BioCircos = new BioCircos(BACKGROUND_SNP, BACKGROUND_EPI, SNP, ARC_hg19, HISTOGRAM_DENSITY, SCATTER_M6A, SCATTER_M1A, SCATTER_M5C ,HEATMAP_EXP, BioCircosGenome, circosConfig) 
+BioCircos.draw_genome(BioCircos01.genomeLength);
