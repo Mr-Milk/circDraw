@@ -460,7 +460,7 @@ def circ_isin(geneob, circob, overlap_rate=0.5):
         over = sort_lst[2] - sort_lst[1]
         #print(sort_lst, over, gene_len, over/gene_len)
         #print(over >= (gene_len * overlap_rate))
-        if over >= (gene_len * overlap_rate) :
+        if over >= (gene_len * overlap_rate) or over == circ_len or over == gene_len:
             return True
         else:
             return False
@@ -492,6 +492,10 @@ def aggregate(dic, chr_ci):
             pass
         elif now != 0 and last == 0:
             sep += now
+            if rs_den > 100:
+                rs_den = 100
+            elif rs_den < 1:
+                rs_den = 1
             start = i
             last = now
             if i == length:
@@ -521,33 +525,6 @@ def aggregate(dic, chr_ci):
     return blocks
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @csrf_exempt
 def run_density(request):
     # Databse used: ToolsChromosome, ToolsScalegenome
@@ -573,33 +550,27 @@ def run_density(request):
             chrs = [get_chr_num(r.chr_ci)-1 for r in chr_exist]
             results = [{'chrnum': len(chrs), 'species': species}]
 
-            # prepare tops
-            # tops = [{'density':0, 'name': "default"}] * 50
-            # max in gene:
             max_gene_len = 0
             for gg in chr_exist:
                 gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=gg.chr_ci)[0]
                 lens = gene_ob.gene_max_end - gene_ob.gene_min_start
                 if lens > max_gene_len:
                     max_gene_len = lens
-            # pixels
-            pixels = 800
-            max_chr_lens, chr_lens = chr_lengths(chr_exist)
-            # create pixels
-            pixel_num = 1000
-            x_d = np.linspace(0, 400, pixel_num)
 
-            # create gene_box
-            gene_box = []
+            # max count, min count
+            max_count = 0
+            min_count = sys.maxsize
+            densitys = 0
+
             ########## loop ##########
+
             for i in chr_lens:
                 # get current chr length
                 chr_num_now = get_chr_num(i['chr']) - 1
                 chr_len_now = i['chrLen']
                 # static info
-                densitys = 0
+
                 chr_results = []
-                density_box = [] # list to contain the pixels appeared
                 chr_ccc = toCHR(chr_num_now + 1)
                 data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
                 print("circ: ", len(data_groups[0]))
@@ -608,16 +579,6 @@ def run_density(request):
                 gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
                 min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
                 gene_chr_lens = max_gene_end - min_gene_start
-
-                # max circle len in this chr
-                # overlap = 0.5
-                # circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid).filter(chr_ci__exact = chr_ccc)[0]
-                # max_circ_len = circ_info.max_length_circ
-
-
-                # we want to divide the group so that the loop's runtime will be reduced.
-
-
 
 
                 # start the loop
@@ -632,11 +593,15 @@ def run_density(request):
                             count += 1
                     if count != 0:
                         ret = {'name': name, 'chr': chr_num_now + 1, 'start': start, 'end': end, 'density': count}
-                        # tops = keep_tops(tops, ret)
 
                         # record total density
                         densitys += count
                         results.append(ret)
+                        if count > max_count:
+                            max_count = count
+                        elif count < min_count:
+                            min_count = count
+                print("Chr: ", chr_ccc)
                 print("---------------------------")
 
 
@@ -646,38 +611,25 @@ def run_density(request):
             """
             print("THIS ++++++++++++++ IS FILE5")
 
-            max_den = 1
-            min_den = 100
-            for res in results[1:]:
-                density = res['density']
-                real_den = (density / densitys) * 100
-
-                if max_den < real_den:
-                    max_den = real_den
-                if min_den > real_den:
-                    min_den = real_den
-
-                res['density'] = real_den
-            print("Max den, Min den: ", max_den, min_den)
-            length = max_den - min_den
+            print("Max count, Min count: ", max_count, min_count)
+            count_range = max_count - min_count
 
 
+            results_get = results[:1]
             for rs in results[1:]:
-                if int(length) == 0:
-                    rs['density'] = 100
+                print("count_range:", count_range)
+                if length == 0:
+                    rs_den = 100
                 else:
-                    rs_den = int((rs['density'] - min_den) / length * 100)
-                    if rs_den > 100:
-                        rs_den = 100
-                    elif rs_den < 1:
-                        rs_den = 1
-                    rs['density'] = rs_den
+                    rs_den = (rs['density'] - min_den) / length * 100
+                rs['density'] = rs_den
+                results_get.append(rs)
 
             # sort density
-            values = results[1:]
-            print("NO EAT: in run:", results[:1])
+            values = results_get[1:]
+            print("NO EAT: in run:", results_get[:1])
             results_sort = sorted(values, key=lambda x: x['density'])
-            results = results[:1] + results_sort
+            results = results_get[:1] + results_sort
 
             # top chart list
             top_num = 50
@@ -705,12 +657,12 @@ def run_density(request):
 
 
             # Write tops to a file
-            # tops_sub_path = 'tops_result/'
-            # tops_path = tops_sub_path + caseid
-            # if default_storage.exists(tops_path):
-            #     default_storage.delete(tops_path)
-            # json_tops = json.dumps(tops)
-            # tops_path = default_storage.save(tops_path, ContentFile(json_tops)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+            tops_sub_path = 'tops_result/'
+            tops_path = tops_sub_path + caseid
+            if default_storage.exists(tops_path):
+                default_storage.delete(tops_path)
+            json_tops = json.dumps(tops)
+            tops_path = default_storage.save(tops_path, ContentFile(json_tops)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
 
             # Change status in database
             md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
@@ -723,14 +675,26 @@ def run_density(request):
 
         else:
             raise Http404
-    except:
-        print("Running failed...")
+    except Exception as e:
+        print("Running failed: ", e)
         caseid = request.GET['md5']
         md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
         md5ob.status = 404
         md5ob.save()
         return JsonResponse([], safe=False)
 
+
+def scale_den(f, scale):
+    print("start loop")
+    while f >= scale[1] or f <= scale[0]:
+        if f >= scale[1]:
+            f = f / 10
+        elif f <= scale[0]:
+            f = f * 10
+        else:
+            break
+    print("break loop")
+    return f
 
 
 @csrf_exempt

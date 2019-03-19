@@ -47,3 +47,15 @@ def aggregate(dic, chr_ci):
     for ob in blocks:
         ob['density'] = round(ob['density'] / total * 100)
     return blocks
+
+
+def scale_den(f, scale):
+    """
+    >>> f =
+    """
+    while f > scale[1] or f < scale[0]:
+        if f > scale[1]:
+            f = f / 10
+        elif f < scale[0]:
+            f = f * 10
+    return f
