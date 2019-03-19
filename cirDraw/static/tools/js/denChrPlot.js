@@ -252,7 +252,7 @@ function chr_block(y, len, name) {
 function getMinMax(denJSON) {
     var arr = []
     for (i = 0; i < denJSON.length; i++) {
-        arr.push(denJSON[i].density)
+        arr.push(denJSON[i].value)
     }
 
     max = Math.max.apply(null, arr)
@@ -375,11 +375,11 @@ function normChr(chrJSON) {
 function denPlot(chrMaxLen, densityJSON, denLimit) {
     filterBlock = []
     for (i = 0; i < densityJSON.length; i++) {
-        if (densityJSON[i].density > denLimit) {
+        if (densityJSON[i].value > denLimit) {
         var xAxis = 50 + 640 * densityJSON[i].start / chrMaxLen,
             len = 640 * (densityJSON[i].end - densityJSON[i].start) / chrMaxLen
         filterBlock.push(densityJSON[i])
-        density_block(xAxis, 20 + 20 * densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].density, densityJSON[i].name)
+        density_block(xAxis, 20 + 20 * densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].value, densityJSON[i].name)
     }
 }
 }
