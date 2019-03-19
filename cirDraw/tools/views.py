@@ -592,7 +592,7 @@ def run_density(request):
                         if circ_isin(each, r):
                             count += 1
                     if count != 0:
-                        ret = {'name': name, 'chr': chr_num_now + 1, 'start': start, 'end': end, 'density': count}
+                        ret = {'name': name, 'chr': chr_num_now + 1, 'start': start, 'end': end, 'value': count}
 
                         # record total density
                         densitys += count
@@ -621,14 +621,14 @@ def run_density(request):
                 if length == 0:
                     rs_den = 100
                 else:
-                    rs_den = (rs['density'] - min_den) / length * 100
-                rs['density'] = rs_den
+                    rs_den = (rs['value'] - min_den) / length * 100
+                rs['value'] = rs_den
                 results_get.append(rs)
 
             # sort density
             values = results_get[1:]
             print("NO EAT: in run:", results_get[:1])
-            results_sort = sorted(values, key=lambda x: x['density'])
+            results_sort = sorted(values, key=lambda x: x['value'])
             results = results_get[:1] + results_sort
 
             # top chart list
