@@ -112,76 +112,70 @@ function redraw(case_id, start, end, chr) {
                 min_interval: Math.min.apply(null, intervalList)
             })
 
-            /* function tableData (data) {
-                var modifiedData = data.slice(0);
-                var newData = []
-                for (line=0, max=data.length;line<max;line++){
-                    l = modifiedData[line]
-                    
-                }
-            } */
-
             /*
             var nestedData = [
                 {id:1, name:"VAP135", start:"12222", end:"23333", source:"", mod:[
-                   {type:"m6A", engineer:"Steve Boberson", actions:"Changed oli filter"},
-                   {date:"07/02/2017", engineer:"Martin Stevenson", actions:"Break light broken"},
+                   {type:"m6A", start:"122222", end:"12222222", SNP_id:"rs9086523", disease:"Parkinson Disease", link:"www.baidu.com"},
+                   {type:"m1C", start:"122222", end:"12222222", SNP_id:"rs9086523", disease:"Parkinson Disease", link:"www.baidu.com"},
                 ]},
-                {id:2, make:"BMW", model:"m3", reg:"W342 SEF", color:"red", serviceHistory:[
-                   {date:"22/05/2017", engineer:"Jimmy Brown", actions:"Aligned wheels"},
-                   {date:"11/02/2018", engineer:"Lotty Ferberson", actions:"Changed Oil"},
-                   {date:"04/04/2018", engineer:"Franco Martinez", actions:"Fixed Tracking"},
+                {id:2, name:"VAP135", start:"12546356", end:"23454635", source:"", mod:[
+                    {type:"m1C", start:"122222", end:"12222222", SNP_id:"rs9086523", disease:"Parkinson Disease", link:"www.baidu.com"},
                 ]},
             ]
             var linkIcon = function(cell, formatterParams){ //plain text value
               return "<i class='fas fa-link'></i>";
-          };
+          };*/
       
-            var table = new Tabulator("#table", {
-              height:"500px",
-              layout:"fitColumns",
-              resizableColumns:false,
-              data:nestedData,
-              pagination:"local",
-              paginationSize:6,
-              textSize: 10,
-              columns:[
-                  {title:"Exon Name", field:"name"},
-                  {title:"Start", field:"start"},
-                  {title:"End", field:"end"},
-                  {title:"Type", field:"type"},
-              ],
-              rowFormatter:function(row){
-                  //create and style holder elements
-                 var holderEl = document.createElement("div");
-                 var tableEl = document.createElement("div");
-          
-                 holderEl.style.boxSizing = "border-box";
-                 holderEl.style.padding = "10px 30px 10px 10px";
-                 holderEl.style.borderTop = "1px solid rgba(0,0,0,.1)";
-                 holderEl.style.borderBotom = "1px solid rgba(0,0,0,.1)";
-                 holderEl.style.background = "#fff";
-          
-                 tableEl.style.border = "1px solid rgba(0,0,0,.1)";
-          
-                 holderEl.appendChild(tableEl);
-          
-                 row.getElement().appendChild(holderEl);
-          
-                 var subTable = new Tabulator(tableEl, {
-                     layout:"fitColumns",
-                     data:row.getData().mod,
-                     columns:[
-                     {title:"Mod Type", field:"type"},
-                     {title:"Start", field:"start"},
-                     {title:"End", field:"end"},
-                     {title:"Disease", field:"disease"},
-                     {title:"Related SNP", field:"SNP_id"},
-                     {title:"Link", field:"link", formatter:linkIcon, width:40, align:"center", cellClick:function(e, cell){openNewTab(cell, '_blank')}}
-                     ]
-                 })
-              },
-          });*/
+          var nestedData = [
+            {id:1, make:"Ford", model:"focus", reg:"P232 NJP", color:"white", serviceHistory:[
+               {date:"01/02/2016", engineer:"Steve Boberson", actions:"Changed oli filter"},
+               {date:"07/02/2017", engineer:"Martin Stevenson", actions:"Break light broken"},
+            ]},
+            {id:1, make:"BMW", model:"m3", reg:"W342 SEF", color:"red", serviceHistory:[
+               {date:"22/05/2017", engineer:"Jimmy Brown", actions:"Aligned wheels"},
+               {date:"11/02/2018", engineer:"Lotty Ferberson", actions:"Changed Oil"},
+               {date:"04/04/2018", engineer:"Franco Martinez", actions:"Fixed Tracking"},
+            ]},
+        ]
+        var table = new Tabulator("#table", {
+            height:"311px",
+            layout:"fitColumns",
+            resizableColumns:false,
+            data:nestedData,
+            columns:[
+                {title:"Make", field:"make"},
+                {title:"Model", field:"model"},
+                {title:"Registration", field:"reg"},
+                {title:"Color", field:"color"},
+            ],
+            rowFormatter:function(row){
+                //create and style holder elements
+               var holderEl = document.createElement("div");
+               var tableEl = document.createElement("div");
+        
+               holderEl.style.boxSizing = "border-box";
+               holderEl.style.padding = "10px 30px 10px 10px";
+               holderEl.style.borderTop = "1px solid #333";
+               holderEl.style.borderBotom = "1px solid #333";
+               holderEl.style.background = "#ddd";
+        
+               tableEl.style.border = "1px solid #333";
+        
+               holderEl.appendChild(tableEl);
+        
+               row.getElement().appendChild(holderEl);
+        
+               var subTable = new Tabulator(tableEl, {
+                   layout:"fitColumns",
+                   data:row.getData().serviceHistory,
+                   columns:[
+                   {title:"Date", field:"date", sorter:"date"},
+                   {title:"Engineer", field:"engineer"},
+                   {title:"Action", field:"actions"},
+                   ]
+               })
+            },
+        });
 
         });
     });
