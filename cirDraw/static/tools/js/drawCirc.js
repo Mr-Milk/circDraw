@@ -20,16 +20,43 @@ var exonList, arcList
 var $name = $('#geneNameSelect'),
     $chr = $('#chrSelector'),
     $start = $("#js-input-from"),
-    $end = $("#js-input-to")
+    $end = $("#js-input-to"),
+    $scale = $("#scale-selector")
 
 $name.on('DOMSubtreeModified', function(){
     name = $name.text()
+    if(name !== ""){
     chr = $chr.text()
     start = $start.text()
     end = $end.text()
     console.log('Refreshing circRNA canvas: ', name, chr, start, end)
+    $('.den-select-info').show()
+    $scale.show()
     redraw(case_id, start, end, chr)
+    }
 })
+
+$scale.ionRangeSlider({
+    type: "double",
+    min: 1,
+    max: 5000,
+    from: 500,
+    to: 2500,
+    drag_interval: true,
+    min_interval: 500, // the min length of all circRNA in arcJSON
+    onFinish: function(data){
+        scaleCirc = arcList.filter(function(v){if(v.start >= data.from && v.end <= data.to){return v}})// get the circ list after selection
+        svg.clear()
+        // draw a straight line
+        var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
+            stroke: "#000",
+            strokeWidth: 1
+        });
+        backSplicing(exonList, scaleCirc)
+    }
+})
+
+var scaleSelect = $scale.data('ionRangeSlider');
 
 /*
 function getGeneList() {
@@ -74,6 +101,16 @@ function redraw(case_id, start, end, chr) {
             console.log("ajax circ: ", arcList)
             var tableContent = backSplicing(exonList, arcList)
             console.log('Things in Table: ', tableContent)
+            console.log('Excu line After ajax call:', arcList)
+            intervalList = arcList.filter(function(v){return v.end - v.start})
+            s_mm = getMinMax(arcList)
+            scaleSelect.update({
+                min: s_mm[0],
+                max: s_mm[1],
+                from: s_mm[0],
+                to: s_mm[1],
+                min_interval: Math.min.apply(null, intervalList)
+            })
 
             /* function tableData (data) {
                 var modifiedData = data.slice(0);
@@ -84,10 +121,10 @@ function redraw(case_id, start, end, chr) {
                 }
             } */
 
-/*
+            /*
             var nestedData = [
-                {id:1, make:"Ford", model:"focus", reg:"P232 NJP", color:"white", serviceHistory:[
-                   {date:"01/02/2016", engineer:"Steve Boberson", actions:"Changed oli filter"},
+                {id:1, name:"VAP135", start:"12222", end:"23333", source:"", mod:[
+                   {type:"m6A", engineer:"Steve Boberson", actions:"Changed oli filter"},
                    {date:"07/02/2017", engineer:"Martin Stevenson", actions:"Break light broken"},
                 ]},
                 {id:2, make:"BMW", model:"m3", reg:"W342 SEF", color:"red", serviceHistory:[
@@ -105,6 +142,9 @@ function redraw(case_id, start, end, chr) {
               layout:"fitColumns",
               resizableColumns:false,
               data:nestedData,
+              pagination:"local",
+              paginationSize:6,
+              textSize: 10,
               columns:[
                   {title:"Exon Name", field:"name"},
                   {title:"Start", field:"start"},
@@ -132,12 +172,12 @@ function redraw(case_id, start, end, chr) {
                      layout:"fitColumns",
                      data:row.getData().mod,
                      columns:[
-                     {title:"Mod Type", field:"date", sorter:"date"},
-                     {title:"Start", field:"engineer"},
-                     {title:"End", field:"actions"},
-                     {title:"Disease", field:""},
-                     {title:"Related SNP", field:""},
-                     {title:"Link", field:"link", formatter:linkIcon, width:40, align:"center", cellClick:function(e, cell){openNewTab(link, '_blank')}}
+                     {title:"Mod Type", field:"type"},
+                     {title:"Start", field:"start"},
+                     {title:"End", field:"end"},
+                     {title:"Disease", field:"disease"},
+                     {title:"Related SNP", field:"SNP_id"},
+                     {title:"Link", field:"link", formatter:linkIcon, width:40, align:"center", cellClick:function(e, cell){openNewTab(cell, '_blank')}}
                      ]
                  })
               },
@@ -458,13 +498,17 @@ function drawCircRNA(exonJSON) {
         modCirc[i] = []
         endAngle += 360 * (exonJSON[i].end - exonJSON[i].start) / range
         console.log(centerX, centerY, startAngle, endAngle)
+        exonStart = exonJSON[i].start
+        exonEnd = exonJSON[i].end
+        if (exonJSON[i]['mod'] !== undefined){
         for (t = 0; t < exonJSON[i]['mod'].length; t++) {
+            if (exonJSON[i]['mod'][t].end <= exonEnd && exonJSON[i]['mod'][t].start >= exonStart){
             if ($.inArray(exonJSON[i]['mod'][t]['type'], modType) === -1) {
                 modType.push(exonJSON[i]['mod'][t]['type'])
             }
             modCirc[i][t] += "mod" + t;
-            modStartAngle = startAngle + 360 * (exonJSON[i]['mod'][t].start - exonJSON[i].start) / range
-            modEndAngle = startAngle + 360 * (exonJSON[i]['mod'][t].end - exonJSON[i].start) / range
+            modStartAngle = startAngle + 360 * (exonJSON[i]['mod'][t].start - exonStart) / range
+            modEndAngle = startAngle + 360 * (exonJSON[i]['mod'][t].end - exonStart) / range
             if (exonJSON[i]['mod'][t].type == 'm6A') {
                 var m6A = triTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
                 epiAnimate(m6A, 'm6A', '#E98B2A', centerX, centerY, exonJSON)
@@ -546,7 +590,7 @@ function drawCircRNA(exonJSON) {
                 modCirc[i][t] = ORF
             }
             //console.log(i, t, modCirc[i][t])
-        }
+        }}}
         if (endAngle - startAngle == 360) {
             circle[i] = svg.paper.circle(centerX, centerY, 80).attr({
                 stroke: exonJSON[i].color,
@@ -605,13 +649,13 @@ function drawCircRNA(exonJSON) {
 
 // CORE FUNCTION! draw the arc and its circRNA
 function arc(start, end, exonJSON) {
+    console.log("Call Functino arc")
     var rx = (end - start) / 2,
         ry = rx / 2,
         startBlock = junction_block(start, "#00AA90"),
         endBlock = junction_block(end, "#D0104C"),
         realStart = getMinMax(exonJSON)[0],
         realEnd = getMinMax(exonJSON)[1],
-        display = false,
         circ
 
     var path = "M" + (start + 1) + " 443A" + rx + " " + ry + " 0 0 1 " + (end + 1) + " 443"
@@ -621,18 +665,20 @@ function arc(start, end, exonJSON) {
         fill: 'none',
         cursor: 'pointer'
     });
+    console.log('Drawing Arc: ' + c)
 
     c.click(function () {
-        if (display == false) {
-            var x = svg.select("g")
-            if (x != null) {
-                x.remove()
-            }
-            circ = drawCircRNA(exonJSON)
-            display = true
-        } else if (display == true) {
+        var x = svg.select("g")
+        if (x != null) {
+            x.remove()
+        }
+        circ = drawCircRNA(exonJSON)
+        id = "circ" + start + end
+        if (id == window.currentStat) {
             circ.remove()
-            display = false
+            window.currentStat = null
+        } else {
+            window.currentStat = id
         }
     }).mouseover(function () {
         Snap.animate(1, 6, function (val) {
@@ -706,82 +752,103 @@ function describeArc(x, y, radius, startAngle, endAngle) {
 }
 
 function backSplicing(exonJSON, arcJSON) {
-    var exonList = [], drawArc = []
-    var mm = getMinMax(exonJSON)
-    var range = mm[1] - mm[0]
-    var colorIndex = 0
-    console.log("get exonlist: ", exonJSON, "\nmm: ", mm, "\nrange: ", range)
-    for (i = 0; i < exonJSON.length; i++) {
-        scaleStart = 50 + 700 * (exonJSON[i].start - mm[0]) / range
-        scaleEnd = 50 + 700 * (exonJSON[i].end - mm[0]) / range
-        scaleLen = scaleEnd - scaleStart
-        if (exonJSON[i].type == "exon") {
-            if (colorIndex < 50) {
-                exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-                exonList[i] = {
-                    "chr": parseInt($('#chrSelector').text()),
-                    "start": exonJSON[i].start,
-                    "end": exonJSON[i].end,
-                    "circid": "chr" + parseInt($('#chrSelector').text()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
-                    "color": colorList[colorIndex],
-                    "mod": exonJSON[i].mod,
-                    "source": exonJSON[i].source,
-                    "detail": exonJSON[i].detail
-                }
-                console.log("exonList " + i + " :", exonList[i])
-                colorIndex += 1
-            } else {
-                colorIndex = 0
-                exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-                exonList[i] = {
-                    "chr": parseInt($('#chrSelector').text()),
-                    "start": exonJSON[i].start,
-                    "end": exonJSON[i].end,
-                    "circid": "chr" + parseInt($('#chrSelector').text()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
-                    "color": colorList[colorIndex],
-                    "mod": exonJSON[i].mod,
-                    "source": exonJSON[i].source,
-                    "detail": exonJSON[i].detail
-                }
-                colorIndex += 1
-            }
-        } else if (exonJSON[i].type == "gene") {
-            if (colorIndex < 50) {
-                gene_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-                colorIndex += 1
-            } else {
-                colorIndex = 0
-                gene_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
-                colorIndex += 1
-            }
+    var filterExons = [], exonList = [], drawArc = [], currentStat
+    var circMM = getMinMax(arcJSON), cmin = circMM[0], cmax= circMM[1]
+    // If the exon is contain even partially in the circRNA, it will still be filtered out
+    filterExons = exonJSON.filter(function(v){if((cmin <= v.end && v.end <= cmax) || (cmin <= v.start && v.start <= cmax)){return v}})
 
+    var range = circMM[1] - circMM[0]
+    var colorIndex = 0
+    console.log("filter exonlist: ", filterExons, "\nmm: ", circMM, "\nrange: ", range)
+        // Condition 1: If exon fully inside circRNA, start and end remain the same
+        // Condition 2: If exon partially inside circRNA, select this part
+        for (i = 0; i < filterExons.length; i++) {
+            scaleStart = 50 + 700 * (filterExons[i].start - circMM[0]) / range
+            scaleEnd = 50 + 700 * (filterExons[i].end - circMM[0]) / range
+            scaleLen = scaleEnd - scaleStart
+            if (filterExons[i].type == "exon") {
+                if (colorIndex < 50) {
+                    exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
+                    exonList[i] = {
+                        "chr": parseInt($('#chrSelector').text()),
+                        "start": filterExons[i].start,
+                        "end": filterExons[i].end,
+                        //"circid": "chr" + parseInt($('#chrSelector').text()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
+                        "color": colorList[colorIndex],
+                        "mod": filterExons[i].mod
+                        //"source": filterExons[i].source,
+                        //"detail": filterExons[i].detail
+                    }
+                    //console.log("exonList " + i + " :", exonList[i])
+                    colorIndex += 1
+                } else {
+                    colorIndex = 0
+                    exon_block(scaleStart, scaleLen, colorList[colorIndex], exonJSON[i].name)
+                    exonList[i] = {
+                        "chr": parseInt($('#chrSelector').text()),
+                        "start": filterExons[i].start,
+                        "end": filterExons[i].end,
+                        //"circid": "chr" + parseInt($('#chrSelector').text()) + ": " + exonJSON[i].start + "-" + exonJSON[i].end,
+                        "color": colorList[colorIndex],
+                        "mod": filterExons[i].mod
+                        //"source": filterExons[i].source,
+                        //"detail": filterExons[i].detail
+                    }
+                    colorIndex += 1
+                }
+            } else if (filterExons[i].type == "gene") {
+                if (colorIndex < 50) {
+                    gene_block(scaleStart, scaleLen, colorList[colorIndex], filterExons[i].name)
+                    colorIndex += 1
+                } else {
+                    colorIndex = 0
+                    gene_block(scaleStart, scaleLen, colorList[colorIndex], filterExons[i].name)
+                    colorIndex += 1
+                }
+            }
         }
 
-    }
-    console.log("After clean exonlist: ", exonList)
-
     console.log("arc num: ", arcJSON.length)
-
     for (r = 0; r < arcJSON.length; r++) {
         arcStart = arcJSON[r].start
         arcEnd = arcJSON[r].end
+        drawArc[r] = exonList.filter(function(v){if(v.start >= arcStart && v.end <= arcEnd){
+            return v} 
+            else if(v.start < arcStart && v.end < arcEnd && v.end > arcStart){
+                v.start = arcStart;
+                return v} 
+            else if(v.end > arcEnd && v.start > arcStart && v.start < arcEnd){
+                v.end = arcEnd;
+                return v}
+            else if(v.start < arcStart && v.end > arcEnd){
+                v.start = arcStart
+                v.end = arcEnd
+                return v
+            }})
+        scaleArcStart = 50 + 700 * (arcStart - circMM[0]) / range
+        scaleArcEnd = 50 + 700 * (arcEnd - circMM[0]) / range
+        arc(scaleArcStart, scaleArcEnd, drawArc[r])
+        /*
         console.log("exonlist len: ", exonList.length)
         for (t = 0; t < exonList.length; t++) {
+            try{
             if (exonList[t].start >= arcStart && exonList[t].end <= arcEnd) {
-                drawArc.push(exonList[t])
+                drawArc[r].push(exonList[t])
             } else {
-                x = 1
+            }}
+            catch(err){
+                console.log("Get exonList info failed.")
             }
-        }
+        }*/
     }
+    /*
+    for (s = 0; s < arcJSON.length; s++) {
+        scaleArcStart = 50 + 700 * (arcJSON[s].start - circMM[0]) / range
+        scaleArcEnd = 50 + 700 * (arcJSON[s].end - circMM[0]) / range
+        arc(scaleArcStart, scaleArcEnd, drawArc[s])
+    }*/
 
     console.log(drawArc)
-
-    for (s = 0; s < arcJSON.length; s++) {
-        scaleArcStart = 50 + 700 * (arcStart - mm[0]) / range
-        scaleArcEnd = 50 + 700 * (arcEnd - mm[0]) / range
-        arc(scaleArcStart, scaleArcEnd, drawArc)
-    }
 
     return drawArc
 };
