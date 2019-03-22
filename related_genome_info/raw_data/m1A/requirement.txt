@@ -3,7 +3,7 @@ modStart  1
 modEnd  2
 strand  5
 pubmedIds 10
-links
+link
 disease(blank=True)
 SNPid(blank=True)
 
