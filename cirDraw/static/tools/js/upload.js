@@ -105,32 +105,36 @@ $(document).ready(function () {
             }
         }
 
-        $('#submit').text('Uploading...')
+        $('#submit').text('✓ Submitted').prop('disabled', true);
         $('#cancel').hide()
+        $('#processtip').after('<div class="lds-roller d-inline-block"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><p class="d-inine-block" id="upload-text">Uploading...</p>')
 
         $.ajax(ajaxParameters)
             .done(
                 function (reportID) {
-                    $('#submit').text('✓ Submitted').prop('disabled', true);
                     var md5 = reportID[0].md5,
                         systime = reportID[0].time.toString(),
                         status = reportID[0].save_status
-                        console.log(reportID)
-
+                        console.log(reportID, status)
+                        $('.lds-roller').remove()
+                        $('#upload-text').hide()
                     if (status === false) {
                         $('#processtip').text('Processing Failed! Wrong file type or server failed.')
                     }
-                    else if (status === true) {
+                    else if (status === true || status === undefined) {
                         $.getJSON("/tools/run", {'md5':md5})
-                        $('#resultbutton').show()
-                        var sec;
+                        var now = new Date()
+                        uploadUsed = now.getTime().toString().substr(0,10) - systime.substr(0,10)
                         interval_1 = setInterval(
                         function () {
                             var d = new Date()
                             console.log(d.getTime(), systime)
-                            sec = d.getTime().toString().substr(0,10) - systime.substr(0,10)
-                            $('#processtip').html('<p id="timer">Processing time: ' + sec + 's</p>')
+                            processTime = d.getTime().toString().substr(0,10) - systime.substr(0,10) - uploadUsed
+                            $('#processtip').html('<p id="timer">Uploading used: ' + uploadUsed + 's, now processing: ' + processTime + 's.</p>')
                         }, 1000);
+                        if (status === undefined) {
+                            clearInterval(interval_1)
+                        }
 
                         interval_2 = setInterval(function(){
                             $.getJSON("statusfile", {'caseid':md5}).done(function (processStatus) {
@@ -140,12 +144,13 @@ $(document).ready(function () {
                                 if (status == 200) {
                                     clearInterval(interval_1)
                                     $('#timer').remove()
-                                    $('#processtip').append('<p>Processing Completed! Please remember your result URL (Accessible for next 24h) ' +   '<div class="input-group input-group-sm col-5" id="reportURL">'+
+                                    $('#processtip').append('<p>Processing Completed! Please remember your result URL (Accessible for next 24h) ' +   '<div class="input-group input-group-sm col-5 pl-1" id="reportURL">'+
                                     '<input type="text" class="form-control" value="http://www.circdraw.com/tools/display/' + md5 + '" id="copy-input">' +
                                     '<div class="input-group-append">' +
                                       '<button class="btn btn-primary btn-sm" id="copy-button" data-toggle="tooltip" data-placement="bottom" title="Copied!">' +
                                         '<i class="far fa-copy"></i>' +
-                                      '</button></div></div></p>')
+                                      '</button></div>'+
+                                      '<div class="input-group-append"><button class="btn btn-primary btn-sm" style="border-left: 2px solid" href="www.circdraw.com/tools/display/'+ md5 + '">View Result</button></div></div>')
                                       $('#copy-button').tooltip('hide')
                                       $('#copy-button').bind('click', function() {
                                         var input = document.querySelector('#copy-input');
@@ -170,7 +175,6 @@ $(document).ready(function () {
                                           $('#copy-button').tooltip('disable');
                                         }
                                       });                                    
-                                    $('#resultbutton').removeAttr("disabled").attr("href", "www.circdraw.com/tools/display/" + md5)
                                     clearInterval(interval_2)
                                 }
     
@@ -188,6 +192,8 @@ $(document).ready(function () {
                     }
                 }).fail(
                 function () {
+                        $('.lds-roller').remove()
+                        $('#upload-text').hide()
                         $('#processtip').text('Failed to upload, please check your connection and refreash.').css("color", "#CB4042")
                         $('#submit').text('Submit')
                 }
