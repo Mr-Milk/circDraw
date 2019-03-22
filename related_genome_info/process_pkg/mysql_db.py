@@ -3,6 +3,7 @@ import ijson
 import json
 from annotation import readfile, string_or_int
 import random
+import sys
 
 
 # load json data:
@@ -36,7 +37,7 @@ def load_and_insert(cnx, cursor, data_file_name, table_columns, table_name, leng
                     insert_one(cursor, table_name, table_columns, line)
                     cnx.commit()
                     num += 1
-                    print("line " + str(num + 1) + " is inserted.--{}%".format(round(((num+1)/length)*100, 4)))
+                    print("line " + str(num + 1) + " is inserted into {}.--{}%".format(table_name ,round(((num+1)/length)*100, 4)))
                 else:
                     print("column is not valid: {}".format(line))
                     break
@@ -145,6 +146,7 @@ def column_is_valid_core(table_columns, line):
             line[name]
         return True
     except:
+        print("Table_columns:", table_columns)
         return False
 
 
@@ -254,6 +256,29 @@ def insert_select(cursor, table_name, table_columns, select_sql):
         print('Insert with select failded: {}'.format(err))
 
 
+def update_snp(cnx, cursor, mod_table, snp_table, data_type):
+    assert is_exist_table(cursor, mod_table), "No such table when adding columns (update_snp)"
+    assert is_exist_table(cursor, snp_table), "No such table when adding columns (update_snp)"
+    data_type = data_type.lower()
+    mod_type = None
+    if data_type == 'm6a':
+        mod_type = 'm6A'
+    elif data_type == 'm1a':
+        mod_type = 'm1A'
+    elif data_type == 'm5c':
+        mod_type = 'm5C'
+
+    if not mod_type:
+        raise ValueError("Failed: Unsupported data_type for update_mod...", data_type)
+    sql = """update {} as m1a, {} as snp set m1a.disease = snp.GWAS_disease, m1a.SNPid = snp.SNPid where snp.modStart = m1a.modStart and snp.chromosome = m1a.chromosome;""".format(mod_table, snp_table)
+    try:
+        print("Processing: Update disease and SNPid of {}".format(mod_table))
+        cursor.execute(sql)
+        print("Success: Update {} with disease and SNPid success! :)".format(mod_table))
+    except mysql.connector.Error as err:
+        print('Failed: Update mod with disease failed: {}'.format(err))
+
+
 
 
 
@@ -349,7 +374,7 @@ def add_one_column_update(cnx, cursor, table_name, column, value_pairs):
     name = column.split(' ')[0]
     update_o = """UPDATE `""" + str(table_name)  + """` SET """ + str(name) + """ = """
     for i in value_pairs:
-        update = update_o + str(i[1]) + """ WHERE chr_ci = """ + str(i[0]) + """;"""
+        update = update_o + str(i['length']) + """ WHERE chr_ci = """ + str(i['name']) + """;"""
         cursor.execute(update)
     cnx.commit()
 
@@ -453,71 +478,133 @@ def commit_db(cnx, cursor):
     cursor.close()
     cnx.close()
 
-def main():
-    login_file_name = 'admin_login.json'
-    annotation = True
-    add = True
-    scale = True
-    gene_wiki = True
+
+def get_input_value(sys_input):
+    """Sys_input is exact the same as sys.argv, return dict contain parameters and lists of values of that parameter. Default is stored by {'default': [default_1, default_2...]}"""
+    args = {}
+    parameter_now = None
+    obligated = True
+    default = []
+    sys_input = sys_input[1:]
+    for i in range(len(sys_input)):
+
+        if sys_input[i][0] == '-':
+            obligated = False
+            parameter_now = sys_input[i][1:]
+            # error when parameter_now is 'default'
+            if parameter_now == 'default':
+                raise ValueError("You have '-default' in your command line input, please include them without '-default'")
+            args[parameter_now] = []
+        elif obligated:
+            default.append(sys_input[i])
+        else:
+            args[parameter_now].append(sys_input[i])
+    re = dict({'default': default}, **args)
+    return re
+
+
+def get_parameter_or_None(dic, para_name):
+    if para_name in dic.keys():
+        return dic[para_name]
+    else:
+        return None
+
+
+
+
+
+
+def main(sys_argv):
+    paras = get_input_value(sys_argv)
+    default = paras['default']
+    assert len(default) >= 1, "At least database login info is required!"
+    login_file_name = default[0]
+    annotation = get_parameter_or_None(paras, 'annotation')
+    add = get_parameter_or_None(paras, 'add')
+    scale = get_parameter_or_None(paras, 'scale')
+    gene_wiki = get_parameter_or_None(paras, 'gene_wiki')
+    snp_update = get_parameter_or_None(paras, 'snp_update')
 
     # initial connection
     cnx, cursor = connect_to_db(login_file_name)
 
 
     # insert
-    # data_file_name_annotation = 'test.json'
-    data_file_name_annotation = 'gencode_annotation.json'
-    length_info_name_annotation = 'gencode_length_annotation.json'
-    table_columns_annotation = ("gene_type VARCHAR(50) NOT NULL","gene_name VARCHAR(200) NOT NULL","chr_ci VARCHAR(50) NOT NULL", "gene_start INT NOT NULL", "gene_end INT NOT NULL", "gene_id VARCHAR(200) NOT NULL")
-    table_name_annotation = "tools_annotation"
+    # ====================
     if annotation:
+        """
+        >>> annotation = ['gencode_annotation.json', 'gencode_length_annotation.json', 'table_columns_info_file', 'tools_annotation']
+        >>> table_columns_annotation = ("gene_type VARCHAR(50) NOT NULL","gene_name VARCHAR(200) NOT NULL","chr_ci VARCHAR(50) NOT NULL", "gene_start INT NOT NULL", "gene_end INT NOT NULL", "gene_id VARCHAR(200) NOT NULL")
+        """
+        data_file_name_annotation = annotation[0]# 'gencode_annotation.json'
+        length_info_name_annotation = annotation[1]
+        table_columns_info_file = annotation[2]
+        # table_columns_annotation
+        table_columns_annotation = []
+        with open(table_columns_info_file) as table_cfile:
+            lines = table_cfile.readlines()
+            for cline in lines:
+                table_columns_annotation.append(cline[:-1])
+        table_columns_annotation = tuple(table_columns_annotation)
+
+        # table_db_name
+        table_name_annotation = annotation[3]
         load_and_insert(cnx, cursor, data_file_name_annotation, table_columns_annotation, table_name_annotation, length_info_name_annotation)
         cnx.commit()
+
 
     # add species info
     if add:
         add_column(cnx, cursor, table_name_annotation, ["species VARCHAR(300) NOT NULL"], ["'human'"])
         cnx.commit()
     # create scale(min start, max end) table
-    table_name_scale = "tools_scalegenome"
-    table_columns_scale = ("species VARCHAR(300) NOT NULL", "chr_ci VARCHAR(30) NOT NULL", "gene_min_start INT NOT NULL", "gene_max_end INT NOT NULL")
     if scale:
-        toos_scale(cnx, cursor, table_name_scale, table_name_annotation, table_columns_scale, "chr_ci", ["gene_end", "gene_max_end"], ["gene_start", "gene_min_start"])
+        """scale = ["tools_scalegenome", "table_columns_scale_column_file_name", "group_by_column_name", max_by, min_by, name_max, name_min, species]
+        table_columns_scale = ("species VARCHAR(300) NOT NULL", "chr_ci VARCHAR(30) NOT NULL", "gene_min_start INT NOT NULL", "gene_max_end INT NOT NULL")
+        """
+        table_name_scale = scale[0]
+        table_columns_scale_column_file_name = scale[1]
+        table_columns_scale = []
+        with open(table_columns_scale_column_file_name) as mm:
+            lines = mm.readline()
+            for mma in lines:
+                table_columns_scale.append(mma)
+        table_columns_scale = tuple(table_columns_scale)
+
+
+        group_by = scale[2]
+        max_column = [scale[3], scale[5]]
+        min_column = [scale[4], scale[6]]
+        species = scale[7].__repr__()
+        toos_scale(cnx, cursor, table_name_scale,table_name_annotation, table_columns_scale, group_by, max_column, min_column, species = species)
         cnx.commit()
     if gene_wiki:
-        value_pairs = [
-            ["'chr1'",  249250621],
-            ["'chr2'",  243199373],
-            ["'chr3'", 198022430],
-            ["'chr4'",  191154276],
-            ["'chr5'", 180915260],
-            ["'chr6'", 171115067],
-            ["'chr7'", 159138663],
-            ["'chr8'", 146364022],
-            ["'chr9'", 141213431],
-            ["'chr10'", 135534747],
-            ["'chr11'", 135006516],
-            ["'chr12'", 133851895],
-            ["'chr13'", 115169878],
-            ["'chr14'", 107349540],
-            ["'chr15'", 102531392],
-            ["'chr16'",  90354753],
-            ["'chr17'", 81195210],
-            ["'chr18'", 78077248],
-            ["'chr19'", 59128983],
-            ["'chr20'", 63025520],
-            ["'chr21'", 48129895],
-            ["'chr22'", 51304566],
-            ["'chrX'", 155270560],
-            ["'chrY'", 59373566],
-            ["'chrM'", 16023]
-        ]
+        """gene_wiki = [wiki_len_file, table_name_scale]"""
+        wiki_len_file = gene_wiki[0]
+        table_name_scale = gene_wiki[1]
+        with open(wiki_len_file) as wiki_file:
+            value_pairs = json.loads(wiki_file.read())
         add_one_column_update(cnx, cursor, table_name_scale, "genelens_wiki INT", value_pairs)
         add_one_column(cnx, cursor, table_name_scale, "id INT")
+
+    if snp_update:
+        """snp_update = [mod_table_name, snp_table_name, data_type]"""
+        mod_table = snp_update[0]
+        snp_table = snp_update[1]
+        data_type = snp_update[2]
+        update_snp(cnx, cursor, mod_table, snp_table, data_type)
 
 
     commit_db(cnx, cursor)
 
 
+
+
+
+
+
+
+
 if __name__ == '__main__':
-   main()
+   main(sys.argv)
+

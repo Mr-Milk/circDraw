@@ -148,6 +148,72 @@ class Operator:
 
 
 
+    ## =====================================================================
+    # Create table in database:
+    def create_table(self, table_name, table_columns, data):
+        """
+        in this function: create table
+        >>> table_columns = ("chr_ci VARCHAR(50) NOT NULL", "gene_start INT NOT NULL", "gene_end INT NOT NULL", "gene_id VARCHAR(200) NOT NULL")
+        >>> table_name = "human_gene_test"
+        >>> data = loadjson("gencode_annotation.json")
+        """
+        assert type(table_name) == str, 'Table_name in create_function call should be str'
+        assert type(table_columns) == tuple, 'Table_column_names in create function should be tuple'
+
+        # Creat cursor
+        cursor_ob = Cursor(self.connector)
+        cursor = cursor_ob.cursor
+
+
+        r = column_is_valid(table_columns, data)
+        if r:
+            self.create_table_core(table_name, table_columns)
+        else:
+            print('column is not valid: ',r)
+
+        cursor_ob.terminate()
+
+
+    def create_table_core(self, table_name, table_columns):
+        assert type(table_name) == str, 'Table_name in create_function call should be str'
+        assert type(table_columns) == tuple, 'Table_column_names in create function should be tuple'
+
+
+
+        # Creat cursor
+        cursor_ob = Cursor(self.connector)
+        cursor = cursor_ob.cursor
+
+        # Origin core
+        if not is_exist_table(cursor, table_name):
+            try:
+                create_table_syntax = """CREATE TABLE `{}` (""" + """{}, """*(len(table_columns) - 1) + """{})"""
+                data_create_table = (table_name,) + table_columns
+                command = create_table_syntax.format(*data_create_table)
+                cursor.execute(command)
+                print("{} table has been created!".format(table_name))
+            except mysql.connector.Error as err:
+                print("Fail: {}".format(err))
+        else:
+            print("Table ({}) is exist".format(table_name))
+            delete = input('TABLE ' + str(table_name) + ' is already exist, PRESS y/Y to proceed and any other keys to abort: ')
+            if delete.lower() == 'y':
+                drop(cursor, table_name)
+                print('Table ' + str(table_name) + ' has been dropped!')
+                self.create_table_core(table_name, table_columns)
+            else:
+                print('Aborted.')
+        cursor_ob.terminate()
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -248,6 +314,37 @@ class CheckpointConnector(Checkpoint):
             print('is_exist_column fail: {}'.format(err))
 
 
+
+class CheckpointOperator(Checkpoint):
+    # Checkpoint for a specific operation, mainly focusing on the validation of it's input data
+    def column_is_valid_core(self, table_columns, line):
+        try:
+            for i in table_columns:
+                s = i.split(" ")
+                assert len(s) >= 1, "No table column specific: {}".format(i)
+                name = s[0]
+                line[name]
+            return True
+        except:
+            return False
+
+    def column_is_valid(self, table_columns, data, random_size=100):
+        """
+        test if the column provided is in the data attribute
+        >>> table_columns = ("chr_ci", "gene_start", "gene_end", "gene_id")
+        >>> data = loadjson("gencode_annotation.json")
+        """
+        try:
+            rand_smpl = [data[i] for i in random.sample(range(len(data)), random_size)]
+            for e in rand_smpl:
+                for i in table_columns:
+                    s = i.split(" ")
+                    assert len(s) >= 1, 'Invalid table_colums: {}'.format(i)
+                    name = i.split(" ")[0]
+                    e[name]
+            return True
+        except:
+            return False
 
 
 

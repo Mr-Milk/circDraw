@@ -124,12 +124,12 @@ md5_data/
 tops_result/
 
 # ignore genome decompress data
-RMBase_hg19_all_mod_snp_disease.txt
-RMBase_hg19_all_m1A_site.txt
-RMBase_hg19_all_m6A_site.txt
-gencode.v29.annotation.gtf
-gencode.v19.annotation.gtf
-RMBase_hg19_all_m5C_site.txt
+RMBase_hg19_all_mod_snp_disease*
+RMBase_hg19_all_m1A_site*
+RMBase_hg19_all_m6A_site*
+gencode*
+gencode*
+RMBase_hg19_all_m5C_site*
 PMC-ids.csv
 
 # Django migration
