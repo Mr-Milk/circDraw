@@ -10,6 +10,7 @@ def main():
 
 
     # aggregate snp to each
+    update_snp()
 
 
 # ================== m1a ============================
@@ -51,6 +52,17 @@ def snp_annotation_db():
     os.system(command_db)
     os.chdir(current_path)
 
+
+def update_snp():
+    command1 = """python3 mysql_db.py admin_login.json -snp_update tools_m1a tools_snp m1a"""
+    command2 = """python3 mysql_db.py admin_login.json -snp_update tools_m6a tools_snp m6a"""
+    command3 = """python3 mysql_db.py admin_login.json -snp_update tools_m5c tools_snp m5c"""
+    current_path = os.getcwd()
+    os.chdir("process_pkg/")
+    os.system(command1)
+    os.system(command2)
+    os.system(command3)
+    os.chdir(current_path)
 
 if __name__ == '__main__':
     main()

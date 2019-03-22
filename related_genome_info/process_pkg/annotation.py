@@ -51,7 +51,7 @@ def write_from_process(f, write_file_name, write_file_length_name, maxread, proc
                     if real_len != 0:
                         f1.write(',\n')
                     f1.write(result_json)
-                    print('line '+str(num + 1) + ' has finished.-- '+str(round((num+1)/maxread, 3)*100) + '% - mm')
+                    print('line '+str(num + 1) + ' has finished.-- '+str(round((num+1)/maxread, 3)*100) + '% - mm ' + str(data_type))
                     num += 1
                     real_len += 1
                 else:
@@ -153,8 +153,8 @@ def p_m1a(sep_line):
         link_base = 'https://www.ncbi.nlm.nih.gov/pubmed/'
         links = [link_base + str(a) for a in pubmedIds]
         ob['link'] = ",".join(links)
-        ob['disease'] = []
-        ob['SNPid'] = []
+        ob['disease'] = ""
+        ob['SNPid'] = ""
         return ob
     except:
         print("Failed: process_m1a Failed: ", sep_line)
@@ -178,8 +178,8 @@ def p_m5c(sep_line):
         link_base = 'https://www.ncbi.nlm.nih.gov/pubmed/'
         links = [link_base + str(a) for a in pubmedIds]
         ob['link'] = ",".join(links)
-        ob['disease'] = []
-        ob['SNPid'] = []
+        ob['disease'] = ""
+        ob['SNPid'] = ""
         return ob
     except:
         print("Failed: process_m5c Failed: ", sep_line)
@@ -201,8 +201,8 @@ def p_m6a(sep_line):
         link_base = 'https://www.ncbi.nlm.nih.gov/pubmed/'
         links = [link_base + str(a) for a in pubmedIds]
         ob['link'] = ",".join(links)
-        ob['disease'] = []
-        ob['SNPid'] = []
+        ob['disease'] = ""
+        ob['SNPid'] = ""
         return ob
     except Exception as e:
         print("Failed: process_m6a Failed: ", e)

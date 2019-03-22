@@ -37,7 +37,7 @@ def load_and_insert(cnx, cursor, data_file_name, table_columns, table_name, leng
                     insert_one(cursor, table_name, table_columns, line)
                     cnx.commit()
                     num += 1
-                    print("line " + str(num + 1) + " is inserted.--{}%".format(round(((num+1)/length)*100, 4)))
+                    print("line " + str(num + 1) + " is inserted into {}.--{}%".format(table_name ,round(((num+1)/length)*100, 4)))
                 else:
                     print("column is not valid: {}".format(line))
                     break
@@ -254,6 +254,29 @@ def insert_select(cursor, table_name, table_columns, select_sql):
         cursor.execute(insert_sql)
     except mysql.connector.Error as err:
         print('Insert with select failded: {}'.format(err))
+
+
+def update_snp(cnx, cursor, mod_table, snp_table, data_type):
+    assert is_exist_table(cursor, mod_table), "No such table when adding columns (update_snp)"
+    assert is_exist_table(cursor, snp_table), "No such table when adding columns (update_snp)"
+    data_type = data_type.lower()
+    mod_type = None
+    if data_type == 'm6a':
+        mod_type = 'm6A'
+    elif data_type == 'm1a':
+        mod_type = 'm1A'
+    elif data_type == 'm5c':
+        mod_type = 'm5C'
+
+    if not mod_type:
+        raise ValueError("Failed: Unsupported data_type for update_mod...", data_type)
+    sql = """update {} as m1a, {} as snp set m1a.disease = snp.GWAS_disease, m1a.SNPid = snp.SNPid where snp.modStart = m1a.modStart and snp.chromosome = m1a.chromosome;""".format(mod_table, snp_table)
+    try:
+        print("Processing: Update disease and SNPid of {}".format(mod_table))
+        cursor.execute(sql)
+        print("Success: Update {} with disease and SNPid success! :)".format(mod_table))
+    except mysql.connector.Error as err:
+        print('Failed: Update mod with disease failed: {}'.format(err))
 
 
 
@@ -473,7 +496,6 @@ def get_input_value(sys_input):
                 raise ValueError("You have '-default' in your command line input, please include them without '-default'")
             args[parameter_now] = []
         elif obligated:
-            print("default")
             default.append(sys_input[i])
         else:
             args[parameter_now].append(sys_input[i])
@@ -497,12 +519,11 @@ def main(sys_argv):
     default = paras['default']
     assert len(default) >= 1, "At least database login info is required!"
     login_file_name = default[0]
-    print(paras)
     annotation = get_parameter_or_None(paras, 'annotation')
-    print(annotation)
     add = get_parameter_or_None(paras, 'add')
     scale = get_parameter_or_None(paras, 'scale')
     gene_wiki = get_parameter_or_None(paras, 'gene_wiki')
+    snp_update = get_parameter_or_None(paras, 'snp_update')
 
     # initial connection
     cnx, cursor = connect_to_db(login_file_name)
@@ -524,7 +545,6 @@ def main(sys_argv):
             lines = table_cfile.readlines()
             for cline in lines:
                 table_columns_annotation.append(cline[:-1])
-        print("Table_input:",table_columns_annotation)
         table_columns_annotation = tuple(table_columns_annotation)
 
         # table_db_name
@@ -566,6 +586,13 @@ def main(sys_argv):
             value_pairs = json.loads(wiki_file.read())
         add_one_column_update(cnx, cursor, table_name_scale, "genelens_wiki INT", value_pairs)
         add_one_column(cnx, cursor, table_name_scale, "id INT")
+
+    if snp_update:
+        """snp_update = [mod_table_name, snp_table_name, data_type]"""
+        mod_table = snp_update[0]
+        snp_table = snp_update[1]
+        data_type = snp_update[2]
+        update_snp(cnx, cursor, mod_table, snp_table, data_type)
 
 
     commit_db(cnx, cursor)
