@@ -58,7 +58,7 @@ def save_to_files(request):
             if md5ob:
                 print("existed in databse")
                 time_ = md5ob.time
-                return_json = [{'md5': md5, 'time': time_, 'save_status': 200}]
+                return_json = [{'md5': md5, 'time': time_, 'save_status': 'Finished'}]
                 return JsonResponse(return_json, safe=False)
             if default_storage.exists(path):
                 default_storage.delete(path)
