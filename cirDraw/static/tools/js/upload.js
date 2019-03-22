@@ -132,7 +132,7 @@ $(document).ready(function () {
                 formdata.append('text', inputText)
                 formdata.append('parameters', JSON.stringify(parameters))
                 var ajaxParameters = {
-                    url: 'text-url',
+                    url: '/tools/upload_text/',
                     type: 'POST',
                     cache: false,
                     dataType: "json",
