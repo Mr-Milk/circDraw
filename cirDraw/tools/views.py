@@ -58,7 +58,7 @@ def save_to_files(request):
             if md5ob:
                 print("existed in databse")
                 time_ = md5ob.time
-                return_json = [{'md5': md5, 'time': time_}]
+                return_json = [{'md5': md5, 'time': time_, 'save_status': 200}]
                 return JsonResponse(return_json, safe=False)
             if default_storage.exists(path):
                 default_storage.delete(path)
@@ -553,6 +553,11 @@ def run_density(request):
             caseid = request.GET['md5']
             # Change status in database to running
             md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
+
+            result_sub_path = 'density_result/'
+            result_path = result_sub_path + caseid
+            if md5ob.status == 200 and default_storage.exists(result_path):
+                return JsonResponse([], safe=False)
             md5ob.status = 101
             species = md5ob.species
             print("Species: ", species)
