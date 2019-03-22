@@ -37,7 +37,7 @@
                             </div>
                 </div>
                 <div class="row justify-content-center pt-3 pb-5">
-                        <div class="col-3">
+                        <div class="col-2">
                                 <div class="input-group">
                                         <select class="custom-select" id="fileType_2">
                                           <option selected>File</option>
@@ -46,7 +46,7 @@
                                           <option value="PDF">PDF</option>
                                         </select>
                                         <div class="input-group-append">
-                                                    <a id="dendownload" class="btn btn-primary" style="color: white;">Download</a>
+                                                    <a id="dendownload" class="btn btn-primary" style="color: white;"><i class="fas fa-download"></i></a>
                                         </div>
                                 </div>
             
@@ -79,11 +79,13 @@
                     <div class="row justify-content-center pt-3">
                             <div class="col-8">
                                     <input type="text" id="scale-selector" class="mb-3" name="my_range" value="" />
+                                    <span class="help-block" style="color:grey;" id="circ-num"></span>
                             </div></div>          
                     
                         <div class="row justify-content-center pt-3">
                             <div class="col-8">
                                     <div class="extra-controls den-select-info">
+                                    <a id="previous" role="button" class="be-black"><i class="fas fa-angle-double-left"></i><strong> Last Gene |</strong></a>
                                             <p class="ml-1 mr-1 mb-1 d-inline-block">Name:</p>
                                             <p id="geneNameSelect" class="ml-1 mr-1 mb-1 d-inline-block">Unknown</p>
                                             <p class="ml-1 mr-1 mb-1 d-inline-block">Chr:</p>
@@ -92,22 +94,23 @@
                                             <p id="js-input-from" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
                                             <p class="ml-1 mr-1 mb-1 d-inline-block">End:</p>
                                             <p id="js-input-to" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
+                                            <a id="next" role="button" class="be-black"><strong>| Next Gene </strong><i class="fas fa-angle-double-right"></i></a>
                                         </div>
                             </div>
                         </div>
 
-                        <div class="row justify-content-center pt-1">
+                        {% comment %} <div class="row justify-content-center pt-1">
                                 <div class="col-6">
                                         <div class="positionBotton">
-                                                <button class="btn btn-primary btn-sm text-center" id="previous">&laquo; Previous Gene</button>
-                                                <button class="btn btn-primary btn-sm text-center" id="next">Next Gene &raquo;</button>
+                                                <button class="btn btn-primary btn-sm text-center" id="previous">&laquo; Last</button>
+                                                <button class="btn btn-primary btn-sm text-center" id="next">Next &raquo;</button>
                                             </div>
                                 </div>
-                        </div>
+                        </div> {% endcomment %}
 
 
                         <div class="row justify-content-center pt-3 mb-5">
-                                <div class="col-3">
+                                <div class="col-2">
                                         <div class="input-group">
                                                 <select class="custom-select" id="fileType_1">
                                                   <option selected>File</option>
@@ -116,7 +119,7 @@
                                                   <option value="PDF">PDF</option>
                                                 </select>
                                                 <div class="input-group-append">
-                                                  <button class="btn btn-primary btn-sm" id="drawdownload" type="button">Download</button>
+                                                  <button class="btn btn-primary btn-sm" id="drawdownload" type="button"><i class="fas fa-download"></i></button>
                                                 </div>
                                         </div>
                                 </div>
@@ -124,8 +127,9 @@
 
                     <h2 id="BaTable">circRNA Table</h2>
                     <div class="row justify-content-center">
-                        <div class="col-8">
-                            <div id="table"></div>
+                        <div class="col-9">
+                            <button id="download-csv" class="btn btn-primary"><i class="fas fa-download"></i></button>
+                            <div id="table"class="table-sm"></div>
                         </div>
                     </div>
 

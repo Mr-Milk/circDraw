@@ -153,13 +153,23 @@ background: url('../../../media/close.png') no-repeat center center;
         position: relative;
 }
 
-    .bd-right {
-        border-right: 1px solid rgba(0,0,0,.1);
-    }
+.bd-right {
+    border-right: 1px solid rgba(0,0,0,.1);
+}
+
+.bd-left {
+  border-left: 1px solid rgba(0,0,0,.1);
+}
 
 .bd-bottom {
         border-bottom: 1px solid rgba(0,0,0,.1);
 }
+.be-black {
+  color: #000;
+  cursor: pointer;
+}
+
+.be-black :hover{color: #fed136;}
 
 .sidebar-item {
 	position: absolute;
@@ -175,13 +185,6 @@ background: url('../../../media/close.png') no-repeat center center;
 }
 
 
-.make-me-sticky {
-  position: -webkit-sticky;
-	position: sticky;
-	top: 0;
-    
-  padding: 0 15px;
-}
 
 .lds-roller {
         display: inline-block;

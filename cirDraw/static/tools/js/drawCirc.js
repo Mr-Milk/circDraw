@@ -121,60 +121,43 @@ function redraw(case_id, start, end, chr) {
                 {id:2, name:"VAP135", start:"12546356", end:"23454635", source:"", mod:[
                     {type:"m1C", start:"122222", end:"12222222", SNP_id:"rs9086523", disease:"Parkinson Disease", link:"www.baidu.com"},
                 ]},
-            ]
+            ]*/
             var linkIcon = function(cell, formatterParams){ //plain text value
               return "<i class='fas fa-link'></i>";
-          };*/
+          };
+
+          var modData = []
+          for (e=0;e<exonList.length;e++){
+              for(m=0;m<exonList[e].mod.length;m++){
+                  modData.push({exon:exonList[e].name,
+                    type:exonList[e].mod[m].type,
+                    start:exonList[e].mod[m].start,
+                    end:exonList[e].mod[m].end,
+                    SNP_id:exonList[e].mod[m].SNP_id,
+                    disease:exonList[e].mod[m].disease,
+                    link:exonList[e].mod[m].link,
+                })
+                }
+          }
       
-          var nestedData = [
-            {id:1, make:"Ford", model:"focus", reg:"P232 NJP", color:"white", serviceHistory:[
-               {date:"01/02/2016", engineer:"Steve Boberson", actions:"Changed oli filter"},
-               {date:"07/02/2017", engineer:"Martin Stevenson", actions:"Break light broken"},
-            ]},
-            {id:1, make:"BMW", model:"m3", reg:"W342 SEF", color:"red", serviceHistory:[
-               {date:"22/05/2017", engineer:"Jimmy Brown", actions:"Aligned wheels"},
-               {date:"11/02/2018", engineer:"Lotty Ferberson", actions:"Changed Oil"},
-               {date:"04/04/2018", engineer:"Franco Martinez", actions:"Fixed Tracking"},
-            ]},
-        ]
         var table = new Tabulator("#table", {
-            height:"311px",
+            height:"500px",
             layout:"fitColumns",
-            resizableColumns:false,
-            data:nestedData,
+            headerFilterPlaceholder:"Search",
+            
+            data:modData,
             columns:[
-                {title:"Make", field:"make"},
-                {title:"Model", field:"model"},
-                {title:"Registration", field:"reg"},
-                {title:"Color", field:"color"},
+                {title:"Exon", field:"exon", width: 100, headerFilter:"input"},
+                {title:"Type", field:"type", width: 100, editor:"select", editorParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C"}}, headerFilter:true, headerFilterParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C", "":""}}},
+                {title:"Start", field:"start", width: 140, headerFilter: true},
+                {title:"End", field:"end", width: 140, headerFilter: true},
+                {title:"SNP ID", field:"SNP_id", width: 140, headerFilter: true},
+                {title:"Disease", field:"disease", width: 180, headerFilter: true},
+                {title:"Link", field:"link", width:150, formatter:linkIcon, cellClick:function(){window.open('http://' + link, '_blank')}},
             ],
-            rowFormatter:function(row){
-                //create and style holder elements
-               var holderEl = document.createElement("div");
-               var tableEl = document.createElement("div");
-        
-               holderEl.style.boxSizing = "border-box";
-               holderEl.style.padding = "10px 30px 10px 10px";
-               holderEl.style.borderTop = "1px solid #333";
-               holderEl.style.borderBotom = "1px solid #333";
-               holderEl.style.background = "#ddd";
-        
-               tableEl.style.border = "1px solid #333";
-        
-               holderEl.appendChild(tableEl);
-        
-               row.getElement().appendChild(holderEl);
-        
-               var subTable = new Tabulator(tableEl, {
-                   layout:"fitColumns",
-                   data:row.getData().serviceHistory,
-                   columns:[
-                   {title:"Date", field:"date", sorter:"date"},
-                   {title:"Engineer", field:"engineer"},
-                   {title:"Action", field:"actions"},
-                   ]
-               })
-            },
+        });
+        $("#download-csv").click(function(){
+            table.download("csv", "data.csv");
         });
 
         });
@@ -803,6 +786,15 @@ function backSplicing(exonJSON, arcJSON) {
         }
 
     console.log("arc num: ", arcJSON.length)
+    if (arcJSON.length === 0) {
+        $('#circ-num').text('No circRNAs in selected region.')
+    }
+    else if (arcJSON.length === 1) {
+        $('#circ-num').text('1 circRNA in selected region.')
+    }
+    else {
+        $('#circ-num').text(arcJSON.length + ' circRNA in selected region.')
+    }
     for (r = 0; r < arcJSON.length; r++) {
         arcStart = arcJSON[r].start
         arcEnd = arcJSON[r].end
