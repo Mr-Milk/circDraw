@@ -18,7 +18,7 @@ $(document).ready(function () {
         }
     })
 
-    function finishProcess() {
+    function finishProcess(md5) {
         $('#timer').remove()
         $('#processtip').append('<p>Processing Completed! Please remember your result URL (Accessible for next 24h) ' + '<div class="input-group input-group-sm col-5 pl-1" id="reportURL">' +
             '<input type="text" class="form-control" value="http://www.circdraw.com/tools/display/' + md5 + '" id="copy-input">' +
@@ -158,7 +158,7 @@ $(document).ready(function () {
                         if (status === false) {
                             $('#processtip').text('Processing Failed! Wrong file type or server failed.')
                         } else if (status === 'Finished') {
-                            finishProcess()
+                            finishProcess(md5)
                         } else if (status === true) {
                             $.getJSON("/tools/run", {
                                 'md5': md5
@@ -185,7 +185,7 @@ $(document).ready(function () {
                                     console.log(status, processStatus)
                                     if (status == 200) {
                                         clearInterval(interval_1)
-                                        finishProcess()
+                                        finishProcess(md5)
                                         clearInterval(interval_2)
                                     } else if (status == 404) {
                                         clearInterval(interval_1)

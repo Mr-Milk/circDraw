@@ -89,6 +89,7 @@ body {
         border-style: solid;
         border-width: 3px;
         border-color: #fed136;
+        z-index: -1;
 }
 
 .positionBotton {

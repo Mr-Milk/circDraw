@@ -162,6 +162,24 @@ $.getJSON('/tools/tools_file4', {
         denPlot(chrMaxLen, densityJSON, denLimit)
         $("#load").hide()
         $("#svg2").show()
+        //$("#next").click() // enable this will load the first gene to isoform plot automatically after page loading.
+        var linkIcon = function(cell, formatterParams){ //plain text value
+            return "<i class='fas fa-link'></i>";};
+        var table = new Tabulator("#table", {
+            height:"500px",
+            layout:"fitColumns",
+            headerFilterPlaceholder:"Search",
+            placeholder: "No Data Available",
+            columns:[
+                {title:"Exon", field:"exon", width: 100, headerFilter:"input"},
+                {title:"Type", field:"type", width: 100, editor:"select", editorParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C"}}, headerFilter:true, headerFilterParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C", "":""}}},
+                {title:"Start", field:"start", width: 140, headerFilter: true},
+                {title:"End", field:"end", width: 140, headerFilter: true},
+                {title:"SNP ID", field:"SNP_id", width: 140, headerFilter: true},
+                {title:"Disease", field:"disease", width: 180, headerFilter: true},
+                {title:"Link", field:"link", width:150, formatter:linkIcon, cellClick:function(){window.open('http://' + link, '_blank')}},
+            ],
+        });
     })
 
 })
@@ -311,6 +329,7 @@ function density_block(x, y, len, chr, start, end, density_value, name) {
         $("#js-input-to").text(end);
         $('#chrSelector').text(chr);
         $('#geneNameSelect').text(name);
+        $('svg-tips').remove()
         /*
         var gene_selector = $("#gene-selector").data("ionRangeSlider");
         $.getJSON("genList/", {
@@ -375,7 +394,7 @@ function normChr(chrJSON) {
 function denPlot(chrMaxLen, densityJSON, denLimit) {
     filterBlock = []
     for (i = 0; i < densityJSON.length; i++) {
-        if (densityJSON[i].value > denLimit) {
+        if (densityJSON[i].value >= denLimit) {
         var xAxis = 50 + 640 * densityJSON[i].start / chrMaxLen,
             len = 640 * (densityJSON[i].end - densityJSON[i].start) / chrMaxLen
         filterBlock.push(densityJSON[i])

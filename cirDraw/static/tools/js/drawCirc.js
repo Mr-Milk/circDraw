@@ -40,8 +40,8 @@ $scale.ionRangeSlider({
     type: "double",
     min: 1,
     max: 5000,
-    from: 500,
-    to: 2500,
+    from: 2000,
+    to: 3000,
     drag_interval: true,
     min_interval: 500, // the min length of all circRNA in arcJSON
     onFinish: function(data){
@@ -144,16 +144,15 @@ function redraw(case_id, start, end, chr) {
             height:"500px",
             layout:"fitColumns",
             headerFilterPlaceholder:"Search",
-            
             data:modData,
             columns:[
                 {title:"Exon", field:"exon", width: 100, headerFilter:"input"},
                 {title:"Type", field:"type", width: 100, editor:"select", editorParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C"}}, headerFilter:true, headerFilterParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C", "":""}}},
                 {title:"Start", field:"start", width: 140, headerFilter: true},
                 {title:"End", field:"end", width: 140, headerFilter: true},
-                {title:"SNP ID", field:"SNP_id", width: 140, headerFilter: true},
+                {title:"SNP ID", field:"SNP_id", formatter: "link", width: 140, headerFilter: true}, //https://www.ncbi.nlm.nih.gov/snp/rs2071569
                 {title:"Disease", field:"disease", width: 180, headerFilter: true},
-                {title:"Link", field:"link", width:150, formatter:linkIcon, cellClick:function(){window.open('http://' + link, '_blank')}},
+                {title:"Mod Link", field:"link", width:150, formatter:linkIcon, cellClick:function(cell){var links = cell.getValue().split(','); for(i=0;i<links.length;i++){window.open('http://' + link[i], '_blank')}}},
             ],
         });
         $("#download-csv").click(function(){
@@ -787,13 +786,13 @@ function backSplicing(exonJSON, arcJSON) {
 
     console.log("arc num: ", arcJSON.length)
     if (arcJSON.length === 0) {
-        $('#circ-num').text('No circRNAs in selected region.')
+        $('#circ-num').text('No circRNA in selected region.')
     }
     else if (arcJSON.length === 1) {
         $('#circ-num').text('1 circRNA in selected region.')
     }
     else {
-        $('#circ-num').text(arcJSON.length + ' circRNA in selected region.')
+        $('#circ-num').text(arcJSON.length + ' circRNAs in selected region.')
     }
     for (r = 0; r < arcJSON.length; r++) {
         arcStart = arcJSON[r].start
