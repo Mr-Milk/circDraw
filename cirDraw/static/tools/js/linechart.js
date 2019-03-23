@@ -188,11 +188,11 @@ isoChart.setOption(option3);
 });
 
 
-$.getJSON('/toplist/', {'caseid': case_id})
+$.getJSON('toplist/', {'case_id': case_id})
 .done(function(topData){
     console.log(topData);
-    var x = topData.x
-    var y = topData.y
+    var x = topData.x.slice(0,20)
+    var y = topData.y.slice(0,20)
     var lenChart = echarts.init(document.getElementById('topChart'));
     var option1 = {
         grid:{
@@ -205,16 +205,23 @@ $.getJSON('/toplist/', {'caseid': case_id})
             name: 'Gene',
             nameLocation: 'center',
             type: 'category',
-            nameGap: 30,
+            nameGap: 25,
             nameTextStyle: {
                 fontSize: 15,
             },
-            data: x
+            data: x,
+            axisTick: {
+                alignWithLabel: true
+            },
+            axisLabel: {
+                interval: 0,
+                fontSize: 10
+            }
         },
         yAxis: {
             name: 'Number of circRNAs',
             nameLocation: 'center',
-            nameGap: 40,
+            nameGap: 25,
             nameTextStyle: {
                 fontSize: 15,
             },
