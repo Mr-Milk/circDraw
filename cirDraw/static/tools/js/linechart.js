@@ -1,5 +1,5 @@
 var url = $(location).attr('href').split("/")
-var case_id = url[url.length -1]
+var case_id = url[url.length -1].split('#')[0]
 $.getJSON('lenChart_URL', {'caseid': case_id})
 .done(function(lenChartData){
     console.log(lenChartData);
@@ -43,7 +43,7 @@ $.getJSON('lenChart_URL', {'caseid': case_id})
                         position: 'top'
                     },
             },
-            type: 'line',
+            type: 'bar',
             smooth: true,
             itemStyle: {color: "#fed136"},
         }],
@@ -105,7 +105,7 @@ $.getJSON('exonChart_URL', {'caseid': case_id})
                         position: 'top'
                     },
             },
-            type: 'line',
+            type: 'bar',
             smooth: true,
             itemStyle: {color: "#fed136"},
         }],
@@ -185,4 +185,68 @@ var option3 = {
 };
 
 isoChart.setOption(option3);
+});
+
+
+$.getJSON('/toplist/', {'caseid': case_id})
+.done(function(topData){
+    console.log(topData);
+    var x = topData.x
+    var y = topData.y
+    var lenChart = echarts.init(document.getElementById('topChart'));
+    var option1 = {
+        grid:{
+            x:125,
+            y:45,
+            x2:0,
+            y2:60,
+        },
+        xAxis: {
+            name: 'Gene',
+            nameLocation: 'center',
+            type: 'category',
+            nameGap: 30,
+            nameTextStyle: {
+                fontSize: 15,
+            },
+            data: x
+        },
+        yAxis: {
+            name: 'Number of circRNAs',
+            nameLocation: 'center',
+            nameGap: 40,
+            nameTextStyle: {
+                fontSize: 15,
+            },
+            type: 'value',
+            axisTick: {
+                alignWithLabel: true,
+            },
+        },
+        series: [{
+            data: y,
+            label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    },
+            },
+            type: 'bar',
+            smooth: true,
+            itemStyle: {color: "#fed136"},
+        }],
+        toolbox: {
+            　　show: true,  
+            　　feature: {
+            　　　　saveAsImage: {
+            　　　　show:true,
+            　　　　title: "png",
+            　　　　excludeComponents :['toolbox'],
+            　　　　pixelRatio: 2
+            　　　　}
+            　　}
+            }
+    };
+
+    lenChart.setOption(option1);
 });
