@@ -157,12 +157,13 @@ $(document).ready(function () {
                         $('#upload-text').hide()
                         if (status === false) {
                             $('#processtip').text('Processing Failed! Wrong file type or server failed.')
-                        } else if (status === 'Finished') {
-                            finishProcess(md5)
-                        } else if (status === true) {
-                            $.getJSON("/tools/run", {
-                                'md5': md5
-                            })
+                        } else if (status === true || status === "Running") {
+
+                            if (status === true) {
+                                $.getJSON("/tools/run", {
+                                    'md5': md5
+                                })
+                            }
                             var now = new Date()
                             uploadUsed = now.getTime().toString().substr(0, 10) - systime.substr(0, 10)
                             interval_1 = setInterval(
@@ -172,9 +173,6 @@ $(document).ready(function () {
                                     processTime = d.getTime().toString().substr(0, 10) - systime.substr(0, 10) - uploadUsed
                                     $('#processtip').html('<p id="timer">Uploading used: ' + uploadUsed + 's, now processing: ' + processTime + 's.</p>')
                                 }, 1000);
-                            if (status === undefined) {
-                                clearInterval(interval_1)
-                            }
 
                             interval_2 = setInterval(function () {
                                 $.getJSON("statusfile", {
