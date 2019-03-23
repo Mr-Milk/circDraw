@@ -19,6 +19,7 @@ $(document).ready(function () {
     })
 
     $('#example').click(function(){
+        $('#uploadlabel').hide()
         $('.textarea').html(example_content)
         $('#submit').prop('disabled', true)
         finishProcess('a91ead50cb480b1aa4d8329c74aa0e84')
