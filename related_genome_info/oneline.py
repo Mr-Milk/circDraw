@@ -90,3 +90,4 @@ def update_snp():
 
 if __name__ == '__main__':
     main()
+    # update_snp()

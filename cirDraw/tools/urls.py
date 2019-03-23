@@ -39,7 +39,11 @@ urlpatterns = [
     # url(r'^test/$', views.render_display_page_test),
 
     # Biocircos
-    url(r'^display/URL.DENSITY/$', views.handle_biocircos_density)
+    url(r'^display/URL.DENSITY/$', views.handle_biocircos_density),
+
+    # TopList
+    url(r'^display/toplist/$', views.toplist),
+
 ]
 
 if settings.DEBUG:

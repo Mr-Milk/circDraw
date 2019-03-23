@@ -274,7 +274,7 @@ def update_snp(cnx, cursor, mod_table, snp_table, data_type):
     sql = """update {} as m1a, {} as snp set m1a.disease = snp.GWAS_disease, m1a.SNPid = snp.SNPid where snp.modStart = m1a.modStart and snp.chromosome = m1a.chromosome;""".format(mod_table, snp_table)
     try:
         print("Processing: Update disease and SNPid of {}".format(mod_table))
-        print("Start time: {}".format(datetime.datetime()))
+        print("Start...")
         cursor.execute(sql)
         print("Success: Update {} with disease and SNPid success! :)".format(mod_table))
     except mysql.connector.Error as err:
@@ -552,6 +552,7 @@ def main(sys_argv):
         # table_db_name
         table_name_annotation = annotation[3]
         load_and_insert(cnx, cursor, data_file_name_annotation, table_columns_annotation, table_name_annotation, length_info_name_annotation)
+        add_one_column(cnx, cursor, table_name_annotation, "id INT")
         cnx.commit()
 
 

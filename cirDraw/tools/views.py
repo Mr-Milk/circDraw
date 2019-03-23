@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 from django.http import Http404, HttpResponse, JsonResponse
 from annoying.functions import get_object_or_None
 from .forms import UploadFileForm, JsonTestFile
-from .models import ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5
+from .models import ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5, ToolsModM6A, ToolsModM1A, ToolsModM5C
 from .process_file import handle_uploaded_file
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
@@ -70,7 +70,9 @@ def save_to_files(request):
                     return JsonResponse(return_json, safe=False)
 
 
-
+            # check if the file existed in filesystem
+            if md5ob:
+                print("Previous saving failed, Re-saving now...")
             if default_storage.exists(path):
                 default_storage.delete(path)
 
@@ -334,11 +336,17 @@ def handle_file2(request):
         print("Gene/exons file2", obs)
         results = []
         for ob in obs:
+            my_start = ob.gene_start
+            my_end = ob.gene_end
+            mod_lst = ['m1a', 'm5c', 'm6a']
+            mod = get_mod(mod_lst, my_start, my_end, chr_ci)
+            print("Results of mod:", mod)
             result = {
                     'name': ob.gene_name,
                     'start': ob.gene_start,
                     'end': ob.gene_end,
                     'type': ob.gene_type,
+                    'mod': mod,
                     }
             results.append(result)
         #print("file2222", results)
@@ -346,6 +354,45 @@ def handle_file2(request):
     else:
         print("your request for file2 is not get")
         raise Http404
+
+
+def get_mod(mod_list, start, end, chromosome):
+    # get mod by start, end
+    mods = []
+    for i in mod_list:
+        if i == 'm1a':
+            obs = ToolsModM1A.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+            type_ob = 'm1A'
+        elif i == 'm5c':
+            obs = ToolsModM5C.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+            type_ob = 'm5C'
+        elif i == 'm6a':
+            obs = ToolsModM6A.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+            type_ob = 'm6A'
+        else:
+            print("modType {} is not supported for now".format(i))
+            obs = None
+
+        if obs:
+            for oo in obs:
+                strand = oo.strand
+                link = oo.link
+                SNP_id = oo.SNPid
+                disease_content = oo.disease
+                disease = {'SNP_id': SNP_id, 'disease': disease_content}
+                mod_object = {'type': type_ob, 'start': start, 'end': end, 'strand': strand, 'link': link, 'disease': disease}
+                mods.append(mod_object)
+    return mods
+
+
+
+
+
+
+
+
+
+
 
 # ------------------------genList---------------------------------
 @csrf_exempt
@@ -850,5 +897,30 @@ def isoChart(request):
         raise Http404
 
 
+def toplist(request):
+    if request.method == "GET":
+        md5 = request.GET['case_id']
+        sub_path = "tops_result/"
+        read_path = sub_path + md5
+        if default_storage.exists(read_path):
+            results = default_storage.open(read_path).read()
+            results_ob = json.loads(results)
+            x = []
+            y = []
+            for i in results_ob:
+                x.append(i['name'])
+                y.append(i['value'])
+            return_ob = {'x': x, 'y': y}
+            print("Toplist: ", return_ob)
+
+            return JsonResponse(return_ob, safe=False)
+        else:
+            print("No file for path when reading toplist: ", read_path)
+            raise Http404
+
+
+    else:
+        print("Handle file5's method is not GET")
+        raise Http404
 
 
