@@ -388,6 +388,7 @@ def add_one_column(cnx, cursor, table_name, column):
     sql = """ALTER TABLE `""" + str(table_name) + """` ADD """ + str(column) + """;"""
     cursor.execute(sql)
     cnx.commit()
+    print("Success: Add new column for {}".format(table_name))
 
 
 
@@ -526,6 +527,8 @@ def main(sys_argv):
     scale = get_parameter_or_None(paras, 'scale')
     gene_wiki = get_parameter_or_None(paras, 'gene_wiki')
     snp_update = get_parameter_or_None(paras, 'snp_update')
+    add_id = get_parameter_or_None(paras, 'add_id')
+
 
     # initial connection
     cnx, cursor = connect_to_db(login_file_name)
@@ -596,6 +599,11 @@ def main(sys_argv):
         snp_table = snp_update[1]
         data_type = snp_update[2]
         update_snp(cnx, cursor, mod_table, snp_table, data_type)
+    if add_id:
+        """add_id = ["table1", "table2"]"""
+        table_names = add_id
+        for table in table_names:
+            add_one_column(cnx, cursor, table, "id INT")
 
 
     commit_db(cnx, cursor)
