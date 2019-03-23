@@ -128,6 +128,7 @@ def empty_dir(path_box):
 
 
 def main(login_file_name, inp):
+    """Useage: python3 resetdb.py admin_login_file.json clean/migration"""
     connector = mc.Connector(login_file_name)
     if inp == "migration":
         remigrations(connector)

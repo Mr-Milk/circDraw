@@ -56,10 +56,21 @@ def save_to_files(request):
             print("Md5 existed in DB?: ", md5ob)
 
             if md5ob:
-                print("existed in databse")
+                status_old = md5ob.status
+                print("existed in databse, code: ", status_old)
                 time_ = md5ob.time
-                return_json = [{'md5': md5, 'time': time_, 'save_status': 'Finished'}]
-                return JsonResponse(return_json, safe=False)
+                if status_old == 200:
+                    return_json = [{'md5': md5, 'time': time_, 'save_status': 'Finished'}]
+                    return JsonResponse(return_json, safe=False)
+                elif status_old == 201:
+                    return_json = [{'md5': md5, 'time': time_, 'save_status': True}]
+                    return JsonResponse(return_json, safe=False)
+                elif status_old == 101:
+                    return_json = [{'md5': md5, 'time': time_, 'save_status': "Running"}]
+                    return JsonResponse(return_json, safe=False)
+
+
+
             if default_storage.exists(path):
                 default_storage.delete(path)
 
@@ -91,6 +102,8 @@ def save_to_files(request):
             else:
                 ss_status = False
                 a.status = 404
+                print("Save data into database failed, deleting uploaded file now...")
+                default_storage.delete(path)
                 a.save()
 
             return_json = [{'md5': md5, 'time': time_, 'save_status': ss_status}]
@@ -618,33 +631,32 @@ def run_density(request):
             count_range = max_count - min_count
             print("Max count, Min count, Count_range: ", max_count, min_count, count_range)
 
-            # scale to 1 - 100
-            results_first = results[:1]
-            results_get = operate_scale(results[1:], (1,100), 'value')
+            # sort by counts
+            values = results[1:]
+            counts_sort = sorted(values, key=lambda x: x['value'])
 
-            # sort density
-            values = results_get
-            print("NO EAT first ob: in run:", results_get[:1])
-            print(values)
-            results_sort = sorted(values, key=lambda x: x['value'])
-            results = results_first + results_sort
 
             # top chart list
             top_num = 50
-            tops = results_sort[-top_num:]
+            tops = counts_sort[-top_num:]
             tops = tops[::-1]
+            # Write tops to a file
+            tops_sub_path = 'tops_result/'
+            tops_path = tops_sub_path + caseid
+            save_tops = write_to_path(tops_path, tops)
 
-            print("file5 has been handled with lens of returning list: ",len(results))
+            # scale to 1 - 100
+            results_first = results[:1]
+            results_get = operate_scale(results[1:], (1,100), 'value')
+            results = results_first + results_get
 
             # Write result to a file
             result_sub_path = 'density_result/'
             result_path = result_sub_path + caseid
             save_results = write_to_path(result_path, results)
 
-            # Write tops to a file
-            tops_sub_path = 'tops_result/'
-            tops_path = tops_sub_path + caseid
-            save_tops = write_to_path(tops_path, tops)
+            print("file5 has been handled with lens of returning list: ",len(results))
+
 
             # Change status in database
             if save_results and save_tops:

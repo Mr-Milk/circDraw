@@ -4,6 +4,7 @@ import json
 from annotation import readfile, string_or_int
 import random
 import sys
+import datetime
 
 
 # load json data:
@@ -273,6 +274,7 @@ def update_snp(cnx, cursor, mod_table, snp_table, data_type):
     sql = """update {} as m1a, {} as snp set m1a.disease = snp.GWAS_disease, m1a.SNPid = snp.SNPid where snp.modStart = m1a.modStart and snp.chromosome = m1a.chromosome;""".format(mod_table, snp_table)
     try:
         print("Processing: Update disease and SNPid of {}".format(mod_table))
+        print("Start time: {}".format(datetime.datetime()))
         cursor.execute(sql)
         print("Success: Update {} with disease and SNPid success! :)".format(mod_table))
     except mysql.connector.Error as err:
