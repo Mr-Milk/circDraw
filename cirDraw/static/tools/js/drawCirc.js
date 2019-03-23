@@ -425,7 +425,7 @@ function textCenter(centerX, centerY, text, fontSize, color) {
 }
 
 // Adding animation for epi-tag on circRNA
-function epiAnimate(epi, name, color, centerX, centerY, exonJSON) {
+function epiAnimate(epi, name, color, centerX, centerY, link) {
     var c = epi.getBBox()
     epi.mouseover(function () {
             epi.animate({
@@ -440,7 +440,10 @@ function epiAnimate(epi, name, color, centerX, centerY, exonJSON) {
             text.remove()
         })
         .click(function () {
-            openNewTab(exonJSON[i]['mod'][t].link)
+            links = link.split(",")
+            for (li=0;li<links.length;li++){
+                openNewTab(links[li])
+            }
         })
 }
 
@@ -487,22 +490,22 @@ function drawCircRNA(exonJSON) {
             modEndAngle = startAngle + 360 * (exonJSON[i]['mod'][t].end - exonStart) / range
             if (exonJSON[i]['mod'][t].type == 'm6A') {
                 var m6A = triTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
-                epiAnimate(m6A, 'm6A', '#E98B2A', centerX, centerY, exonJSON)
+                epiAnimate(m6A, 'm6A', '#E98B2A', centerX, centerY, exonJSON[i]['mod'][t].link)
                 modCirc[i][t] = m6A
             }
             if (exonJSON[i]['mod'][t].type == 'm1C') {
                 var m1C = squareTagOnCircle(centerX, centerY, 85, 180 + modStartAngle)
-                epiAnimate(m1C, 'm1C', '#E16B8C', centerX, centerY, exonJSON)
+                epiAnimate(m1C, 'm1C', '#E16B8C', centerX, centerY, exonJSON[i]['mod'][t].link)
                 modCirc[i][t] = m1C
             }
             if (exonJSON[i]['mod'][t].type == 'm1A') {
                 var m1A = circleTagOnCircle(centerX, centerY, 85, 180 + modStartAngle, '#64363C')
-                epiAnimate(m1A, 'm1A', '#64363C', centerX, centerY, exonJSON)
+                epiAnimate(m1A, 'm1A', '#64363C', centerX, centerY, exonJSON[i]['mod'][t].link)
                 modCirc[i][t] = m1A
             }
             if (exonJSON[i]['mod'][t].type == 'SNP') {
                 var SNP = arrowOnCircle(centerX, centerY, 85, 180 + modStartAngle)
-                epiAnimate(SNP, 'SNP', '#000', centerX, centerY, exonJSON)
+                epiAnimate(SNP, 'SNP', '#000', centerX, centerY, exonJSON[i]['mod'][t].link)
                 modCirc[i][t] = SNP
             }
             if (exonJSON[i]['mod'][t].type == 'MRE') {
