@@ -1,4 +1,5 @@
 argh==0.26.2
+-e git+https://github.com/Mr-Milk/circDraw.git@44469a5c5c5d7d8dae7827e06e3d8581fa03425d#egg=bigcircle
 Django==2.1.4
 django-annoying==0.10.4
 ijson==2.3
