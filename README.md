@@ -75,7 +75,7 @@ The table shows the details of every circRNA.
 
 
 ### Support for Further development
-- Scalibility is fully considered from the beginning of project, it includs:
+- Scalibility was fully considered from the beginning of project, it includes:
 	- Extension of Upload Data Format. See details here.
 	- Extension of other annotation data. See details [here](https://github.com/Mr-Milk/circDraw/tree/front/related_genome_info) 
 
