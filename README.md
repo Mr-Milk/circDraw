@@ -74,14 +74,17 @@ The table shows the details of every circRNA.
 - Distrubution of circRNA isoforms
 
 
-### Further development
-1. Scalibility is fully considered from the beginning of project, it includs:
+### Support for Further development
+#### Scalibility is fully considered from the beginning of project, it includs:
 - Extension of Upload Data Format. See details here.
 - Extension of other annotation data. See details [here](https://github.com/Mr-Milk/circDraw/tree/front/related_genome_info) 
 
-2. Easy reproduction server:
-- CLI([command line interface](https://en.wikipedia.org/wiki/Command-line_interface) for easy migrations and cleaning data in database for Develop-Testing-Optimize Paradigm. See details [here](https://github.com/Mr-Milk/circDraw/tree/front/process_watchdog)  
+#### Easy reproduction server:
+- CLI([command line interface](https://en.wikipedia.org/wiki/Command-line_interface)) for easy migrations and cleaning data in database for Develop-Testing-Optimize Paradigm. See details [here](https://github.com/Mr-Milk/circDraw/tree/front/process_watchdog)  
 - CLI that integrates the whole process of inserting data into MySQL database is developed and tested for the use of circDraw processing. See details [here](https://github.com/Mr-Milk/circDraw/blob/front/related_genome_info/oneline.py)
+- Virtualenv was used during the development and developers who want to re-build the server can use the requirment file in top directory to set up packages needed.
+
+
 
 
 
