@@ -174,6 +174,7 @@ if __name__ == '__main__':
     update_snp_= get_parameter_or_None(paras, 'update_snp')
     addid = get_parameter_or_None(paras, 'add_id')
     annotation = get_parameter_or_None(paras, 'annotation')
+    add_species = get_parameter_or_None(paras, 'add_species')
 
     if addid == [] or addid:
         add_id()
