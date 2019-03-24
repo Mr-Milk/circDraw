@@ -160,7 +160,7 @@ def get_parameter_or_None(dic, para_name):
 
 if __name__ == '__main__':
     paras = get_input_value(sys.argv)
-    update_snp = get_parameter_or_None(paras, 'update_snp')
+    update_snp_= get_parameter_or_None(paras, 'update_snp')
     addid = get_parameter_or_None(paras, 'add_id')
     annotation = get_parameter_or_None(paras, 'annotation')
 
@@ -180,5 +180,5 @@ if __name__ == '__main__':
             snp_annotation_db()
         if 'gene' in annotation:
             gene_annotation_db()
-    if update_snp:
+    if update_snp_ or update_snp_ == []:
         update_snp()
