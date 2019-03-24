@@ -122,6 +122,17 @@ def add_id():
 
 
 
+def add_gene_species():
+    try:
+        command = """sudo python3 mysql_db.py admin_login.json -add tools_annotation"""
+        current_path = os.getcwd()
+        os.chdir("process_pkg/")
+        os.system(command)
+        os.chdir(current_path)
+        print("Success: Add_species to annotation success! :)")
+    except Exception as e:
+        print("Failed: in add_id")
+        print("Error: ",e)
 
 
 
@@ -182,3 +193,5 @@ if __name__ == '__main__':
             gene_annotation_db()
     if update_snp_ or update_snp_ == []:
         update_snp()
+    if add_species or add_species == []:
+        add_gene_species()
