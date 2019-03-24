@@ -114,7 +114,7 @@ def p_gene(sep_line):
     ob = {}
     gene_type = sep_line[2]
     chr_ci, gene_start, gene_end, gene_info = sep_line[0], sep_line[3], sep_line[4], sep_line[8]
-    query_lst = ['gene_name']
+    query_lst = ['gene_name', 'gene_id']
     gene_infos = get_more(gene_info, query_lst) # a list
     # what's in the get more infor??
     ob['chr_ci'] = string_or_int(chr_ci)

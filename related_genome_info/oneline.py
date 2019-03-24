@@ -22,7 +22,7 @@ def main():
 def gene_annotation_db():
     try:
         command_annotation = """sudo python3 annotation.py gencode.v19.annotation.gtf gene"""
-        command_db = """"""
+        command_db = """sudo python3 mysql_db.py admin_login.json -annotation gencode.json gencode_length_.json table_column.txt tools_annotation"""
         current_path = os.getcwd()
         os.chdir("raw_data/gene_annotation/")
         os.system(command_annotation)
