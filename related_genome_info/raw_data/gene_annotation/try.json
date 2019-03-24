@@ -1,0 +1,11 @@
+[
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "gene", "gene_start": 11869, "gene_end": 14412},
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "transcript", "gene_start": 11869, "gene_end": 14409},
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "exon", "gene_start": 11869, "gene_end": 12227},
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "exon", "gene_start": 12613, "gene_end": 12721},
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "exon", "gene_start": 13221, "gene_end": 14409},
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "transcript", "gene_start": 11872, "gene_end": 14412},
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "exon", "gene_start": 11872, "gene_end": 12227},
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "exon", "gene_start": 12613, "gene_end": 12721},
+{"gene_id": "ENSG00000223972.4;", "chr_ci": "chr1", "gene_type": "exon", "gene_start": 13225, "gene_end": 14412}
+]

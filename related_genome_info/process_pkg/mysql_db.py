@@ -523,6 +523,7 @@ def main(sys_argv):
     assert len(default) >= 1, "At least database login info is required!"
     login_file_name = default[0]
     annotation = get_parameter_or_None(paras, 'annotation')
+    print("This is annotation:", annotation)
     add = get_parameter_or_None(paras, 'add')
     scale = get_parameter_or_None(paras, 'scale')
     gene_wiki = get_parameter_or_None(paras, 'gene_wiki')

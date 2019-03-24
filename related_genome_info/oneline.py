@@ -18,11 +18,25 @@ def main():
         raise
 
 
+# ================== gene ============================
+def gene_annotation_db():
+    try:
+        command_annotation = """sudo python3 annotation.py gencode.v19.annotation.gtf gene"""
+        command_db = """"""
+        current_path = os.getcwd()
+        os.chdir("raw_data/gene_annotation/")
+        os.system(command_annotation)
+        os.system(command_db)
+        os.chdir(current_path)
+    except Exception as e:
+        print("Failed: in m1a_annotation_db")
+        print("Error: ", e)
+
 # ================== m1a ============================
 def m1a_annotation_db():
     try:
-        command_annotation = """python3 annotation.py RMBase_hg19_all_m1A_site.txt m1a"""
-        command_db = """python3 mysql_db.py admin_login.json -annotation RMBase_hg19_all_m1A_site.json RMBase_hg19_all_m1A_site_length_.json table_column.txt tools_m1a"""
+        command_annotation = """sudo python3 annotation.py RMBase_hg19_all_m1A_site.txt m1a"""
+        command_db = """sudo python3 mysql_db.py admin_login.json -annotation RMBase_hg19_all_m1A_site.json RMBase_hg19_all_m1A_site_length_.json table_column.txt tools_m1a"""
         current_path = os.getcwd()
         os.chdir("raw_data/m1A/")
         os.system(command_annotation)
@@ -33,12 +47,13 @@ def m1a_annotation_db():
         print("Error: ", e)
 
 
+# ================== m6a ============================
 def m6a_annotation_db():
     try:
-        command_annotation = """python3 annotation.py RMBase_hg19_all_m6A_site.txt m6a"""
-        command_db = """python3 mysql_db.py admin_login.json -annotation RMBase_hg19_all_m6A_site.json RMBase_hg19_all_m6A_site_length_.json table_column.txt tools_m6a"""
+        command_annotation = """sudo python3 annotation.py RMBase_hg19_all_m6A_site.txt m6a"""
+        command_db = """sudo python3 mysql_db.py admin_login.json -annotation RMBase_hg19_all_m6A_site.json RMBase_hg19_all_m6A_site_length_.json table_column.txt tools_m6a"""
         current_path = os.getcwd()
-        os.chdir("raw_data/m6A/")
+        os.chdir("raw_data/m6a/")
         os.system(command_annotation)
         os.system(command_db)
         os.chdir(current_path)
@@ -47,10 +62,11 @@ def m6a_annotation_db():
         print("Error: ",e)
 
 
+# ================== m5c ============================
 def m5c_annotation_db():
     try:
-        command_annotation = """python3 annotation.py RMBase_hg19_all_m5C_site.txt m5c"""
-        command_db = """python3 mysql_db.py admin_login.json -annotation RMBase_hg19_all_m5C_site.json RMBase_hg19_all_m5C_site_length_.json table_column.txt tools_m5c"""
+        command_annotation = """sudo python3 annotation.py RMBase_hg19_all_m5C_site.txt m5c"""
+        command_db = """sudo python3 mysql_db.py admin_login.json -annotation RMBase_hg19_all_m5C_site.json RMBase_hg19_all_m5C_site_length_.json table_column.txt tools_m5c"""
         current_path = os.getcwd()
         os.chdir("raw_data/m5c/")
         os.system(command_annotation)
@@ -60,10 +76,11 @@ def m5c_annotation_db():
         print("Failed: in m5c_annotation_db")
         print("Error: ", e)
 
+# ================== snp ============================
 def snp_annotation_db():
     try:
-        command_annotation = """python3 annotation.py RMBase_hg19_all_mod_snp_disease.txt snp"""
-        command_db = """python3 mysql_db.py admin_login.json -annotation RMBase_hg19_all_mod_snp_disease.json RMBase_hg19_all_mod_snp_disease_length_.json table_column.txt tools_snp"""
+        command_annotation = """sudo python3 annotation.py RMBase_hg19_all_mod_snp_disease.txt snp"""
+        command_db = """sudo python3 mysql_db.py admin_login.json -annotation RMBase_hg19_all_mod_snp_disease.json RMBase_hg19_all_mod_snp_disease_length_.json table_column.txt tools_snp"""
         current_path = os.getcwd()
         os.chdir("raw_data/SNP/")
         os.system(command_annotation)
@@ -74,11 +91,12 @@ def snp_annotation_db():
         print("Error: ",e)
 
 
+# ================== update_snp ============================
 def update_snp():
     try:
-        command1 = """python3 mysql_db.py admin_login.json -snp_update tools_m1a tools_snp m1a"""
-        command2 = """python3 mysql_db.py admin_login.json -snp_update tools_m6a tools_snp m6a"""
-        command3 = """python3 mysql_db.py admin_login.json -snp_update tools_m5c tools_snp m5c"""
+        command1 = """sudo python3 mysql_db.py admin_login.json -snp_update tools_m1a tools_snp m1a"""
+        command2 = """sudo python3 mysql_db.py admin_login.json -snp_update tools_m6a tools_snp m6a"""
+        command3 = """sudo python3 mysql_db.py admin_login.json -snp_update tools_m5c tools_snp m5c"""
         current_path = os.getcwd()
         os.chdir("process_pkg/")
         os.system(command1)
@@ -89,10 +107,10 @@ def update_snp():
         print("Failed: in update_snp")
         print("Error: ",e)
 
-
+# ================== add_id ============================
 def add_id():
     try:
-        command1 = """python3 mysql_db.py admin_login.json -add_id tools_m1a tools_m6a tools_m5c"""
+        command1 = """sudo python3 mysql_db.py admin_login.json -add_id tools_m1a tools_m6a tools_m5c"""
         current_path = os.getcwd()
         os.chdir("process_pkg/")
         os.system(command1)
@@ -137,6 +155,9 @@ def get_parameter_or_None(dic, para_name):
         return dic[para_name]
     else:
         return None
+
+
+
 if __name__ == '__main__':
     paras = get_input_value(sys.argv)
     update_snp = get_parameter_or_None(paras, 'update_snp')
@@ -147,9 +168,17 @@ if __name__ == '__main__':
         add_id()
 
     if annotation:
-        m1a_annotation_db()
-        m6a_annotation_db()
-        m5c_annotation_db()
-        snp_annotation_db()
+        print("annotation: ",annotation)
+        if 'm1a' in annotation:
+            m1a_annotation_db()
+        if 'm6a' in annotation:
+            print("M6A in")
+            m6a_annotation_db()
+        if 'm5c' in annotation:
+            m5c_annotation_db()
+        if 'snp' in annotation:
+            snp_annotation_db()
+        if 'gene' in annotation:
+            gene_annotation_db()
     if update_snp:
         update_snp()
