@@ -51,7 +51,6 @@ By processing the uploaded file in backend, you will be able to __interactively_
 - Django: https://www.djangoproject.com/
 - MySQL: https://www.mysql.com/cn/
 - mysqlclient-python: https://github.com/PyMySQL/mysqlclient-python
-- PyMySQL: https://pypi.python.org/pypi/PyMySQL
 - ijson: https://pypi.org/project/ijson/
 
 #### Algorithm
