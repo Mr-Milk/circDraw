@@ -102,7 +102,6 @@ $(document).ready(function () {
         }
     })
 
-
     $('#submit').click(function (e) {
         e.preventDefault();
         //e.stopPropagation();
@@ -114,7 +113,7 @@ $(document).ready(function () {
                     "FileType": $("#software").val(),
                     "Species": $("#species").val(),
                     "expvalue": $("#expvalue").val(),
-                    "denvalue": $("#denvalue").val()
+                    "denvalue": 0,
                 }
 
             if ($('.textarea').text() === "") {
