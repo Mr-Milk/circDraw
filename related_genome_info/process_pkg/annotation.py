@@ -34,7 +34,7 @@ def write_from_process(f, write_file_name, write_file_length_name, maxread, proc
         result_line = process_line_fun(line, data_type)
         with open(write_file_name, 'a') as f1:
             if not result_line:
-                print('line '+str(num + 1) + ' has finished.-- '+str(round((num+1)/maxread, 3)*100) + '% -useless')
+                print('line '+str(num + 1) + ' has finished.-- '+'{:.5f}'.format((num+1)/maxread*100) + '% -useless')
 
                 if num == (maxread-1):
                     f1.write('\n]')
@@ -51,7 +51,7 @@ def write_from_process(f, write_file_name, write_file_length_name, maxread, proc
                     if real_len != 0:
                         f1.write(',\n')
                     f1.write(result_json)
-                    print('line '+str(num + 1) + ' has finished.-- '+str(round((num+1)/maxread, 3)*100) + '% - mm ' + str(data_type))
+                    print('line '+str(num + 1) + ' has finished.-- '+'{:.5f}'.format(round((num+1)/maxread, 3)*100) + '% - mm ' + str(data_type))
                     num += 1
                     real_len += 1
                 else:
@@ -113,31 +113,39 @@ def p_gene(sep_line):
     # costomize for gene data
     ob = {}
     gene_type = sep_line[2]
-    if gene_type == "gene" or gene_type == "exon":
-        chr_ci, gene_start, gene_end, gene_info = sep_line[0], sep_line[3], sep_line[4], sep_line[8]
-        gene_infos = get_more(gene_info) # a list
-        # what's in the get more infor??
-        ob['chr_ci'] = string_or_int(chr_ci)
-        ob['gene_type'] = string_or_int(gene_type)
-        ob['gene_start'] = string_or_int(gene_start)
-        ob['gene_end'] = string_or_int(gene_end)
-        # print('This is gene_info',gene_infos)
-        re = dict(gene_infos, **ob)
-        return re
-    else:
-        return False
+    chr_ci, gene_start, gene_end, gene_info = sep_line[0], sep_line[3], sep_line[4], sep_line[8]
+    query_lst = ['gene_name', 'gene_id']
+    gene_infos = get_more(gene_info, query_lst) # a list
+    # what's in the get more infor??
+    ob['chr_ci'] = string_or_int(chr_ci)
+    ob['gene_type'] = string_or_int(gene_type)
+    ob['gene_start'] = string_or_int(gene_start)
+    ob['gene_end'] = string_or_int(gene_end)
+    # print('This is gene_info',gene_infos)
+    re = dict(gene_infos, **ob)
+    return re
 
 
-def get_more(gene_info):
+def get_more(gene_info, query_lst):
+    """Query_lst = ['gene_end', 'gene_start'...], if query is not found, warning message will showup"""
     c = gene_info.split(',')
     result = {}
     for i in c:
         if i != '\n':
-            m = remove_null(i.split(' '))
-            #name = first_name(m)
-            #content = get_content(m)
-            result[str(m[0])] = string_or_int(remove_quote(m[1]))
+            m = remove_null(i.split(';'))
+            for each in m:
+                infor = each.split(' ')
+                pre_infor = remove_null(infor)
+                if len(pre_infor) >= 2:
+                    name = noslash(pre_infor[0])
+                    if name in query_lst:
+                        value = ",".join([noslash(remove_quote(idi)) for idi in pre_infor[1:]]) if len(pre_infor) > 2 else str(noslash(remove_quote(pre_infor[-1])))
+                        result[name] = string_or_int(value)
+
+                    
+
     return result
+
 
 # ============================ Process m1a ==========================
 def p_m1a(sep_line):

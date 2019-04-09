@@ -86,6 +86,19 @@ When the user choose no region from the density map, detailed map will display t
 - Top 20 gene with most circRNA isoforms
 
 <img src="toplist.png">
+### Support for Further development
+- Scalibility was fully considered from the beginning of project, it includes:
+	- Extension of Upload Data Format. See details here.
+	- Extension of other annotation data. See details [here](https://github.com/Mr-Milk/circDraw/tree/front/related_genome_info) 
+
+- Easy reproduction server:
+	- CLI([command line interface](https://en.wikipedia.org/wiki/Command-line_interface)) for easy migrations and cleaning data in database for Develop-Testing-Optimize Paradigm. See details [here](https://github.com/Mr-Milk/circDraw/tree/front/process_watchdog)  
+	- CLI that integrates the whole process of inserting data into MySQL database is developed and tested for the use of circDraw processing. See details [here](https://github.com/Mr-Milk/circDraw/blob/front/related_genome_info/oneline.py)
+	- Virtualenv was used during the development and developers who want to re-build the server can use the requirment file in top directory to set up packages needed.
+
+
+
+
 
 ### F&Q
 

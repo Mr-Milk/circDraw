@@ -523,6 +523,7 @@ def main(sys_argv):
     assert len(default) >= 1, "At least database login info is required!"
     login_file_name = default[0]
     annotation = get_parameter_or_None(paras, 'annotation')
+    print("This is annotation:", annotation)
     add = get_parameter_or_None(paras, 'add')
     scale = get_parameter_or_None(paras, 'scale')
     gene_wiki = get_parameter_or_None(paras, 'gene_wiki')
@@ -561,7 +562,9 @@ def main(sys_argv):
 
     # add species info
     if add:
-        add_column(cnx, cursor, table_name_annotation, ["species VARCHAR(300) NOT NULL"], ["'human'"])
+        """add = [table_name]"""
+        table_name_add_same_column_value = add[0]
+        add_column(cnx, cursor, table_name_add_same_column_value, ["species VARCHAR(300) NOT NULL"], ["'human'"])
         cnx.commit()
     # create scale(min start, max end) table
     if scale:
