@@ -3,7 +3,7 @@
 // declare jQuery function
 $.fn.extend({
     errorAfter: function (error) {
-        $(this).after("<span id='error' class='ml-3'></span>")
+        $(this).after("<span id='error' class='ml-3'></span>");
         $('#error').html(error).addClass('text-danger').show().fadeOut(1000, function () {
             $('#error').remove();
         });
@@ -13,7 +13,7 @@ $.fn.extend({
 $.fn.extend({
     alphaNumOnly: function () {
         $(this).on("keydown", function (e) {
-            var arr = [8, 16, 17, 20, 35, 36, 37, 38, 39, 40, 45, 46];
+            var arr = [8, 16, 17, 20, 35, 36, 37, 38, 39, 40, 45, 46, 91];
             // Allow letters
             for (var i = 65; i <= 90; i++) {
                 arr.push(i);
@@ -252,7 +252,7 @@ $('#addcirc').click(function () {
             'start': parseInt(circStart),
             'end': parseInt(circEnd)
         })
-        let seencircNames = {}
+        let seencircNames = {};
         circList = circList.filter(function (e) {
             if (e.name in seencircNames) {
                 return false;
@@ -260,11 +260,11 @@ $('#addcirc').click(function () {
                 seencircNames[e.name] = true;
                 return true;
             }
-        })
+        });
 
-        console.log(circList)
+        console.log(circList);
 
-        console.log(exons)
+        console.log(exons);
 
         for (i = 0; i < exons.length / 3; i++) {
             exonList.push({
