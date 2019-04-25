@@ -5,8 +5,8 @@ $.fn.extend({
     errorAfter: function (error) {
         $(this).after("<span id='error' class='ml-3'></span>")
         $('#error').html(error).addClass('text-danger').show().fadeOut(1000, function () {
-            $('#error').remove()
-        })
+            $('#error').remove();
+        });
     }
 });
 
@@ -25,9 +25,9 @@ $.fn.extend({
             if (jQuery.inArray(event.which, arr) === -1) {
                 event.preventDefault();
             }
-        })
+        });
     }
-})
+});
 
 $.fn.extend({
     numOnly: function () {
@@ -41,9 +41,9 @@ $.fn.extend({
             if (jQuery.inArray(event.which, arr) === -1) {
                 event.preventDefault();
             }
-        })
+        });
     }
-})
+});
 
 var svg = Snap("#svg");
 
@@ -51,10 +51,10 @@ var background = svg.paper.rect(0, 0, $("#svg").attr('width'), $("#svg").attr('h
     fill: "#fff",
     stroke: "none",
     //strokeWidth: 1
-})
+});
 
-$('.alpha-num-only').alphaNumOnly()
-$('.num-only').numOnly()
+$('.alpha-num-only').alphaNumOnly();
+$('.num-only').numOnly();
 
 $('#exonAdd').click(function () {
     $('#exon').append(
@@ -190,10 +190,10 @@ $('#addcirc').click(function () {
 
         // 5. 检查circ的start和end是否与exon匹配
         ifExonInCirc = (function () {
-            condition = true
+            condition = true;
             for (i = 0; i < exons.length / 3; i++) {
                 if (parseInt(exons[3 * i + 1]) < circStart || parseInt(exons[3 * i + 2]) > circEnd) {
-                    condition = false
+                    condition = false;
                 }
             }
             return condition
