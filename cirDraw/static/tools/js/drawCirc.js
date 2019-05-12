@@ -1,3 +1,4 @@
+/*jshint esversion: 5 */
 // Initiate snap.SVG instance
 var svg = Snap("#svg");
 
@@ -8,33 +9,32 @@ var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2
     '#490063', '#ff5757', '#007aea', '#88cc66', '#ff4848', '#73aeff', '#ae5800', '#c1b900', '#c36cff', '#39b03b',
     '#244c66', '#9c0000', '#6d0000', '#877400', '#002065', '#000cae', '#ecd600', '#ff44a2', '#ffa254', '#ff0000',
     '#1a6f00', '#ffa12c'
-]
+];
 
 // Get URL and split to caseid
-var url = $(location).attr('href').split("/")
-var case_id = url[url.length - 1].split("#")[0]
+var url = $(location).attr('href').split("/"),
+    caseID = url[url.length - 1].split("#")[0];
 
 // Get which region the user want to draw
-var start, end
-var exonList, arcList
+var start, end, exonList, arcList;
 var $name = $('#geneNameSelect'),
     $chr = $('#chrSelector'),
     $start = $("#js-input-from"),
     $end = $("#js-input-to"),
-    $scale = $("#scale-selector")
+    $scale = $("#scale-selector");
 
 $name.on('DOMSubtreeModified', function(){
-    name = $name.text()
+    name = $name.text();
     if(name !== ""){
-    chr = $chr.text()
-    start = $start.text()
-    end = $end.text()
+    chr = $chr.text();
+    start = $start.text();
+    end = $end.text();
     console.log('Refreshing circRNA canvas: ', name, chr, start, end)
-    $('.den-select-info').show()
-    $scale.show()
-    redraw(case_id, start, end, chr)
+    $('.den-select-info').show();
+    $scale.show();
+    redraw(caseID, start, end, chr);
     }
-})
+});
 
 $scale.ionRangeSlider({
     type: "double",
@@ -46,7 +46,7 @@ $scale.ionRangeSlider({
     min_interval: 500, // the min length of all circRNA in arcJSON
     onFinish: function(data){
         scaleCirc = arcList.filter(function(v){if(v.start >= data.from && v.end <= data.to){return v}})// get the circ list after selection
-        svg.clear()
+        svg.clear();
         // draw a straight line
         var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
             stroke: "#000",
@@ -64,7 +64,7 @@ function getGeneList() {
         val2 = parseInt($inputTo.text()),
         chr = parseInt($('#chrSelector').text())
     $.getJSON("genList/", {
-            "caseid": case_id,
+            "caseid": caseID,
             "start": val1,
             "end": val2,
             "chr": chr
@@ -74,8 +74,8 @@ function getGeneList() {
         })
 }*/
 
-function redraw(case_id, start, end, chr) {
-    svg.clear()
+function redraw(caseID, start, end, chr) {
+    svg.clear();
     // draw a straight line
     var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
         stroke: "#000",
@@ -84,24 +84,24 @@ function redraw(case_id, start, end, chr) {
 
     // Call Ajax
     $.getJSON("tools_file2/", {
-        "caseid": case_id,
+        "caseid": caseID,
         "start": start,
         "end": end,
         "chr": chr
     }).done(function (exon) {
         exonList = exon;
-        console.log("ajax exon: ", exonList)
+        console.log("ajax exon: ", exonList);
         $.getJSON("tools_file1/", {
-            "caseid": case_id,
+            "caseid": caseID,
             "start": start,
             "end": end,
             "chr": chr
         }).done(function (arc) {
             arcList = arc;
-            console.log("ajax circ: ", arcList)
-            var tableContent = backSplicing(exonList, arcList)
-            console.log('Things in Table: ', tableContent)
-            console.log('Excu line After ajax call:', arcList)
+            console.log("ajax circ: ", arcList);
+            var tableContent = backSplicing(exonList, arcList);
+            console.log('Things in Table: ', tableContent);
+            console.log('Excu line After ajax call:', arcList);
             intervalList = arcList.filter(function(v){return v.end - v.start})
             s_mm = getMinMax(arcList)
             scaleSelect.update({

@@ -147,9 +147,6 @@ function processData(circName, circStart, circEnd, exons, mods) {
             exon.start = data[2];
             exon.end = data[3];
             exon.mods = [];
-            exon.color = colorList[colorIndex];
-
-            colorIndex = colorIndex < colorList.length ? colorIndex + 1 : 0;
 
             for (var t = 0, tlen = mods.length / mStep; t < tlen; t++) {
                 var mdata = mods.slice(mStep * t, mStep * (t + 1));
@@ -176,6 +173,10 @@ function processData(circName, circStart, circEnd, exons, mods) {
 }
 
 function redraw() { // redraw() will be called everytime when the stored data changed
+    //reset certain value
+    exonList = {};
+    colorIndex = 0;
+
     var mm = convert();
     MIN = mm.min;
     MAX = mm.max;
@@ -328,6 +329,13 @@ function convert() {
 
         min = circRNAs[v1].start < min || min === undefined ? circRNAs[v1].start : min;
         max = circRNAs[v1].end > max || max === undefined ? circRNAs[v1].end : max;
+        for(var t = 0, up = circRNAs[v1].exons.length; t<up ; t++ ) {
+            exonStart = circRNAs[v1].exons[t].start;
+            exonEnd = circRNAs[v1].exons[t].end;
+
+            min = exonStart < min || min === undefined ? exonStart : min;
+            max = exonEnd > max || max === undefined ? exonEnd : max;
+        }
     }
 
     for (var v2 in geneList) {
@@ -408,9 +416,11 @@ function drawLegend(conf) {
     return legend;
 }
 
-function drawCircRNA(exons, circStart, circEnd) {
+function drawCircRNA(exonComponents, circStart, circEnd) {
+    console.log(exonComponents);
     var len = 0,
         startAngle = 90,
+        exons = JSON.parse(JSON.stringify(exonComponents)),
         exlen = exons.length,
         modR1 = 0.145,
         modR2 = 5,
@@ -425,6 +435,10 @@ function drawCircRNA(exons, circStart, circEnd) {
         },
         circRNA = svg.paper.g();
 
+    exons[0].realStart = exons[0].start;
+    exons[0].realEnd = exons[0].end;
+    exons[exlen - 1].realStart = exons[exlen - 1].start;
+    exons[exlen - 1].realEnd = exons[exlen - 1].end;
     exons[0].start = exons[0].start < circStart ? circStart : exons[0].start;
     exons[exlen - 1].end = exons[exlen - 1].end > circEnd ? circEnd : exons[exlen - 1].end;
     min = exons[0].start;
@@ -440,7 +454,18 @@ function drawCircRNA(exons, circStart, circEnd) {
             exEndAngle = startAngle + ((end - start) / len) * 360,
             type = exons[i].type,
             mods = exons[i].mods,
-            color = exons[i].color;
+            name = exons[i].name,
+            exonID, color;
+
+        if (exons[i].realStart === undefined || exons[i].realEnd === undefined) {
+            exonID = type + ':' + start + '-' + end;
+        }
+        else {
+            exonID = type + ':' + exons[i].realStart + '-' + exons[i].realEnd;
+        }
+        console.log(exonList, exonID);
+
+        color = exonList[exonID];
 
         for (j = 0, up_j = mods.length; j < up_j; j++) {
             var modType = mods[j].type,
@@ -502,6 +527,7 @@ function drawCircRNA(exons, circStart, circEnd) {
                 endDegree: exEndAngle,
                 color: color,
                 info: {
+                    name: name,
                     type: type,
                     position: start + '-' + end
                 }
@@ -516,6 +542,7 @@ function drawCircRNA(exons, circStart, circEnd) {
                 endDegree: exEndAngle,
                 color: "#000",
                 info: {
+                    name: name,
                     type: type,
                     position: start + '-' + end
                 }
@@ -567,33 +594,44 @@ function drawExons(exons) {
             end = exons[i].end,
             type = exons[i].type,
             name = exons[i].name,
+            exonID = type + ':' + start + '-' + end,
             exStart = (start - MIN) / RAN * CHR_LEN + OFFSET_DIST,
             exEnd = (end - MIN) / RAN * CHR_LEN + OFFSET_DIST,
-            color = exons[i].color;
-        if (type === 'exon') {
-            block({
-                x: exStart,
-                len: exEnd - exStart,
-                color: color,
-                type: type,
-                info: {
+            color;
+        
+        console.log('drawExons', exonList[exonID]);
+
+        if (exonList[exonID] === undefined) {
+            exonList[exonID] = colorList[colorIndex];
+            color = exonList[exonID];
+            colorIndex = colorIndex < colorList.length ? colorIndex + 1 : 0;
+            if (type === 'exon') {
+                block({
+                    x: exStart,
+                    len: exEnd - exStart,
+                    color: color,
                     type: type,
-                    name: name,
-                    position: start + '-' + end
-                }
-            });
-        } else if (type === 'intron') {
-            block({
-                x: exStart,
-                len: exEnd - exStart,
-                color: "#000",
-                type: type,
-                info: {
+                    info: {
+                        name: name,
+                        type: type,
+                        position: start + '-' + end
+                    }
+                });
+            } else if (type === 'intron') {
+                block({
+                    x: exStart,
+                    len: exEnd - exStart,
+                    color: "#000",
                     type: type,
-                    name: name,
-                    position: start + '-' + end
-                }
-            });
+                    info: {
+                        name: name,
+                        type: type,
+                        position: start + '-' + end
+                    }
+                });
+            }
+        }
+        else {
         }
     }
 }
@@ -606,13 +644,14 @@ function drawGene(geneList) {
         block({
             x: start,
             len: end - start,
-            color: gene.color,
+            color: colorList[colorIndex],
             type: 'gene',
             info: {
                 name: gene.name,
                 position: gene.start + " - " + gene.end
             }
         });
+        colorIndex = colorIndex < colorList.length ? colorIndex + 1 : 0;
     }
 }
 
@@ -663,12 +702,14 @@ function drawArc(data) {
     // setting interactive of arc
     arc.click(function () {
         id = "circ" + arcStart + arcEnd;
-        if (id == CURRENT_STAT) {
-            circ.remove();
-            CURRENT_STAT = undefined;
+        if (id === CURRENT_STAT.id) {
+            CURRENT_STAT.circ.remove();
+            // fix this remove circ things, try store it in a object with key to access it, should do the trick
+            CURRENT_STAT = {id: undefined, circ: undefined};
         } else {
             circ = drawCircRNA(exons, data.start, data.end);
-            CURRENT_STAT = id;
+            CURRENT_STAT = {id: id,
+                            circ: circ};
         }
     }).mouseover(function (ev, x, y) {
         Snap.animate(1, 5, function (val) {
@@ -955,7 +996,8 @@ var exonInputHTML = '<div class="input-group mb-3"><select class="custom-select"
 // storage of input circRNA and Gene
 var circRNAs = {},
     geneList = {},
-    CURRENT_STAT, MIN, MAX, RAN;
+    exonList = {},
+    CURRENT_STAT = {id: undefined, circ: undefined}, MIN, MAX, RAN;
 
 // setting up Add Button function
 var InputBox = [
@@ -1088,10 +1130,8 @@ $('#addgene').click(function () {
         geneList[id] = {
             'name': geneName,
             'start': parseInt(geneStart),
-            'end': parseInt(geneEnd),
-            'color': colorList[colorIndex]
+            'end': parseInt(geneEnd)
         };
-        colorIndex = colorIndex < colorList.length ? colorIndex + 1 : 0;
         $('#geneName').val("");
         $('#geneStart').val("");
         $('#geneEnd').val("");
