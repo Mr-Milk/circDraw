@@ -97,7 +97,10 @@
                             <button id="previous" class="btn btn-light btn-sm"><i
                                     class="fas fa-angle-double-left"></i><strong> Last Gene</strong></button>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Name:</p>
-                            <p id="geneNameSelect" class="ml-1 mr-1 mb-1 d-inline-block">Unknown</p>
+                            <!--<p id="geneNameSelect" class="ml-1 mr-1 mb-1 d-inline-block">Unknown</p>-->
+                            <input list="genename-list" id="geneNameSelect" style="width: 5em"/>
+                                <datalist id="genename-list">
+                                </datalist>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Chr:</p>
                             <p id="chrSelector" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Start:</p>
@@ -171,13 +174,14 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/canvg/1.4/rgbcolor.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvg@2.0.0-beta.0/dist/browser/canvg.min.js"></script>
+<script src="https://cdn.bootcss.com/fuse.js/3.4.4/fuse.js"></script>
 
 <!-- Enbed varibles -->
 
 <!-- Custom js for this template -->
 <script src="{% static 'tools/js/ion.rangeSlider.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'tools/js/denChrPlot.js' %}" type="text/javascript"></script>
-<script src="{% static 'tools/js/drawCirc.js' %}" type="text/javascript"></script>
+<!--<script src="{% static 'tools/js/drawCirc.js' %}" type="text/javascript"></script>-->
 <script src="{% static 'tools/js/agency.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'tools/js/linechart.js' %}" type="text/javascript"></script>
 <script src="{% static 'tools/js/download.js' %}" type="text/javascript"></script>

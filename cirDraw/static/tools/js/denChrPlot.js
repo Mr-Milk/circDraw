@@ -1,6 +1,187 @@
-// Get URL and split to caseid
-var url = $(location).attr('href').split("/")
-var caseid = url[url.length - 1].split("#")[0]
+function infoBox(x, y, info) {
+    var offset = $('#svg2').position(),
+        offsetX = offset.left,
+        offsetY = offset.top;
+    x = x - offsetX;
+    y = y - offsetY;
+
+    if (info === undefined || info === null) {
+        return;
+    } else {
+        var texts = den.paper.g(),
+            keys = Object.keys(info),
+            addY = 15;
+
+        for (var i = 0, up = keys.length; i < up; i++) {
+            key = keys[i];
+            text = key + ': ' + info[key];
+            texts.add(den.paper.text(x + 10, y + addY, text).attr({
+                'font-size': 10,
+                'font-family': 'arial'
+            }));
+            addY += 13;
+        }
+
+        var textBBox = texts.getBBox(),
+            box = den.paper.rect(textBBox.x - 2.5, textBBox.y - 2.5, textBBox.w + 5, textBBox.h + 5).attr({
+                fill: '#fed136',
+                fillOpacity: 0.5,
+                stroke: '#211E55',
+                strokeWidth: 0.5,
+                strokeOpacity: 0.5
+            });
+        box.insertBefore(texts);
+        return den.group(box, texts);
+    }
+}
+
+// get index of an array
+function getIndex() {
+    var from = parseInt($("#js-input-from").text()),
+        to = parseInt($("#js-input-to").text()),
+        chr = $('#chrSelector').text();
+
+    return densityFilter.findIndex(function (item, i) {
+        return item.start === from && item.chr === chr && item.end === to;
+    });
+}
+
+// draw a block
+function chrBlock(y, len, name) {
+    var chrBlock = den.paper.rect(50, y, len, 10).attr({
+        fill: "#e4e4e2",
+        stroke: "#000",
+        strokeWidth: 0.5
+    });
+
+    var t1 = den.paper.text(20, y + 8, name).attr({
+        'font-family': 'arial',
+        'font-size': 10
+    });
+
+    return den.group(chrBlock, t1);
+}
+
+// normalize density value
+function densityBlock(x, y, len, color, info) {
+    var infobox,
+        denBlock = den.paper.rect(x, y + 0.5, len, 9).attr({
+            fill: color,
+            stroke: 'none',
+            cursor: 'pointer'
+        });
+
+    var denBlockBBox = denBlock.getBBox();
+
+    denBlock.mouseover(function (ev, x, y) {
+        denBlock.animate({
+            transform: 's(1,1.5)' + denBlockBBox.cx + ',' + denBlockBBox.cy
+        }, 200);
+        infobox = infoBox(x, y, info);
+    }).mouseout(function () {
+        denBlock.animate({
+            transform: 's(1,1)' + denBlockBBox.cx + ',' + denBlockBBox.cy
+        }, 200);
+        infobox.remove();
+    }).click(function () {
+        position = info.position.split("-");
+        $("#js-input-from").text(position[0]);
+        $("#js-input-to").text(position[1]);
+        $('#chrSelector').text(info.chr);
+        $('#geneNameSelect').val(info.gene);
+        $('svg-tips').remove();
+    });
+
+    return denBlock;
+}
+
+function drawChrSkeletons(chrSkeleton) {
+    console.log("drawing chr skeleton");
+    // calculate the MIN and MAX of chrskeleton
+    for (var i = 0, up = chrSkeleton.length; i < up; i++) {
+        dMIN = chrSkeleton[i].chrLen >= dMIN ? dMIN : chrSkeleton[i].chrLen;
+        dMAX = chrSkeleton[i].chrLen <= dMAX ? dMAX : chrSkeleton[i].chrLen;
+    }
+    dRAN = dMAX - dMIN;
+
+    console.log("MIN:", dMIN,
+        "\nMAX:", dMAX,
+        "\nRAN:", dRAN);
+
+    // draw chrskeleton
+    for (var t = 0; t < up; t++) {
+        var len = (chrSkeleton[t].chrLen - dMIN) / dRAN * 640 + 60;
+        chrBlock(chrSkeletonCordY[t], len, chrSkeleton[t].chr.slice(3));
+        chrNameOrder[chrSkeleton[t].chr] = t;
+    }
+}
+
+function drawDensityBlocks(densityInfo) {
+    console.log(chrNameOrder);
+    for (var i = 0, up = densityInfo.length; i < up; i++) {
+        var chr = densityInfo[i].chr,
+            x = (densityInfo[i].start) / dMAX * 700 + 50,
+            y = chrSkeletonCordY[chrNameOrder[chr]],
+            len = (densityInfo[i].end) / dMAX * 700 + 50 - x + 2,
+            color = palette[densityInfo[i].density - 1],
+            name = densityInfo[i].name,
+            info = {
+                chr: chr,
+                position: densityInfo[i].start + "-" + densityInfo[i].end,
+                gene: name,
+                density: densityInfo[i].density
+            };
+        console.log("chr:", chrNameOrder[chr], y, x);
+        densityBlock(x, y, len, color, info);
+    }
+}
+
+function gradientLegend(x, y) {
+    for (var i = 0; i < 100; i++) {
+        den.paper.rect(x + 2 * i, y, 2, 5).attr({
+            fill: palette[i],
+            stroke: 'none'
+        });
+    }
+    den.paper.text(x - 10, y + 5, '1').attr({
+        fill: palette[0],
+        stroke: 'none',
+        'font-size': 8,
+        'font-family': 'arial'
+    });
+    den.paper.text(x + 203, y + 5, '100').attr({
+        fill: palette[99],
+        stroke: 'none',
+        'font-size': 8,
+        'font-family': 'arial'
+    });
+}
+
+function denPlot(chrSkeleton, densityInfo, limit) {
+    var SVG_WIDTH = parseInt($("#svg2").attr('width')),
+        SVG_HEIGHT = parseInt($("#svg2").attr('height'));
+    var background = den.paper.rect(0, 0, SVG_WIDTH, SVG_HEIGHT).attr({
+            stroke: "none",
+            fill: "#fff"
+        });
+    densityFilter = densityInfo.filter(function (el) {
+            if (el.density > limit) {
+                return el;
+            }
+        });
+    gradientLegend(550, 20);
+    console.log(densityFilter);
+    drawChrSkeletons(chrSkeleton);
+    drawDensityBlocks(densityFilter);
+}
+
+function print(text) {
+    console.log(text);
+}
+
+// Get URL and split to caseID
+var url = $(location).attr('href').split("/");
+var caseID = url[url.length - 1].split("#")[0];
 
 
 // handle range slider
@@ -12,158 +193,174 @@ $den.ionRangeSlider({
     max: 100,
     from: 0,
     step: 1,
-    onFinish: function(data){
-        denLimit = data.from
-        console.log('Setting limit at: ', denLimit)
-        den.clear()
-        background = den.paper.rect(0, 0, 800, 500).attr({
-            stroke: "none",
-            fill: "#fff"
-        });
-        tipInfo = den.paper.text(700, 30, "Density: ").attr({
-            'font-family': 'arial',
-            'font-size': 15
-        })
-        chrMaxLen = normChr(chrSkeleton)
-        denPlot(chrMaxLen, denINFO, denLimit)
+    onFinish: function (data) {
+        console.log('Setting limit at: ', data.from);
+        den.clear();
+        denPlot(chrSkeleton, densityInfo, data.from);
     }
 });
 
 // Initiate Density Plot
 var den = Snap("#svg2");
 
-var background = den.paper.rect(0, 0, 800, 500).attr({
-    stroke: "none",
-    fill: "#fff"
-});
+var dMIN, dMAX, dRAN, chrSkeleton, densityInfo, densityFilter, chrNameOrder = {};
 
 var palette = ['#f75c2f',
-'#f7612e',
-'#f6662d',
-'#f66b2d',
-'#f5702c',
-'#f5752b',
-'#f47a2a',
-'#f47f2a',
-'#f38429',
-'#f38928',
-'#f28e27',
-'#f29327',
-'#f19826',
-'#f19d25',
-'#f0a225',
-'#f0a724',
-'#efac23',
-'#efb122',
-'#eeb622',
-'#eebb21',
-'#edc020',
-'#edc620',
-'#eccb1f',
-'#ecd01e',
-'#ebd51e',
-'#eada1d',
-'#eadf1c',
-'#e9e41c',
-'#e8e91b',
-'#e2e81a',
-'#dbe81a',
-'#d5e719',
-'#cfe618',
-'#c8e519',
-'#c1e319',
-'#bae21a',
-'#b3e01a',
-'#addf1a',
-'#a6dd1b',
-'#a0db1b',
-'#99da1b',
-'#93d81b',
-'#8dd71c',
-'#87d51c',
-'#81d41c',
-'#7cd21d',
-'#76d11d',
-'#70cf1d',
-'#6bce1e',
-'#66cc1e',
-'#60cb1e',
-'#5bc91e',
-'#56c81f',
-'#51c61f',
-'#4cc51f',
-'#48c31f',
-'#43c220',
-'#3ec020',
-'#3abf20',
-'#35be20',
-'#31bc21',
-'#2dbb21',
-'#29b921',
-'#25b821',
-'#21b622',
-'#22b527',
-'#22b32b',
-'#22b22f',
-'#22b133',
-'#22af37',
-'#23ae3b',
-'#23ac3e',
-'#23ab42',
-'#23aa46',
-'#23a849',
-'#23a74c',
-'#24a550',
-'#24a453',
-'#24a356',
-'#24a159',
-'#24a05c',
-'#249f5f',
-'#249d62',
-'#259c64',
-'#259b67',
-'#25996a',
-'#25986c',
-'#25976e',
-'#259571',
-'#259473',
-'#259375',
-'#259177',
-'#269079',
-'#268f7b',
-'#268d7d',
-'#268c7f',
-'#268b80',
-'#268a82',
-'#268884',
-'#268785']
-var tipInfo = den.paper.text(700, 30, "Density: ").attr({
-    'font-family': 'arial',
-    'font-size': 15
-})
+        '#f7612e',
+        '#f6662d',
+        '#f66b2d',
+        '#f5702c',
+        '#f5752b',
+        '#f47a2a',
+        '#f47f2a',
+        '#f38429',
+        '#f38928',
+        '#f28e27',
+        '#f29327',
+        '#f19826',
+        '#f19d25',
+        '#f0a225',
+        '#f0a724',
+        '#efac23',
+        '#efb122',
+        '#eeb622',
+        '#eebb21',
+        '#edc020',
+        '#edc620',
+        '#eccb1f',
+        '#ecd01e',
+        '#ebd51e',
+        '#eada1d',
+        '#eadf1c',
+        '#e9e41c',
+        '#e8e91b',
+        '#e2e81a',
+        '#dbe81a',
+        '#d5e719',
+        '#cfe618',
+        '#c8e519',
+        '#c1e319',
+        '#bae21a',
+        '#b3e01a',
+        '#addf1a',
+        '#a6dd1b',
+        '#a0db1b',
+        '#99da1b',
+        '#93d81b',
+        '#8dd71c',
+        '#87d51c',
+        '#81d41c',
+        '#7cd21d',
+        '#76d11d',
+        '#70cf1d',
+        '#6bce1e',
+        '#66cc1e',
+        '#60cb1e',
+        '#5bc91e',
+        '#56c81f',
+        '#51c61f',
+        '#4cc51f',
+        '#48c31f',
+        '#43c220',
+        '#3ec020',
+        '#3abf20',
+        '#35be20',
+        '#31bc21',
+        '#2dbb21',
+        '#29b921',
+        '#25b821',
+        '#21b622',
+        '#22b527',
+        '#22b32b',
+        '#22b22f',
+        '#22b133',
+        '#22af37',
+        '#23ae3b',
+        '#23ac3e',
+        '#23ab42',
+        '#23aa46',
+        '#23a849',
+        '#23a74c',
+        '#24a550',
+        '#24a453',
+        '#24a356',
+        '#24a159',
+        '#24a05c',
+        '#249f5f',
+        '#249d62',
+        '#259c64',
+        '#259b67',
+        '#25996a',
+        '#25986c',
+        '#25976e',
+        '#259571',
+        '#259473',
+        '#259375',
+        '#259177',
+        '#269079',
+        '#268f7b',
+        '#268d7d',
+        '#268c7f',
+        '#268b80',
+        '#268a82',
+        '#268884',
+        '#268785'
+    ],
+    chrSkeletonCordY = [40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500];
 
 // Draw Density Plot
-var chrMaxLen, denINFO, densityBlock = [], denLimit = 0, chrSkeleton, species, filterBlock = []
-$("#svg2").hide()
-$.getJSON('/tools/tools_file4', {
-    'case_id': caseid
+$("#svg2").hide();
+$.getJSON('https://my-json-server.typicode.com/Mr-Milk/circDraw-api/chrSkeleton', {
+    'case_id': caseID
 }).done(function (chrJSON) {
-    chrSkeleton = chrJSON
-
-    chrMaxLen = normChr(chrJSON)
-
-    $.getJSON('/tools/tools_file5', {
-        'case_id': caseid
+    chrSkeleton = chrJSON;
+    $("#svg2").height(20 * chrSkeleton.length + 40);
+    $.getJSON('https://my-json-server.typicode.com/Mr-Milk/circDraw-api/densityplot', {
+        'case_id': caseID
     }).done(function (densityJSON) {
-        denINFO = densityJSON
-        species = denINFO[0].species
-        console.log('denINFO: ', denINFO)
-        console.log('Species: ', denINFO[0].species)
-        denPlot(chrMaxLen, densityJSON, denLimit)
-        $("#load").hide()
-        $("#svg2").show()
+        densityInfo = densityJSON;
+        console.log(chrSkeleton);
+        console.log(densityInfo);
+        denPlot(chrSkeleton, densityInfo, 0);
+        $("#load").hide();
+        $("#svg2").show();
+        var options = {
+            shouldSort: true,
+            threshold: 0.6,
+            location: 0,
+            distance: 100,
+            maxPatternLength: 32,
+            minMatchCharLength: 1,
+            keys: ["name"]
+          };
+        var fuse = new Fuse(densityInfo, options); // "list" is the item array
+        $("#geneNameSelect").on("propertychange change click keyup input paste", function(){
+            var searchText = $(this).val(),
+                result = fuse.search(searchText),
+                html;
+            for (var i=0, up=result.length; i<up ;i++){
+                html += '<option value="' + result[i].name + '">';
+            }
+            $(document.querySelector("#genename-list")).html(html);
+
+            if (result.length === 1){
+                $("#js-input-from").text(result[0].start);
+                $("#js-input-to").text(result[0].end);
+                $('#chrSelector').text(result[0].chr);
+            }
+            });
+        });
+
+/*         $("#geneNameSelect").focusout(function(){
+            var searchText = $(this).val(),
+                result = fuse.search(searchText);
+            $("#js-input-from").text(result[0].start);
+            $("#js-input-to").text(result[0].end);
+            $('#chrSelector').text(result[0].chr);
+        }); */
+
         //$("#next").click() // enable this will load the first gene to isoform plot automatically after page loading.
-        var linkIcon = function(cell, formatterParams){ //plain text value
+        /* var linkIcon = function(cell, formatterParams){ //plain text value
             return "<i class='fas fa-link'></i>";};
         var table = new Tabulator("#table", {
             height:"500px",
@@ -179,226 +376,35 @@ $.getJSON('/tools/tools_file4', {
                 {title:"Disease", field:"disease", width: 180, headerFilter: true},
                 {title:"Link", field:"link", width:150, formatter:linkIcon, cellClick:function(){window.open('http://' + link, '_blank')}},
             ],
-        });
-    })
-
-})
+        }); */
+});
 
 // Changing Density Block
-$("#previous").click(
-    function () {
-        index = getIndex()
-        if (index > 0) {
-            p_den = filterBlock[index-1]
-            p_start = p_den.start
-            p_end = p_den.end
-            p_chr = p_den.chr
-            p_name = p_den.name
-            $("#js-input-from").text(p_start);
-            $("#js-input-to").text(p_end);
-            $('#chrSelector').text(p_chr);
-            $('#geneNameSelect').text(p_name);
-
-            $("#next").removeAttr("disabled")
-        } else {
-            $("#previous").attr("disabled", "")
-        }
+$("#previous").click(function () {
+    index = getIndex();
+    if (index > 0) {
+        preDen = densityFilter[index - 1];
+        $("#js-input-from").text(preDen.start);
+        $("#js-input-to").text(preDen.end);
+        $('#chrSelector').text(preDen.chr);
+        $('#geneNameSelect').text(preDen.name);
+        $("#next").removeAttr("disabled");
+    } else {
+        $("#previous").attr("disabled", "");
     }
-)
+});
 
-$("#next").click(
-    function () {
-        index = getIndex()
-        console.log('Next index:', index)
-        if (index < filterBlock.length - 1) {
-            n_den = filterBlock[index+1]
-            n_start = n_den.start
-            n_end = n_den.end
-            n_chr = n_den.chr
-            n_name = n_den.name
-            $("#js-input-from").text(n_start);
-            $("#js-input-to").text(n_end);
-            $('#chrSelector').text(n_chr);
-            $('#geneNameSelect').text(n_name);
-
-            $("#previous").removeAttr("disabled")
-        } else {
-            $("#next").attr("disabled", "")
-        }
+$("#next").click(function () {
+    index = getIndex();
+    console.log('Next index:', index);
+    if (index < densityFilter.length - 1) {
+        nextDen = densityFilter[index + 1];
+        $("#js-input-from").text(nextDen.start);
+        $("#js-input-to").text(nextDen.end);
+        $('#chrSelector').text(nextDen.chr);
+        $('#geneNameSelect').val(nextDen.name);
+        $("#previous").removeAttr("disabled");
+    } else {
+        $("#next").attr("disabled", "");
     }
-)
-/*
-$("#dendownload").click(function () {
-    var saveSvgAsSvg = svg2.paper.toString(),
-        blob = new Blob([saveSvgAsSvg], {
-            type: 'text/plain'
-        })
-    $("#dendownload").attr("href", window.URL.createObjectURL(blob))
-})*/
-
-// get index of an array
-function getIndex() {
-    var from = parseInt($("#js-input-from").text()),
-        to = parseInt($("#js-input-to").text()),
-        chr = parseInt($('#chrSelector').text());
-
-    index = filterBlock.findIndex(function (item, i) {
-        return item.start === from && item.chr === chr && item.end === to
-    })
-
-    return index
-}
-
-// draw a block
-function chr_block(y, len, name) {
-    var chr_block = den.paper.rect(50, y, len, 10).attr({
-        fill: "#e4e4e2",
-        stroke: "#000",
-        strokeWidth: 0.5
-    })
-
-    var t1 = den.paper.text(20, y + 8, name).attr({
-        'font-family': 'arial',
-        'font-size': 10
-    })
-
-    return chr_block, t1
-
-}
-
-// normalize density value
-function getMinMax(denJSON) {
-    var arr = []
-    for (i = 0; i < denJSON.length; i++) {
-        arr.push(denJSON[i].value)
-    }
-
-    max = Math.max.apply(null, arr)
-    min = Math.min.apply(null, arr)
-
-    mm = [min, max, max - min]
-
-    return mm
-}
-
-function normden(denJSON) {
-    mm = getMinMax(denJSON)
-    min = mm[0]
-    max = mm[1]
-    range = mm[2]
-    for (x in denJSON) {
-        x.scaleDen = 100 * (x.density_value - min) / range
-    }
-
-    return denJSON
-}
-
-function density_block(x, y, len, chr, start, end, density_value, name) {
-    var fillColor = palette[Math.round(density_value - 1)]
-    var denBlock = den.paper.rect(x, y + 0.3, len + 1, 9.5).attr({
-        fill: fillColor,
-        stroke: 'none',
-        cursor: 'pointer'
-    }).mouseover(function () {
-        den_value = den.paper.text(755, 30, density_value).attr({
-            'font-family': 'arial',
-            'font-size': 15,
-            fill: 'orange',
-        })
-        pText = "chr" + chr + ": " + start + " - " + end
-        position = den.paper.text(325, 30, pText).attr({
-            'font-family': 'arial',
-            'font-size': 15,
-        })
-        denBlock.attr({
-            fill: fillColor,
-            stroke: '#E83015',
-            strokeWidth: 1.5,
-            cursor: 'pointer'
-        })
-    }).mouseout(function () {
-        den_value.remove()
-        position.remove()
-        denBlock.attr({
-            fill: fillColor,
-            stroke: 'none',
-            cursor: 'pointer'
-        })
-    }).click(function () {
-        $("#js-input-from").text(start);
-        $("#js-input-to").text(end);
-        $('#chrSelector').text(chr);
-        $('#geneNameSelect').text(name);
-        $('svg-tips').remove()
-        /*
-        var gene_selector = $("#gene-selector").data("ionRangeSlider");
-        $.getJSON("genList/", {
-                "caseid": caseid,
-                "start": start,
-                "end": end,
-                "chr": chr
-            })
-            .done(function (geneList) {
-                console.log('Get genelist: ', geneList)
-                var geneValues = []
-                for (i=0;i<geneList.length;i++) {
-                    geneValues.push(geneList[i].name)
-                }
-                console.log(geneValues)
-                gene_selector.update({
-                    values: geneValues,
-                    from:0,
-                    to: geneValues.length
-                })
-            });*/
-    })
-
-    return denBlock
-}
-
-function normChr(chrJSON) {
-    var max = 0,
-        normChr = []
-    for (i = 0; i < chrJSON.length; i++) {
-        if (chrJSON[i].chrLen > max) {
-            max = chrJSON[i].chrLen
-        };
-    };
-
-    for (i = 0; i < chrJSON.length; i++) {
-        normChr.push({
-            "chr": chrJSON[i].chr,
-            "len": 640 * chrJSON[i].chrLen / max
-        })
-    }
-
-    var len = normChr.length
-    var svgHeight = 60 + len * 20
-    $("#svg2").attr("height", svgHeight)
-    for (i = 0; i < normChr.length; i++) {
-        var chrSkeName = normChr[i].chr
-        if (parseInt(chrSkeName) === 23){
-            chrSkeName = ' X'
-        }
-        else if (parseInt(chrSkeName) === 24){
-            chrSkeName = ' Y'
-        }
-        else if (parseInt(chrSkeName) === 25){
-            chrSkeName = ' M'
-        }
-        chr = chr_block(20 + 20 * (i + 1), normChr[i].len, chrSkeName)
-    }
-    return max
-};
-
-function denPlot(chrMaxLen, densityJSON, denLimit) {
-    filterBlock = []
-    for (i = 0; i < densityJSON.length; i++) {
-        if (densityJSON[i].value >= denLimit) {
-        var xAxis = 50 + 640 * densityJSON[i].start / chrMaxLen,
-            len = 640 * (densityJSON[i].end - densityJSON[i].start) / chrMaxLen
-        filterBlock.push(densityJSON[i])
-        density_block(xAxis, 20 + 20 * densityJSON[i].chr, len, densityJSON[i].chr, densityJSON[i].start, densityJSON[i].end, densityJSON[i].value, densityJSON[i].name)
-    }
-}
-}
+});
