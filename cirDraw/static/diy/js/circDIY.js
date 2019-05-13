@@ -411,7 +411,7 @@ function drawLegend(conf) {
         fill: 'none'
     });
 
-    legend.add(legendBox).drag();
+    legend.add(legendBox);
 
     return legend;
 }
@@ -707,6 +707,9 @@ function drawArc(data) {
             // fix this remove circ things, try store it in a object with key to access it, should do the trick
             CURRENT_STAT = {id: undefined, circ: undefined};
         } else {
+            if (CURRENT_STAT.circ !== undefined){
+                CURRENT_STAT.circ.remove();
+            }
             circ = drawCircRNA(exons, data.start, data.end);
             CURRENT_STAT = {id: id,
                             circ: circ};

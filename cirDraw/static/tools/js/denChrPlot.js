@@ -1,4 +1,4 @@
-function infoBox(x, y, info) {
+function denInfoBox(x, y, info) {
     var offset = $('#svg2').position(),
         offsetX = offset.left,
         offsetY = offset.top;
@@ -77,7 +77,7 @@ function densityBlock(x, y, len, color, info) {
         denBlock.animate({
             transform: 's(1,1.5)' + denBlockBBox.cx + ',' + denBlockBBox.cy
         }, 200);
-        infobox = infoBox(x, y, info);
+        infobox = denInfoBox(x, y, info);
     }).mouseout(function () {
         denBlock.animate({
             transform: 's(1,1)' + denBlockBBox.cx + ',' + denBlockBBox.cy
@@ -310,14 +310,14 @@ var palette = ['#f75c2f',
 
 // Draw Density Plot
 $("#svg2").hide();
-$.getJSON('https://my-json-server.typicode.com/Mr-Milk/circDraw-api/chrSkeleton', {
+$.getJSON('https://my-json-server.typicode.com/Mr-Milk/circDraw-api/chrSkeleton'/* , {
     'case_id': caseID
-}).done(function (chrJSON) {
+} */).done(function (chrJSON) {
     chrSkeleton = chrJSON;
     $("#svg2").height(20 * chrSkeleton.length + 40);
-    $.getJSON('https://my-json-server.typicode.com/Mr-Milk/circDraw-api/densityplot', {
+    $.getJSON('https://my-json-server.typicode.com/Mr-Milk/circDraw-api/densityplot'/* , {
         'case_id': caseID
-    }).done(function (densityJSON) {
+    } */).done(function (densityJSON) {
         densityInfo = densityJSON;
         console.log(chrSkeleton);
         console.log(densityInfo);
