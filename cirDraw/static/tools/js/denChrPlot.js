@@ -343,21 +343,13 @@ $.getJSON('https://my-json-server.typicode.com/Mr-Milk/circDraw-api/chrSkeleton'
             }
             $(document.querySelector("#genename-list")).html(html);
 
-            if (result.length === 1){
+            if (result.length === 1 && $(this).val() === result[0].name){
                 $("#js-input-from").text(result[0].start);
                 $("#js-input-to").text(result[0].end);
                 $('#chrSelector').text(result[0].chr);
             }
             });
         });
-
-/*         $("#geneNameSelect").focusout(function(){
-            var searchText = $(this).val(),
-                result = fuse.search(searchText);
-            $("#js-input-from").text(result[0].start);
-            $("#js-input-to").text(result[0].end);
-            $('#chrSelector').text(result[0].chr);
-        }); */
 
         //$("#next").click() // enable this will load the first gene to isoform plot automatically after page loading.
         /* var linkIcon = function(cell, formatterParams){ //plain text value
@@ -387,7 +379,7 @@ $("#previous").click(function () {
         $("#js-input-from").text(preDen.start);
         $("#js-input-to").text(preDen.end);
         $('#chrSelector').text(preDen.chr);
-        $('#geneNameSelect').text(preDen.name);
+        $('#geneNameSelect').val(preDen.name);
         $("#next").removeAttr("disabled");
     } else {
         $("#previous").attr("disabled", "");

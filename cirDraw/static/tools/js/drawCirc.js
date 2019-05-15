@@ -48,16 +48,27 @@ var $name = $('#geneNameSelect'),
     $end = $("#js-input-to"),
     $scale = $("#scale-selector");
 
-$name.on('change', function(){
+$start.on('DOMSubtreeModified', function(){
     name = $name.val();
     if(name !== ""){
-        chr = $chr.text();
-        start = $start.text();
-        end = $end.text();
         console.log('Refreshing circRNA canvas: ', name, chr, start, end);
         $('.den-select-info').show();
         $scale.show();
         updataCircPlot(function(){
+
+            var minInterval = Math.min.apply(null,circRNAs.forEach(function(v) {
+                return v.end - v.start;
+            })),
+            chr = $chr.text(),
+            start = $start.text(),
+            end = $end.text();
+            $scale.data('ionRangeSlider').update({
+                from: start,
+                to: end,
+                min: start,
+                max: end,
+                min_interval: minInterval
+            });
             console.log("running callback");
             redraw(circRNAs, geneList);});
     }
@@ -73,15 +84,14 @@ $scale.ionRangeSlider({
     min_interval: 500, // the min length of all circRNA in arcJSON
     onFinish: function(data){
         circRNAsFilter = circRNAs.filter(function(v){if(v.start >= data.from && v.end <= data.to){return v;}});// get the circ list after selection
+        geneListFilter = geneList.filter(function(v){if(v.start >= data.from && v.end <= data.to){return v;}});
         svg.clear();
         // draw a straight line
         var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
             stroke: "#000",
             strokeWidth: 1
         });
-        redraw(circRNAs, geneList);
-
-        
+        redraw(circRNAsFilter, geneList);
     }
 });
 
@@ -117,7 +127,17 @@ function redraw(circRNAs, geneList) {
     MAX = mm.max;
     RAN = MAX - MIN;
 
-    if (Object.keys(circRNAs).length === 0 && Object.keys(geneList).length === 0) {
+    if (circRNAs.length === 0) {
+        $('#circ-num').text('No circRNA in selected region.');
+    }
+    else if (circRNAs.length === 1) {
+        $('#circ-num').text('1 circRNA in selected region.');
+    }
+    else {
+        $('#circ-num').text(circRNAs.length + ' circRNAs in selected region.');
+    }
+
+    if (circRNAs.length === 0 && geneList.length === 0) {
         svg.clear();
     } else {
         svg.clear();
@@ -426,8 +446,12 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
 
         for (j = 0, up_j = mods.length; j < up_j; j++) {
             var modType = mods[j].type,
+                modInfo = mods[j].info,
                 modStart = ((mods[j].start - start) / len) * 360 + exStartAngle,
                 modEnd = ((mods[j].end - start) / len) * 360 + exStartAngle;
+            modInfo.type = modType;
+            modInfo.position = mods[j].start + '-' + mods[j].end;
+            console.log('modinfo:',modInfo);
             if (['MRE', 'ORF', 'RBP'].includes(modType)) {
                 if (modSTAT1[modType] === undefined) {
                     modR1 -= 0.015;
@@ -444,10 +468,7 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
                     startDegree: modStart,
                     endDegree: modEnd,
                     color: modColor[modType],
-                    info: {
-                        type: modType,
-                        position: mods[j].start + '-' + mods[j].end
-                    }
+                    info: modInfo
                 }));
             } else {
                 if (modSTAT2[modType] === undefined) {
@@ -466,10 +487,7 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
                     height: r2,
                     color: modColor[modType],
                     type: opt[modType][1],
-                    info: {
-                        type: modType,
-                        position: mods[j].start
-                    }
+                    info: modInfo
                 }));
             }
         }
@@ -863,7 +881,7 @@ function addAnimation(obj, info) {
 
     if (info !== undefined && info.link !== undefined) {
         links = info.link;
-        delete obj.info.link;
+        delete info.link;
     }
 
     obj.mouseover(function (ev, x, y) {
