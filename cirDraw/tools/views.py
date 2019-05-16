@@ -946,16 +946,16 @@ def exon_extr(chr_ci, start, end):
         my_end = ob.gene_end
         mod_lst = ['m1a', 'm5c', 'm6a']
         mod = get_mod(mod_lst, my_start, my_end, chr_ci)
-        if mod != []:
+        #if mod != []:
             #print("Results of mod:", mod)
-            result = {
-                    'name': ob.gene_name,
-                    'start': ob.gene_start,
-                    'end': ob.gene_end,
-                    'type': ob.gene_type,
-                    'mods': mod,
-                    }
-            results.append(result)
+        result = {
+                'name': ob.gene_name,
+                'start': ob.gene_start,
+                'end': ob.gene_end,
+                'type': ob.gene_type,
+                'mods': mod,
+                }
+        results.append(result)
 
     return results
 
@@ -1005,9 +1005,10 @@ def store_example(request):
         start_cir = circ_ob.circRNA_start
         end_cir = circ_ob.circRNA_end
         exons = exon_extr(chr_ci_cir, start_cir, end_cir)
-        if exons != []:
-            result_cir = {"start": start_cir, "end": end_cir, "exons": exons}
-            c_gene = ToolsAnnotation.objects.filter(gene_type__exact='gene').filter(gene_start__lte = start_cir).filter(gene_end__gte=end_cir)
+        #if exons != []:
+        result_cir = {"start": start_cir, "end": end_cir, "exons": exons}
+        c_gene = ToolsAnnotation.objects.filter(gene_type__exact='gene').filter(gene_start__lte = start_cir).filter(gene_end__gte=end_cir)
+        if c_gene.count() != 0:
             gene_name = c_gene[0].gene_name
             if gene_name not in all_genes_re.keys():
                 all_genes_re[gene_name] = [result_cir]

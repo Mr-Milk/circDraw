@@ -455,8 +455,8 @@ def commit_db(cnx, cursor):
 
 def main():
     login_file_name = 'admin_login.json'
-    annotation = True
-    add = True
+    annotation = False
+    add = False
     scale = True
     gene_wiki = True
 

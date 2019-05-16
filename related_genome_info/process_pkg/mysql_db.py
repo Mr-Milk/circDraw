@@ -234,7 +234,7 @@ def insert_one(cursor, table_name, table_columns, ob):
     except mysql.connector.Error as err:
         print('Insert One line failded: {}'.format(err))
 
-
+####### Integrated function ###
 
 def insert_select(cursor, table_name, table_columns, select_sql):
     # insert into action with select method
@@ -392,8 +392,14 @@ def add_one_column(cnx, cursor, table_name, column):
 
 
 
+def build_example_json(cnx, cursor, table_name):
+    # create table
 
 
+
+
+
+    # insert into
 
 
 
@@ -607,6 +613,8 @@ def main(sys_argv):
         table_names = add_id
         for table in table_names:
             add_one_column(cnx, cursor, table, "id INT")
+
+
 
 
     commit_db(cnx, cursor)
