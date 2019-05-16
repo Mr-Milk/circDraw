@@ -136,6 +136,7 @@ var table = new Tabulator("#table", {
         }, cellClick:function(e, cell){cell.getValue().forEach(function(e){openNewTab(e)})}},
     ],
 });
+$.getJSON("example", {'caseid': caseID})
 function updataCircPlot(callback, geneName) {
     $.when(
         $.getJSON(" http://localhost:3000/" + geneName/* , {),
