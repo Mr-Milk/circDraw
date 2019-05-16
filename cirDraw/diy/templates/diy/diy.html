@@ -14,7 +14,7 @@
         <div class="row flex-xl-nowrap mb-3">
                 <div class="col-12 col-md-4 col-xl-4 bd-sidebar mt-5">
                         <div class='mt-3'>
-                                <div class='row justify-content-start'>
+                                <!--<div class='row justify-content-start'>
                                         <div class="col-7">
                                                 <div class='input-group mb-3'>
                                                         <div class='input-group-prepend'>
@@ -24,7 +24,7 @@
                                                                 placeholder='Ex: 1' id='chr'>
                                                 </div>
                                         </div>
-                                </div>
+                                </div>-->
 
 
                                 <label for='circInput' id='appendCircForm'>circRNA</label>
@@ -37,8 +37,13 @@
 
                                 <div class='row justify-content-end'>
                                         <div class='col-11' id='exon'>
-                                                <label for='circInput'>Exons</label>
+                                                <label for='circInput'>Exons & Introns</label>
                                                 <div class='input-group mb-3'>
+                                                <select class='custom-select' id='exon-intron'>
+                                                                <option selected value='exon'>Exon</option>
+                                                                <!--<option value='exon'>Exon</option>-->
+                                                                <option value='intron'>Intron</option>
+                                                        </select>
                                                         <input type='text' class='form-control alpha-num-only'
                                                                 placeholder='name' id='exonName'>
                                                         <input type='text' class='form-control num-only' placeholder='start'
@@ -54,9 +59,9 @@
                                         </div>
                                 </div>
 
-                                <div class='row justify-content-end'>
+                                <!--<div class='row justify-content-end'>
                                         <div class='col-11' id='mod'>
-                                                <label for='circInput'>Modifications</label>
+                                                <label for='circInput'>Modifications & Functional Regions</label>
                                                 <div class='input-group mb-3'>
                                                         <select class='custom-select' id='inputGroupSelect01'>
                                                                 <option selected>Type</option>
@@ -72,15 +77,21 @@
                                                         </div>
                                                 </div>
                                         </div>
-                                </div>
+                                </div>-->
 
                                 <div class='row justify-content-end'>
-                                        <div class='col-11' id='f'>
-                                                <label for='circInput'>Functional Regions</label>
+                                        <div class='col-11' id='mod'>
+                                                <label for='circInput'>Modifications & Functional Regions</label>
                                                 <div class='input-group mb-3'>
                                                         <select class='custom-select' id='inputGroupSelect01'>
                                                                 <option selected>Type</option>
+                                                                <option value='m6A'>m6A</option>
+                                                                <option value='m5C'>m5C</option>
+                                                                <option value='m1A'>m1A</option>
+                                                                <option value='pU'>pseudo-U</option>
+                                                                <option value='OMe'>2-O-Me</option>
                                                                 <option value='MRE'>MRE</option>
+                                                                <option value='RBP'>RBP</option>
                                                                 <option value='ORF'>ORF</option>
                                                         </select>
                                                         <input type='text' class='form-control num-only' placeholder='start'
@@ -89,7 +100,7 @@
                                                                 id='modend'>
                                                         <div class='input-group-append'>
                                                                 <button class='btn btn-outline-secondary' type='button'
-                                                                        id='fAdd'>+</button>
+                                                                        id='modAdd'>+</button>
                                                         </div>
                                                 </div>
                                         </div>

@@ -10,7 +10,7 @@ Using [circDraw](http://www.circdraw.com)
 
 The circDraw allow visualization circRNA analysis results of circRNA analysis tools. It's user friendly and allow you to get your picture within few clicks. 
 
-<p align="center"><img src="home.png" alt="300" width="cover"></p>
+<p align="center"><img src="src/home.png" alt="300" width="cover"></p>
 
 ##  
 
@@ -38,23 +38,36 @@ Upload instruction:
 
 - Use `+ Select File` and `Submit` button to upload file from your upstream processing software for circle RNA prediction.
 
-<p align="center"><img src="upload.png" alt="300" width="uploadr"></p>
+<p align="center"><img src="src/upload_blank.png" alt="300" width="uploadr"></p>
 
 - Wait for about 1-3 mins depending on your network speed.
 - When the `View Result` button arise, please remenber the link to retrieve your result, you result will be accessible in the next 24h. Now please enjoy the show!
 
+<p align=center><img src="src/example.png"></p>
+
+- You can also click `Example` button to load preloaded data to fast view on what circDraw can provided.
+
 
 ### circRNA density distribution analysis
-By processing the uploaded file in backend, you will be able to __interactively__ view the circRNA density distribution on chromosome. Choose your interesting region and then click on it to display it in detailed map.
+By processing the uploaded file in backend, you will be able to __interactively__ view the circRNA density distribution on chromosome. Choose your interesting region and then click on it to display it in detailed map. Most of the region contain only 1 circRNA, so it will be a bit messy if you don't set the limit.
 
-<p align="center"><img src="density.png" alt="300" width="cover"></p>
+<p align="center"><img src="src/density_nofilter.png" alt="300" width="cover"></p>
 
 
 [//]: # "### How to read Results?"
 
+When we set the limit to 15, the plot become much clear, it's easily for you to identify the hub gene with most isoforms.
+
+<p align='center'>
+  <img src='src/density_filter_15.png'>
+</p>
+
+
 ### Detailed map of circRNA region.
 
 When the user choose no region from the density map, detailed map will display the first density region. Using the selector to select which gene or genes that you are interesting in. CircDraw provided epigenetic annotation for human circRNA. The data is from [RMBase](https://academic.oup.com/nar/article/46/D1/D327/4429298).
+
+<img src='src/isoformplot_ttn_m6A.png'>
 
 - How to read this map?
   - **Black curve line**: The back-splicing of circRNA, link to the start and end.
@@ -63,17 +76,17 @@ When the user choose no region from the density map, detailed map will display t
     - Epigenetic Type: m6A, m1C, m5C, SNP
     - Other functional region: ORF, MRE
 
-The table shows the details of every circRNA.
-
 
 
 ### General statistics of your circRNA data set
 
 - Distrubution of circRNA length
-- Distrubution of exon number in circRNA
-- Distrubution of circRNA isoforms
 
+<img src="src/circLen.png">
 
+- Top 20 gene with most circRNA isoforms
+
+<img src="src/toplist.png">
 ### Support for Further development
 - Scalibility was fully considered from the beginning of project, it includes:
 	- Extension of Upload Data Format. See details here.
@@ -96,7 +109,7 @@ Your data will be deleted from the server in 24 hour after you uploaded it. Any 
 
 #### Is there any limite to the upload file size?
 
-Yes, not more than 200MB. We recommend you filter your data before uploading to have a better visualization result. A larger file will take more time for the server to process.
+Yes, not more than 30MB. We recommend you filter your data before uploading to have a better visualization result. A larger file will take more time for the server to process.
 
 #### Can CircDraw have more species? More epigenetic annotation?
 
