@@ -440,7 +440,7 @@ def handle_file4(request):
         for i in chr_inv:
             gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=i)[0]
             lens = gene_ob.genelens_wiki
-            result = {'chr':get_chr_num(i), 'chrLen': lens}
+            result = {'chr': i, 'chrLen': lens}
             print(lens)
             gene_lens.append(result)
 
