@@ -946,16 +946,16 @@ def exon_extr(chr_ci, start, end):
         my_end = ob.gene_end
         mod_lst = ['m1a', 'm5c', 'm6a']
         mod = get_mod(mod_lst, my_start, my_end, chr_ci)
-        if mod != []:
+        #if mod != []:
             #print("Results of mod:", mod)
-            result = {
-                    'name': ob.gene_name,
-                    'start': ob.gene_start,
-                    'end': ob.gene_end,
-                    'type': ob.gene_type,
-                    'mods': mod,
-                    }
-            results.append(result)
+        result = {
+                'name': ob.gene_name,
+                'start': ob.gene_start,
+                'end': ob.gene_end,
+                'type': ob.gene_type,
+                'mods': mod,
+                }
+        results.append(result)
 
     return results
 
