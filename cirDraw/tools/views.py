@@ -997,7 +997,7 @@ def store_example(request):
     all_length = circ_obs.count()
     index = 0
     inital_time = time.time()
-    for circ_ob in [circ_obs[364]]:
+    for circ_ob in circ_obs:
         print("IN: ", index)
         print("progress: ", index/all_length)
         start_time = time.time()
