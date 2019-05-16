@@ -310,15 +310,15 @@ var palette = ['#f75c2f',
 
 // Draw Density Plot
 $("#svg2").hide();
-$.getJSON('tools/file2/', {
+$.getJSON('/tools/tools_file4/', {
     'case_id': caseID
 }).done(function (chrJSON) {
     chrSkeleton = chrJSON;
     $("#svg2").height(20 * chrSkeleton.length + 40);
-    $.getJSON('https://my-json-server.typicode.com/Mr-Milk/circDraw-api/densityplot'/* , {
+    $.getJSON('/tools/tools_file5/', {
         'case_id': caseID
-    } */).done(function (densityJSON) {
-        densityInfo = densityJSON;
+    }).done(function (densityJSON) {
+        densityInfo = densityJSON.slice(1);
         console.log(chrSkeleton);
         console.log(densityInfo);
         denPlot(chrSkeleton, densityInfo, 0);
