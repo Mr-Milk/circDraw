@@ -49,28 +49,25 @@ var $name = $('#geneNameSelect'),
     $scale = $("#scale-selector");
 
 $start.on('DOMSubtreeModified', function(){
-    name = $name.val();
-    if(name !== ""){
-        $('.den-select-info').show();
-        $scale.show();
-        updataCircPlot(function(){
+    $('.den-select-info').show();
+    $scale.show();
+    updataCircPlot(function(){
 
-            var minInterval = Math.min.apply(null,circRNAs.forEach(function(v) {
-                return v.end - v.start;
-            })),
-            chr = $chr.text(),
-            start = $start.text(),
-            end = $end.text();
-            $scale.data('ionRangeSlider').update({
-                from: start,
-                to: end,
-                min: start,
-                max: end,
-                min_interval: minInterval
-            });
-            console.log("running callback");
-            redraw(circRNAs, geneList);}, name);
-    }
+        var minInterval = Math.min.apply(null,circRNAs.forEach(function(v) {
+            return v.end - v.start;
+        })),
+        chr = $chr.text(),
+        start = $start.text(),
+        end = $end.text();
+        $scale.data('ionRangeSlider').update({
+            from: start,
+            to: end,
+            min: start,
+            max: end,
+            min_interval: minInterval
+        });
+        console.log("running callback");
+        redraw(circRNAs, geneList);}, $name.val());
 });
 
 $scale.ionRangeSlider({
@@ -147,7 +144,7 @@ function updataCircPlot(callback, geneName) {
             } */)
     ).done(function (circ/* , genes */) {
         console.log(circ/* ,genes */);
-        circRNAs = circ[0];
+        circRNAs = circ;
         // geneList = genes[0];
         callback();
     });

@@ -85,10 +85,10 @@ function densityBlock(x, y, len, color, info) {
         infobox.remove();
     }).click(function () {
         position = info.position.split("-");
+        $('#geneNameSelect').val(info.gene);
         $("#js-input-from").text(position[0]);
         $("#js-input-to").text(position[1]);
         $('#chrSelector').text(info.chr);
-        $('#geneNameSelect').val(info.gene);
         $('svg-tips').remove();
     });
 
@@ -110,28 +110,27 @@ function drawChrSkeletons(chrSkeleton) {
 
     // draw chrskeleton
     for (var t = 0; t < up; t++) {
-        var len = (chrSkeleton[t].chrLen - dMIN) / dRAN * 640 + 60;
+        var len = chrSkeleton[t].chrLen * 135 / dMIN;
         chrBlock(chrSkeletonCordY[t], len, chrSkeleton[t].chr.slice(3));
         chrNameOrder[chrSkeleton[t].chr] = t;
     }
 }
 
-function drawDensityBlocks(densityInfo) {
+function drawDensityBlocks(densfityInfo) {
     console.log(chrNameOrder);
     for (var i = 0, up = densityInfo.length; i < up; i++) {
         var chr = densityInfo[i].chr,
-            x = (densityInfo[i].start) / dMAX * 700 + 50,
+            x = (densityInfo[i].start) * 135 / dMIN + 50,
             y = chrSkeletonCordY[chrNameOrder[chr]],
-            len = (densityInfo[i].end) / dMAX * 700 + 50 - x + 2,
-            color = palette[densityInfo[i].density - 1],
+            len = (densityInfo[i].end) * 135 / dMIN + 50 - x + 2,
+            color = palette[densityInfo[i].value - 1],
             name = densityInfo[i].name,
             info = {
                 chr: chr,
                 position: densityInfo[i].start + "-" + densityInfo[i].end,
                 gene: name,
-                density: densityInfo[i].density
+                density: densityInfo[i].value
             };
-        console.log("chr:", chrNameOrder[chr], y, x);
         densityBlock(x, y, len, color, info);
     }
 }
@@ -165,7 +164,7 @@ function denPlot(chrSkeleton, densityInfo, limit) {
             fill: "#fff"
         });
     densityFilter = densityInfo.filter(function (el) {
-            if (el.density > limit) {
+            if (el.value > limit) {
                 return el;
             }
         });
@@ -324,6 +323,8 @@ $.getJSON('/tools/tools_file4/', {
         denPlot(chrSkeleton, densityInfo, 0);
         $("#load").hide();
         $("#svg2").show();
+        });
+
         var options = {
             shouldSort: true,
             threshold: 0.6,
@@ -332,43 +333,23 @@ $.getJSON('/tools/tools_file4/', {
             maxPatternLength: 32,
             minMatchCharLength: 1,
             keys: ["name"]
-          };
+            };
         var fuse = new Fuse(densityInfo, options); // "list" is the item array
-        $("#geneNameSelect").on("propertychange change click keyup input paste", function(){
-            var searchText = $(this).val(),
-                result = fuse.search(searchText),
-                html;
-            for (var i=0, up=result.length; i<up ;i++){
-                html += '<option value="' + result[i].name + '">';
-            }
-            $(document.querySelector("#genename-list")).html(html);
-
-            if (result.length === 1 && $(this).val() === result[0].name){
-                $("#js-input-from").text(result[0].start);
-                $("#js-input-to").text(result[0].end);
-                $('#chrSelector').text(result[0].chr);
-            }
-            });
-        });
-
-        //$("#next").click() // enable this will load the first gene to isoform plot automatically after page loading.
-        /* var linkIcon = function(cell, formatterParams){ //plain text value
-            return "<i class='fas fa-link'></i>";};
-        var table = new Tabulator("#table", {
-            height:"500px",
-            layout:"fitColumns",
-            headerFilterPlaceholder:"Search",
-            placeholder: "No Data Available",
-            columns:[
-                {title:"Exon", field:"exon", width: 100, headerFilter:"input"},
-                {title:"Type", field:"type", width: 100, editor:"select", editorParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C"}}, headerFilter:true, headerFilterParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C", "":""}}},
-                {title:"Start", field:"start", width: 140, headerFilter: true},
-                {title:"End", field:"end", width: 140, headerFilter: true},
-                {title:"SNP ID", field:"SNP_id", width: 140, headerFilter: true},
-                {title:"Disease", field:"disease", width: 180, headerFilter: true},
-                {title:"Link", field:"link", width:150, formatter:linkIcon, cellClick:function(){window.open('http://' + link, '_blank')}},
-            ],
-        }); */
+        $("#geneNameSelect").on("input change", function(){
+                var searchText = $(this).val(),
+                    result = fuse.search(searchText),
+                    html;
+                for (var i=0, up=result.length >= 6 ? 6 : result.length; i<up ;i++){
+                    html += '<option value="' + result[i].name + '">';
+                }
+                $(document.querySelector("#genename-list")).html(html);
+        
+                if (result.length === 1 && $(this).val() === result[0].name){
+                    $("#js-input-from").text(result[0].start);
+                    $("#js-input-to").text(result[0].end);
+                    $('#chrSelector').text(result[0].chr);
+                }
+                });
 });
 
 // Changing Density Block
@@ -376,10 +357,10 @@ $("#previous").click(function () {
     index = getIndex();
     if (index > 0) {
         preDen = densityFilter[index - 1];
+        $('#geneNameSelect').val(preDen.name);
         $("#js-input-from").text(preDen.start);
         $("#js-input-to").text(preDen.end);
         $('#chrSelector').text(preDen.chr);
-        $('#geneNameSelect').val(preDen.name);
         $("#next").removeAttr("disabled");
     } else {
         $("#previous").attr("disabled", "");
@@ -391,10 +372,10 @@ $("#next").click(function () {
     console.log('Next index:', index);
     if (index < densityFilter.length - 1) {
         nextDen = densityFilter[index + 1];
+        $('#geneNameSelect').val(nextDen.name);
         $("#js-input-from").text(nextDen.start);
         $("#js-input-to").text(nextDen.end);
         $('#chrSelector').text(nextDen.chr);
-        $('#geneNameSelect').val(nextDen.name);
         $("#previous").removeAttr("disabled");
     } else {
         $("#next").attr("disabled", "");
