@@ -51,7 +51,6 @@ var $name = $('#geneNameSelect'),
 $start.on('DOMSubtreeModified', function(){
     name = $name.val();
     if(name !== ""){
-        console.log('Refreshing circRNA canvas: ', name, chr, start, end);
         $('.den-select-info').show();
         $scale.show();
         updataCircPlot(function(){
@@ -93,6 +92,49 @@ $scale.ionRangeSlider({
         });
         redraw(circRNAsFilter, geneList);
     }
+});
+
+var table = new Tabulator("#table", {
+    layout:"fitData",
+    headerFilterPlaceholder:"Search",
+    placeholder:"No Data Available",
+    columns:[
+        {title:"Type", field:"type", width: 100, headerFilter:true, formatter: function(cell){
+            cellValue = cell.getValue();
+            if (cellValue === 'pU') {
+                return 'pseudo-U';
+            }
+            else if (cellValue === 'OMe') {
+                return '2-O-Me';
+            }
+            else {
+                return cellValue;
+            }
+        }},
+        {title:"Start", field:"start", width: 140, headerFilter: true},
+        {title:"End", field:"end", width: 140, headerFilter: true},
+        {title:"SNP", field:"info.SNP", formatter: function(cell){
+            if (cell.getValue() === undefined) {
+                return '----';
+            }
+            else {
+                return cell.getValue();
+            }
+        }, width: 140, headerFilter: true},
+        {title:"Disease", field:"info.disease", width: 180, headerFilter: true, formatter: function(cell){
+            if (cell.getValue() === undefined) {
+                return '----';
+            }
+            else {
+                return cell.getValue();
+            }
+        }},
+        {title:"Mod Link", field:"info.link", width:150, formatter:function(cell){
+            if (cell.getValue() !== undefined) {
+                return "<i class='fas fa-link'></i>";
+            }
+        }, cellClick:function(e, cell){cell.getValue().forEach(function(e){openNewTab(e)})}},
+    ],
 });
 
 function updataCircPlot(callback) {
@@ -158,31 +200,6 @@ function redraw(circRNAs, geneList) {
             drawArc(circRNAs[v]);
         }
     }
-
-    // fill the table
-    /* var linkIcon = function(cell, formatterParams){ //plain text value
-            return "<i class='fas fa-link'></i>";
-        };
-    
-    var table = new Tabulator("#table", {
-        height:"500px",
-        layout:"fitColumns",
-        headerFilterPlaceholder:"Search",
-        data:modData,
-        columns:[
-            {title:"Exon", field:"exon", width: 100, headerFilter:"input"},
-            {title:"Type", field:"type", width: 100, editor:"select", editorParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C"}}, headerFilter:true, headerFilterParams:{values:{"m6A":"m6A", "m1A":"m1A", "m5C":"m5C", "":""}}},
-            {title:"Start", field:"start", width: 140, headerFilter: true},
-            {title:"End", field:"end", width: 140, headerFilter: true},
-            {title:"SNP ID", field:"SNP_id", formatter: "link", width: 140, headerFilter: true}, //https://www.ncbi.nlm.nih.gov/snp/rs2071569
-            {title:"Disease", field:"disease", width: 180, headerFilter: true},
-            {title:"Mod Link", field:"link", width:150, formatter:linkIcon, cellClick:function(cell){var links = cell.getValue().split(','); for(i=0;i<links.length;i++){window.open('http://' + link[i], '_blank')}}},
-        ],
-    });
-
-    $("#download-csv").click(function(){
-        table.download("csv", "data.csv");
-    }); */
 }
 
 //----------------------------------------- Functions For Drawing --------------------------------------
@@ -205,14 +222,14 @@ function infoBox(x, y, info) {
             text = key + ': ' + info[key];
             texts.add(svg.paper.text(x + 10, y + addY, text).attr({
                 'font-size': 10,
-                'font-family': 'arial'
+                /* 'font-family': 'arial' */
             }));
             addY += 13;
         }
 
         var textBBox = texts.getBBox(),
             box = svg.paper.rect(textBBox.x - 2.5, textBBox.y - 2.5, textBBox.w + 5, textBBox.h + 5).attr({
-                fill: '#fed136',
+                fill: '#91989F',
                 fillOpacity: 0.5,
                 stroke: '#211E55',
                 strokeWidth: 0.5,
@@ -275,7 +292,7 @@ function block(opt) {
                 display = false;
             } else if (display == false) {
                 nameTag = svg.paper.text(opt.x + conf[opt.type].w / 2, conf[opt.type].textY, opt.info.name).attr({
-                        'font-family': 'arial',
+                        /* 'font-family': 'arial', */
                         'font-size': conf[opt.type].fontSize,
                         'font-weight': conf[opt.type].fontWeight,
                         'cursor': 'pointer',
@@ -374,7 +391,7 @@ function drawLegend(conf) {
         text = svg.paper.text(xCord + 10, yCord - 10, textConf[v]).attr({
             fill: conf[v],
             'font-size': 10,
-            'font-family': 'arial'
+            /* 'font-family': 'arial' */
         });
         legend.add(icon, text);
     }
@@ -679,15 +696,45 @@ function drawArc(data) {
         id = "circ" + arcStart + arcEnd;
         if (id === CURRENT_STAT.id) {
             CURRENT_STAT.circ.remove();
+            CURRENT_STAT.circname.remove();
             // fix this remove circ things, try store it in a object with key to access it, should do the trick
-            CURRENT_STAT = {id: undefined, circ: undefined};
+            CURRENT_STAT = {id: undefined, circ: undefined, circname: undefined};
+            table.clearData();
         } else {
             if (CURRENT_STAT.circ !== undefined){
                 CURRENT_STAT.circ.remove();
+                CURRENT_STAT.circname.remove();
             }
             circ = drawCircRNA(exons, data.start, data.end);
+            name = $chr.text() + ' : ' + data.start + ' - ' + data.end;
+            circName = (function(){
+                
+                var text = svg.text(400, 20, name).attr({
+                    'font-size': 12
+                }), textBox = text.getBBox();
+                text.remove();
+                return svg.text(400 - textBox.w/2, 50, name).attr({
+                    'font-size': 12
+                });
+            })();
             CURRENT_STAT = {id: id,
-                            circ: circ};
+                            circ: circ,
+                            circname: circName};
+            // fill the table
+            var tableData = [];
+
+            exons.forEach(function(v){
+                v.mods.forEach(function(m){
+                    tableData.push(m);
+                });
+            });
+            
+            table.replaceData(tableData);
+
+            $("#download-csv").click(function(){
+                table.download("csv", name + ".csv");
+            });
+
         }
     }).mouseover(function (ev, x, y) {
         Snap.animate(1, 5, function (val) {

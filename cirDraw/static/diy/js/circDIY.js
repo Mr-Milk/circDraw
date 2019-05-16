@@ -228,14 +228,14 @@ function infoBox(x, y, info) {
             text = key + ': ' + info[key];
             texts.add(svg.paper.text(x + 10, y + addY, text).attr({
                 'font-size': 10,
-                'font-family': 'arial'
+                /* 'font-family': 'arial' */
             }));
             addY += 13;
         }
 
         var textBBox = texts.getBBox(),
             box = svg.paper.rect(textBBox.x - 2.5, textBBox.y - 2.5, textBBox.w + 5, textBBox.h + 5).attr({
-                fill: '#fed136',
+                fill: '#0B346E',
                 fillOpacity: 0.5,
                 stroke: '#211E55',
                 strokeWidth: 0.5,
@@ -298,7 +298,7 @@ function block(opt) {
                 display = false;
             } else if (display == false) {
                 nameTag = svg.paper.text(opt.x + conf[opt.type].w / 2, conf[opt.type].textY, opt.info.name).attr({
-                        'font-family': 'arial',
+                        /* 'font-family': 'arial', */
                         'font-size': conf[opt.type].fontSize,
                         'font-weight': conf[opt.type].fontWeight,
                         'cursor': 'pointer',
@@ -397,7 +397,7 @@ function drawLegend(conf) {
         text = svg.paper.text(xCord + 10, yCord - 10, textConf[v]).attr({
             fill: conf[v],
             'font-size': 10,
-            'font-family': 'arial'
+            /* 'font-family': 'arial' */
         });
         legend.add(icon, text);
     }
