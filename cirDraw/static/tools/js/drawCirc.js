@@ -219,12 +219,14 @@ function infoBox(x, y, info) {
 
         for (var i = 0, up = keys.length; i < up; i++) {
             key = keys[i];
-            text = key + ': ' + info[key];
-            texts.add(svg.paper.text(x + 10, y + addY, text).attr({
-                'font-size': 10,
-                /* 'font-family': 'arial' */
-            }));
-            addY += 13;
+            if (info[key] !== undefined) {
+                text = key + ': ' + info[key];
+                texts.add(svg.paper.text(x + 10, y + addY, text).attr({
+                    'font-size': 10,
+                    /* 'font-family': 'arial' */
+                }));
+                addY += 13;
+            }
         }
 
         var textBBox = texts.getBBox(),
