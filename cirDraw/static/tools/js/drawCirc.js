@@ -136,7 +136,6 @@ var table = new Tabulator("#table", {
         }, cellClick:function(e, cell){cell.getValue().forEach(function(e){openNewTab(e)})}},
     ],
 });
-
 function updataCircPlot(callback) {
     $.when(
         $.getJSON("https://my-json-server.typicode.com/Mr-Milk/circDraw-api/circRNAs"/* , {
@@ -150,7 +149,19 @@ function updataCircPlot(callback) {
             "start": start,
             "end": end,
             "chr": chr
-            } */)
+            } */),
+        /* $.getJSON("tools_file1" , {
+            "caseid": caseID,
+            "start": parseInt($start.text()),
+            "end": parseInt($end.text()),
+            "chr": parseInt($chr.text().slice(3))
+            } ),
+        $.getJSON("tools_file2" , {
+            "caseid": caseID,
+            "start": parseInt($start.text()),
+            "end": parseInt($end.text()),
+            "chr": parseInt($chr.text().slice(3))
+            } ), */
     ).done(function (circ, genes) {
         console.log(circ,genes);
         circRNAs = circ[0];
