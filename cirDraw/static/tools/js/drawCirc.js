@@ -111,7 +111,7 @@ var table = new Tabulator("#table", {
         {title:"Start", field:"start", width: 140, headerFilter: true},
         {title:"End", field:"end", width: 140, headerFilter: true},
         {title:"SNP", field:"info.SNP", formatter: function(cell){
-            if (cell.getValue() === undefined) {
+            if (cell.getValue() === undefined || cell.getValue() === "") {
                 return '----';
             }
             else {
@@ -119,7 +119,7 @@ var table = new Tabulator("#table", {
             }
         }, width: 140, headerFilter: true},
         {title:"Disease", field:"info.disease", width: 180, headerFilter: true, formatter: function(cell){
-            if (cell.getValue() === undefined) {
+            if (cell.getValue() === undefined || cell.getValue() === "") {
                 return '----';
             }
             else {
@@ -133,7 +133,7 @@ var table = new Tabulator("#table", {
         }, cellClick:function(e, cell){cell.getValue().forEach(function(e){openNewTab(e)})}},
     ],
 });
-$.getJSON("example", {'caseid': caseID})
+$.getJSON("example", {'caseid': caseID});
 function updataCircPlot(callback, geneName) {
     $.when(
         $.getJSON(" http://localhost:3000/" + geneName/* , {),
@@ -211,7 +211,7 @@ function infoBox(x, y, info) {
 
         for (var i = 0, up = keys.length; i < up; i++) {
             key = keys[i];
-            if (info[key] !== undefined) {
+            if (info[key] !== undefined && info[key] !== "") {
                 text = key + ': ' + info[key];
                 texts.add(svg.paper.text(x + 10, y + addY, text).attr({
                     'font-size': 10,

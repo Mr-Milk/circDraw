@@ -160,14 +160,14 @@ function denPlot(chrSkeleton, densityInfo, limit) {
     var SVG_WIDTH = parseInt($("#svg2").attr('width')),
         SVG_HEIGHT = parseInt($("#svg2").attr('height'));
     var background = den.paper.rect(0, 0, SVG_WIDTH, SVG_HEIGHT).attr({
-            stroke: "none",
-            fill: "#fff"
-        });
+        stroke: "none",
+        fill: "#fff"
+    });
     densityFilter = densityInfo.filter(function (el) {
-            if (el.value > limit) {
-                return el;
-            }
-        });
+        if (el.value > limit) {
+            return el;
+        }
+    });
     gradientLegend(550, 20);
     console.log(densityFilter);
     drawChrSkeletons(chrSkeleton);
@@ -323,8 +323,6 @@ $.getJSON('/tools/tools_file4/', {
         denPlot(chrSkeleton, densityInfo, 0);
         $("#load").hide();
         $("#svg2").show();
-        });
-
         var options = {
             shouldSort: true,
             threshold: 0.6,
@@ -333,23 +331,26 @@ $.getJSON('/tools/tools_file4/', {
             maxPatternLength: 32,
             minMatchCharLength: 1,
             keys: ["name"]
-            };
-        var fuse = new Fuse(densityInfo, options); // "list" is the item array
-        $("#geneNameSelect").on("input change", function(){
-                var searchText = $(this).val(),
-                    result = fuse.search(searchText),
-                    html;
-                for (var i=0, up=result.length >= 6 ? 6 : result.length; i<up ;i++){
-                    html += '<option value="' + result[i].name + '">';
-                }
-                $(document.querySelector("#genename-list")).html(html);
-        
-                if (result.length === 1 && $(this).val() === result[0].name){
-                    $("#js-input-from").text(result[0].start);
-                    $("#js-input-to").text(result[0].end);
-                    $('#chrSelector').text(result[0].chr);
-                }
-                });
+        };
+    
+        var fuse = new Fuse(densityInfo, options);
+        $("#geneNameSelect").on("input", function () {
+            var searchText = $(this).val();
+            console.log(searchText);
+            var result = fuse.search(searchText),
+                html;
+            for (var i = 0, up = result.length >= 6 ? 6 : result.length; i < up; i++) {
+                html += '<option value="' + result[i].name + '">';
+            }
+            $(document.querySelector("#genename-list")).html(html);
+    
+            if ($(this).val() === result[0].name) {
+                $("#js-input-from").text(result[0].start);
+                $("#js-input-to").text(result[0].end);
+                $('#chrSelector').text(result[0].chr);
+            }
+        });
+    });
 });
 
 // Changing Density Block
