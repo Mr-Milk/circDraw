@@ -997,7 +997,7 @@ def store_example(request):
     all_length = circ_obs.count()
     index = 0
     inital_time = time.time()
-    for circ_ob in circ_obs:
+    for circ_ob in [circ_obs[364]]:
         print("IN: ", index)
         print("progress: ", index/all_length)
         start_time = time.time()
@@ -1008,11 +1008,12 @@ def store_example(request):
         #if exons != []:
         result_cir = {"start": start_cir, "end": end_cir, "exons": exons}
         c_gene = ToolsAnnotation.objects.filter(gene_type__exact='gene').filter(gene_start__lte = start_cir).filter(gene_end__gte=end_cir)
-        gene_name = c_gene[0].gene_name
-        if gene_name not in all_genes_re.keys():
-            all_genes_re[gene_name] = [result_cir]
-        else:
-            all_genes_re[gene_name].append(result_cir)
+        if c_gene.count() != 0:
+            gene_name = c_gene[0].gene_name
+            if gene_name not in all_genes_re.keys():
+                all_genes_re[gene_name] = [result_cir]
+            else:
+                all_genes_re[gene_name].append(result_cir)
         index += 1
         end_time = time.time()
         print("Interval (s): ", round(end_time - start_time))
