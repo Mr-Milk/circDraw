@@ -1,0 +1,5 @@
+species VARCHAR(300) NOT NULL
+chr_ci VARCHAR(30) NOT NULL
+gene_min_start INT NOT NULL
+gene_max_end INT NOT NULL
+
