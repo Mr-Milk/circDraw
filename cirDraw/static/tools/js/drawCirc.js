@@ -52,7 +52,6 @@ $start.on('DOMSubtreeModified', function(){
     $('.den-select-info').show();
     $scale.show();
     updataCircPlot(function(){
-
         var minInterval = Math.min.apply(null,circRNAs.forEach(function(v) {
             return v.end - v.start;
         })),
@@ -80,7 +79,7 @@ $scale.ionRangeSlider({
     min_interval: 500, // the min length of all circRNA in arcJSON
     onFinish: function(data){
         circRNAsFilter = circRNAs.filter(function(v){if(v.start >= data.from && v.end <= data.to){return v;}});// get the circ list after selection
-        geneListFilter = geneList.filter(function(v){if(v.start >= data.from && v.end <= data.to){return v;}});
+        //geneListFilter = geneList.filter(function(v){if(v.start >= data.from && v.end <= data.to){return v;}});
         svg.clear();
         // draw a straight line
         var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
@@ -133,7 +132,7 @@ var table = new Tabulator("#table", {
         }, cellClick:function(e, cell){cell.getValue().forEach(function(e){openNewTab(e)})}},
     ],
 });
-$.getJSON("example", {'caseid': caseID});
+//$.getJSON("example", {'caseid': caseID});
 function updataCircPlot(callback, geneName) {
     $.when(
         $.getJSON(" http://localhost:3000/" + geneName/* , {),
@@ -738,7 +737,7 @@ function drawArc(data) {
             });
         }, 200);
         infobox = infoBox(x, y, {
-            name: circName,
+            name: $chr.text() + ' : ' + data.start + ' - ' + data.end,
             position: data.start + "-" + data.end
         });
     }).mouseout(function () {

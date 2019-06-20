@@ -82,7 +82,7 @@ class UploadParametersMD5(models.Model):
 
 
 class ToolsModM1A(models.Model):
-    chromosome = models.CharField(db_column="chromosome", max_length = 20)
+    chromosomel = models.CharField(db_column="chromosome", max_length = 20)
     modStart = models.IntegerField(db_column="modStart")
     modEnd = models.IntegerField(db_column="modEnd")
     strand = models.CharField(db_column="strand", max_length=2)
