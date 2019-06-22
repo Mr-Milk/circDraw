@@ -6,6 +6,7 @@ from annoying.functions import get_object_or_None
 from .forms import UploadFileForm, JsonTestFile
 #from .models import ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5, ToolsModM6A, ToolsModM1A, ToolsModM5C
 # from .process_file import handle_uploaded_file
+from .models import *
 from .handle_file import handle
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min

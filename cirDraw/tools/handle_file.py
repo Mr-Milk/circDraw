@@ -73,7 +73,7 @@ def find_exons(assembly, transcript, start, end):
 
     try:
         exon_tree = IntervalTree.from_tuples(
-            tuple([(e[4], e[5], e[7]) for e in get_exons if e[4] < e[5])
+            tuple([(e[4], e[5], e[7]) for e in get_exons if e[4] < e[5]])
         )
     except Exception as e:
         print(f'Error in building interval tree, {e}')
@@ -234,7 +234,7 @@ def process_file(file, assembly: str, file_type, new_file, bias=2):
         for _,v in circ_on_gene.items():
             info = v[0].append(v[1])
             line = config["TASK_ID"] + '\t' + '\t'.join(info)
-                f.write(line+'\n')
+            f.write(line+'\n')
         # columns
         # TASK_ID, id, chr, start, end, gene_name, gene_type, circ_on_gene_all
 
@@ -261,7 +261,7 @@ def handle(config):
     try:
         split_file(config)
         path = '/'.join(config['FILE_NAME'].split('/')[0:-1]) + '/'
-        new_files = [f'{path}{config['FILE_NAME']}.{i}' for i in config['CORE_NUM']]
+        new_files = [f"""{path}{config['FILE_NAME']}.{i}""" for i in config['CORE_NUM']]
         jobs = []
         for i in new_files:
             p = mp.Process(target=process_file, args=(config['FILE_NAME'], config['ASSEMBLY'], config['FILE_TYPE'], new_files[i]))
