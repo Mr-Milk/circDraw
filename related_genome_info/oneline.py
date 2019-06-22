@@ -17,6 +17,44 @@ def main():
         print("KeyboardInterrupt")
         raise
 
+conf = {'gene':['gencode.v19.annotation.gtf',
+                'gene',
+                'gencode.json gencode_length_.json table_column.txt tools_annotation',
+                'raw_data/gene_annotation/'],
+
+        'm1a':['RMBase_hg19_all_m1A_site.txt',
+                'm1a',
+                'RMBase_hg19_all_m1A_site.json RMBase_hg19_all_m1A_site_length_.json table_column.txt tools_m1a',
+                'raw_data/m1A/'],
+
+        'm6a':['RMBase_hg19_all_m6A_site.txt',
+                'm6a',
+                'RMBase_hg19_all_m6A_site.json RMBase_hg19_all_m6A_site_length_.json table_column.txt tools_m6a',
+                'raw_data/m1A/'],
+
+        'm5c':['RMBase_hg19_all_m5C_site.txt',
+                'm5c',
+                'RMBase_hg19_all_m5C_site.json RMBase_hg19_all_m5C_site_length_.json table_column.txt tools_m5c',
+                'raw_data/m1A/'],
+
+        'snp':['RMBase_hg19_all_snp_site.txt',
+                'snp',
+                'RMBase_hg19_all_snp_site.json RMBase_hg19_all_snp_site_length_.json table_column.txt tools_snp',
+                'raw_data/SNP/'],
+                }
+
+def annotation2db(type):
+    try:
+        command_annotation = f'sudo python3 annotation.py {type[0]} {type[1]}'
+        command_db = f'sudo python3 mysql_db.py admin_login.json -annotation {type[3]}'
+        current_path = os.getcwd()
+        os.chdir(type[4])
+        os.system(command_annotation)
+        os.system(command_db)
+        os.chdir(current_path)
+    except Exception as e:
+        print(f"Failed: in {type[1]}_annotation_db")
+        print("Error: ", e)
 
 # ================== gene ============================
 def gene_annotation_db():
@@ -45,7 +83,6 @@ def m1a_annotation_db():
     except Exception as e:
         print("Failed: in m1a_annotation_db")
         print("Error: ", e)
-
 
 # ================== m6a ============================
 def m6a_annotation_db():

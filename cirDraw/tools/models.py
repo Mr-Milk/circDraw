@@ -221,6 +221,7 @@ class UploadParametersMD5(models.Model):
 
 
 
+<<<<<<< HEAD
 #class ToolsModM1A(models.Model):
 #    chromosome = models.CharField(db_column="chromosome", max_length = 20)
 #    modStart = models.IntegerField(db_column="modStart")
@@ -263,3 +264,47 @@ class UploadParametersMD5(models.Model):
 #    class Meta:
 #        managed = False
 #        db_table = 'tools_m6a'
+=======
+class ToolsModM1A(models.Model):
+    chromosomel = models.CharField(db_column="chromosome", max_length = 20)
+    modStart = models.IntegerField(db_column="modStart")
+    modEnd = models.IntegerField(db_column="modEnd")
+    strand = models.CharField(db_column="strand", max_length=2)
+    pubmedId = models.CharField(db_column="pubmedId", max_length=300)
+    link = models.CharField(db_column="link", max_length=1000)
+    disease = models.CharField(db_column="disease", max_length=500)
+    SNPid = models.CharField(db_column="SNPid", max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'tools_m1a'
+
+
+class ToolsModM5C(models.Model):
+    chromosome = models.CharField(db_column="chromosome", max_length = 20)
+    modStart = models.IntegerField(db_column="modStart")
+    modEnd = models.IntegerField(db_column="modEnd")
+    strand = models.CharField(db_column="strand", max_length=2)
+    pubmedId = models.CharField(db_column="pubmedId", max_length=300)
+    link = models.CharField(db_column="link", max_length=1000)
+    disease = models.CharField(db_column="disease", max_length=500)
+    SNPid = models.CharField(db_column="SNPid", max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'tools_m5c'
+
+class ToolsModM6A(models.Model):
+    chromosome = models.CharField(db_column="chromosome", max_length = 20)
+    modStart = models.IntegerField(db_column="modStart")
+    modEnd = models.IntegerField(db_column="modEnd")
+    strand = models.CharField(db_column="strand", max_length=2)
+    pubmedId = models.CharField(db_column="pubmedId", max_length=300)
+    link = models.CharField(db_column="link", max_length=1000)
+    disease = models.CharField(db_column="disease", max_length=500)
+    SNPid = models.CharField(db_column="SNPid", max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'tools_m6a'
+>>>>>>> 00b67fb4224602419d75de87a3612aa73c5ffda9
