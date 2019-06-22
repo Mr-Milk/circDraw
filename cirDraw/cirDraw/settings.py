@@ -88,7 +88,8 @@ DATABASES = {
         'NAME': 'circDraw',
         'USER': 'root',
         'PASSWORD': '12345678',
-        'HOST': '127.0.0.1'
+        'HOST': '127.0.0.1',
+        'OPTIONS': {'local_infile': 1}
     }
 }
 

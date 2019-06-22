@@ -4,11 +4,11 @@ from django.core.files.base import ContentFile
 from django.http import Http404, HttpResponse, JsonResponse
 from annoying.functions import get_object_or_None
 from .forms import UploadFileForm, JsonTestFile
-from .models import ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5, ToolsModM6A, ToolsModM1A, ToolsModM5C
-from .process_file import handle_uploaded_file
+#from .models import ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5, ToolsModM6A, ToolsModM1A, ToolsModM5C
+# from .process_file import handle_uploaded_file
+from .handle_file import handle
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
-from sklearn.neighbors import KernelDensity
 import numpy as np
 from math import floor
 import sys, datetime, time
@@ -79,26 +79,26 @@ def save_to_files(request):
             time_ = time.time()
             return_json = [{'md5': md5, 'time': time_}]
 
-            # store md5 value and parameters into database
+            # store md5 value and parameters into database, store file
             path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
 
             # distribute parameters details
-            file_type = parameters['FileType']
-            species = parameters['Species']
-            denvalue = parameters['denvalue']
+            file_type = parameters['filetype']
+            species = parameters['species']
 
 
             # insert to data base the info of file, paramerter and time
-            a = UploadParametersMD5(md5 = md5, status = 204, file_type = file_type, species = species, denvalue = denvalue, time = time_, path = path)
-            md5ob = a
+            # initial code 202
+            a = UploadParametersMD5(md5 = md5, status = 202, file_type = file_type, species = species, time = time_, path = path)
+            md5ob = a.md5
             a.save()
 
 
             # calling for process
-            save_status = call_process(form_file, md5ob, parameters, toCHR, get_chr_num, circ_isin)
-            if save_status == 200:
+            save_status = call_process(path, md5ob, parameters)
+            if save_status:
                 ss_status = True
-                a.status = 201
+                a.status = 200
                 a.save()
 
             else:
@@ -110,26 +110,31 @@ def save_to_files(request):
 
             return_json = [{'md5': md5, 'time': time_, 'save_status': ss_status}]
 
-                
-            
-
-
-
-
 
             return JsonResponse(return_json, safe=False)
 
 
-def call_process(form_file, md5ob, parameters, toCHR, get_chr_num, circ_isin):
+def call_process(file_path, md5ob, parameters):
     """Function to control the file process precedure"""
     assert md5ob, "Md5 object should be valid"
 
-    info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
-    save_status = handle_uploaded_file(form_file, info_needed, md5ob, parameters, toCHR, get_chr_num, circ_isin)
+    # info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
+    # save_status = handle_uploaded_file(form_file, info_needed, md5ob, parameters, toCHR, get_chr_num, circ_isin)
+
+
+
+    configuration = {
+        'FILE_NAME': file_path,
+        'CORE_NUM': 4,
+        'FILE_TYPE': parameters['filetype'],
+        'NEW_FILE': f'{md5ob}_circDraw_generate',
+        'ASSEMBLY': parameters['species'],
+        'TASK_ID': md5ob,
+    }
+
+    save_status = handle(configuration)
     print("Saved?: {} {}".format(save_status, md5ob.md5))
     return save_status
-
-
 
 
 
@@ -238,69 +243,6 @@ def check_status(request):
 
 # ===================== HANDLE AJAX CALL =================================
 
-# ---------------------fake handle_file1---------------------------------------
-@csrf_exempt
-def fake_handle_file1(request):
-    # database needed: ToolsChromosome, ToolsEachobservation
-    if request.method == 'GET':
-        case_id = request.GET['caseid']
-        print("Fake handle_file 1 ", case_id)
-        # chr_ci = toCHR(int(request.GET['chr']))
-        chr_ci = "chr20"
-        start = int(request.GET['start'])
-        end = int(request.GET['end'])
-        obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).order_by('-circRNA_start')[:1]
-        print("fake file1 obs length:",len(obs))
-        print("file1 parameters: ", chr_ci, start, end)
-        print("obs file1:", obs)
-        results = []
-        for ob in obs:
-            result_draw = {
-                'start': ob.circRNA_start,
-                'end': ob.circRNA_end
-            }
-            results.append(result_draw)
-        print("Fake Handle_file1 results: ", results)
-        return JsonResponse(results, safe=False)
-    else:
-        print("your request for file1 is not get")
-        raise Http404
-# ------------------------fake handle_flie2---------------------------------
-def fake_handle_file2(request):
-    if request.method == 'GET':
-        case_id = request.GET['caseid']
-        # chr_ci = toCHR(int(request.GET['chr']))
-        chr_ci = "chr20"
-        # start = int(request.GET['start'])
-        # end = int(request.GET['end'])
-        # print(start)
-        # print(end)
-        # print(chr_ci)
-        gene_type = "exon"
-        circ_ob = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).order_by('-circRNA_start').first()
-        start = circ_ob.circRNA_start
-        end = circ_ob.circRNA_end
-
-        print("\n")
-        print("Fakefile2 start end:", start, end)
-        print("\n")
-
-        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact=gene_type).filter(gene_start__gte=start).filter(gene_end__lte=end)
-        print("file2 obs: ", obs)
-        results = []
-        for ob in obs:
-            result = {
-                    'name': ob.gene_name,
-                    'start': ob.gene_start,
-                    'end': ob.gene_end
-                    }
-            results.append(result)
-        print("fake_file2 results: ", results)
-        return JsonResponse(results,safe=False)
-    else:
-        print("your request for file2 is not get")
-        raise Http404
-
 # ---------------------handle_file1---------------------------------------
 @csrf_exempt
 def handle_file1(request):
@@ -324,8 +266,8 @@ def handle_file1(request):
 
         print("Handle_file1 results: ", results)
 
-        
-                
+
+
         return JsonResponse(results, safe=False)
     else:
         print("your request for file1 is not get")
@@ -881,7 +823,7 @@ def lenChart(request):
             results[group] += 1
         re = {'x': points, 'y': results}
         print("result of lenChart", re)
-        
+
         return JsonResponse(re, safe=False)
     else:
         raise Http404
@@ -939,7 +881,7 @@ def exon_extr(chr_ci, start, end):
     if obs.count() == 0:
         return []
     filtered_obs = remove_replicate(start, end, obs)
-    
+
     results = []
     for ob in filtered_obs:
         my_start = ob.gene_start
@@ -962,7 +904,7 @@ def exon_extr(chr_ci, start, end):
 def remove_replicate(circStart, circEnd, exonList):
     exons = sorted(exonList, key=lambda x: x.gene_start)
     possible_comb = {}
-    
+
     while len(exons) >= 1:
         new_comb = [exons[0]]
         cover_len = 0
@@ -972,7 +914,7 @@ def remove_replicate(circStart, circEnd, exonList):
                 cover_len += exons[i].gene_end - exons[i].gene_start
         possible_comb[cover_len] = new_comb
         del exons[0]
-        
+
     exons_len = list(possible_comb.keys())
     exons_len.sort()
     return possible_comb[exons_len[-1]]
@@ -988,7 +930,7 @@ def store_example(request):
     print("Gene count", all_lengths)
     gene_index = 0
     for gene_ob in gene_obs[1:10000]:
-        chr_ci = gene_ob.chr_ci 
+        chr_ci = gene_ob.chr_ci
         start = gene_ob.gene_start
         end = gene_ob.gene_end """
     all_genes_re = {}
@@ -1020,16 +962,16 @@ def store_example(request):
         print("Used time : ", str(datetime.timedelta(seconds=(end_time - inital_time))))
 
 
-    
-    
+
+
     print("ALL DONE")
     all_genes_re = json.dumps(all_genes_re)
     default_storage.save("example/hi", ContentFile(all_genes_re))
     return JsonResponse([], safe=False)
-    
 
 
-            
+
+
 
     # exon
 
