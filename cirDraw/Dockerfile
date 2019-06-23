@@ -8,10 +8,14 @@ MAINTAINER Tianqin Li <jacklitianqin@gmail.com>
 
 ENV TZ "Asia/Shanghai"
 
+ENV PYTHONUNBUFFERED 1
 
-WORKDIR /circDraw-docker
 
-COPY . /circDraw-docker
+RUN mkdir /docker_api
+WORKDIR /docker_api
+ADD . /docker_api
+
+
 
 # uwsgi, adapted from https://github.com/docker-library/python.git
 # in file python/3.6/slim/Dockerfile
@@ -47,13 +51,10 @@ RUN set -ex \
         \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
     \) -exec rm -rf '{}' +
 
-EXPOSE 8000
 
-RUN pip install -r requirements.txt
 
-ENTRYPOINT ["python", "manage.py"]
-
-CMD ["runserver", "0.0.0.0:8000"]
+RUN pip install --upgrade pip
+RUN  pip install -i https://pypi.douban.com/simple -r requirements.txt
 
 
 

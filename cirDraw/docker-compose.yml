@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0
+    expose:
+        - 3306
+    environment:
+      MYSQL_DATABASE: 'circDraw'
+      MYSQL_ROOT_PASSWORD: '12345678'
+      MYSQL_USER: 'root'
+
+  web:
+    build: .
+    restart: always
+    command: uwsgi -i ./uwsgi_conf/uwsgi.ini
+    volumes:
+      - .:/docker_api
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    links:
+      - db
+
+  nginx:
+    container_name: nginx-container
+    restart: always
+    depends_on:
+      - web
+    build: ./nginx
+    ports:
+      - 8000:80
+    volumes:
+      - .:/docker_api
+    
+
