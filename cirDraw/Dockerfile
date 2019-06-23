@@ -8,10 +8,14 @@ MAINTAINER Tianqin Li <jacklitianqin@gmail.com>
 
 ENV TZ "Asia/Shanghai"
 
+ENV PYTHONUNBUFFERED 1
 
-WORKDIR /circDraw-docker
 
-COPY . /circDraw-docker
+RUN mkdir /docker_api
+WORKDIR /docker_api
+ADD . /docker_api
+
+
 
 # uwsgi, adapted from https://github.com/docker-library/python.git
 # in file python/3.6/slim/Dockerfile
@@ -39,7 +43,8 @@ RUN set -ex \
     ' \
     && apt-get update && apt-get install -y $buildDeps $deps --no-install-recommends  && rm -rf /var/lib/apt/lists/* \
     && pip install uwsgi \
-    && apt-get purge -y --auto-remove $buildDeps \
+    && pip install ujson \
+    && apt-get purge --auto-remove -y $buildDeps \
     && find /usr/local -depth \
     \( \
         \( -type d -a -name test -o -name tests \) \
@@ -47,13 +52,9 @@ RUN set -ex \
         \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
     \) -exec rm -rf '{}' +
 
-EXPOSE 8000
 
-RUN pip install -r requirements.txt
-
-ENTRYPOINT ["python", "manage.py"]
-
-CMD ["runserver", "0.0.0.0:8000"]
+RUN pip install --upgrade pip
+RUN  pip install -i https://pypi.douban.com/simple -r requirements.txt
 
 
 
