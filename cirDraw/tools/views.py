@@ -436,7 +436,7 @@ def get_mod(mod_list, start, end, chromosome):
 
 
 
-
+""" 
 # ------------------------genList---------------------------------
 @csrf_exempt
 def genList(request):
@@ -892,6 +892,7 @@ def pixel_run_density(request):
     except Exception as e:
         print("Failed: Pixels_run failed...")
         print("Error: ", e)
+ """
 
 
 def lenChart(request):
