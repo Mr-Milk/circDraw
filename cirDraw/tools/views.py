@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.http import Http404, HttpResponse, JsonResponse
@@ -82,7 +83,7 @@ def save_to_files(request):
 
             # store md5 value and parameters into database, store file
             path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
-
+            file_path = settings.MEDIA_ROOT + '/' + path
             # distribute parameters details
             file_type = parameters['filetype']
             species = parameters['species']
@@ -96,7 +97,7 @@ def save_to_files(request):
 
 
             # calling for process
-            save_status = call_process(path, md5ob, parameters)
+            save_status = call_process(file_path, md5ob, parameters)
             if save_status:
                 ss_status = True
                 a.status = 200
@@ -134,7 +135,7 @@ def call_process(file_path, md5ob, parameters):
     }
 
     save_status = handle(configuration)
-    print("Saved?: {} {}".format(save_status, md5ob.md5))
+    print("Saved?: {} {}".format(save_status, md5ob))
     return save_status
 
 
@@ -246,7 +247,97 @@ def check_status(request):
 
 # ---------------------handle_file1---------------------------------------
 @csrf_exempt
-def handle_file1(request):
+def handle_chrLen(request):
+    # database needed: chromosome_length
+    if request.method == 'GET':
+        case_id = request.GET['caseid']
+        print("File1 caseid: ", case_id)
+        case_species = UploadParametersMD5.objects.filter(md5 = case_id)
+        obs = chromosome_length.objects.filter(assembly = case_species.species)
+        print("GET /result/chrLen:", len(obs))
+        results = [{
+                'chr': ob.chr_num,
+                'chrLen': ob.chr_length
+            } for ob in obs]
+
+        print("GET /result/chrLen:", results)
+        return JsonResponse(results, safe=False)
+    else:
+        print("GET /result/chrLen: Failed")
+        raise Http404
+
+def handle_density(request):
+    # database needed: UserDensity
+    if request.method == 'GET':
+        case_id = request.GET['caseid']
+        print("File1 caseid: ", case_id)
+        obs = UserDensity.objects.filter(md5 = case_id)
+        print("GET /result/density:", len(obs))
+        results = [{
+                    "chr": ob.chr_num,
+                    "start": ob.start,
+                    "end": ob.end,
+                    "name": ob.name,
+                    "type": ob.gene_type,
+                    "count": ob.circ_num
+                } for ob in obs]
+
+        print("GET /result/density:", results)
+        return JsonResponse(results, safe=False)
+    else:
+        print("GET /result/density: Failed")
+        raise Http404
+
+def handle_circrnas(request):
+    # database needed: 
+    if request.method == 'GET':
+        case_id = request.GET['caseid']
+        gene_id = request.GET['geneid']
+        chr_num = request.GET['chr']
+        start = request.GET['start']
+        end = request.GET['end']
+        print("File1 caseid: ", case_id)
+        obs = UserTable.objects.filter(md5 = case_id).filter(id_gene = gene_id)
+        print("GET /result/density:", len(obs))
+        results = [{
+                    "name": ob.name,
+                    "start": ob.start,
+                    "end": ob.end,
+                    "source": ob.source,
+                    "components": ob.components
+                    } for ob in obs]
+
+        print("GET /result/circrnas:", results)
+        return JsonResponse(results, safe=False)
+    else:
+        print("GET /result/circrnas: Failed")
+        raise Http404
+
+def handle_genes(request):
+
+    if request.method == 'GET':
+        case_id = request.GET['caseid']
+        chr_num = request.GET['chr']
+        start = request.GET['start']
+        end = request.GET['end']
+        print("File1 caseid: ", case_id)
+        case_species = UploadParametersMD5.objects.filter(md5 = case_id)
+        obs = exec(f"""{case_species.species}_speceis_genome_genes.objects.filter(chr_num = chr_num).filter(start >= start).filter(end <= end)""")
+        print("GET /result/genes:", len(obs))
+        results = [{
+                    "name": ob.name,
+                    "start": ob.start,
+                    "end": ob.end,
+                    "type": ob.type,
+                    "id": ob.id
+                    } for ob in obs]
+        print("GET /result/circrnas:", results)
+        return JsonResponse(results, safe=False)
+    else:
+        print("GET /result/circrnas: Failed")
+        raise Http404
+
+""" def handle_file1(request):
     # database needed: ToolsChromosome, ToolsEachobservation
     if request.method == 'GET':
         case_id = request.GET['caseid']
@@ -272,7 +363,7 @@ def handle_file1(request):
         return JsonResponse(results, safe=False)
     else:
         print("your request for file1 is not get")
-        raise Http404
+        raise Http404 """
 
 # ------------------------handle_flie2---------------------------------
 def handle_file2(request):

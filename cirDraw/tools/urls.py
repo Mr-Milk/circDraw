@@ -24,11 +24,17 @@ urlpatterns = [
     url(r'^statusfile/$', views.check_status),
 
     # Ajax call functions
-    url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
-    url(r'^display/tools_file2/$', views.handle_file2, name="tools_file2"),
-    url(r'^display/genList/$', views.genList),
-    url(r'^tools_file4/$', views.handle_file4, name="tools_file4"),
-    url(r'^tools_file5/$', views.handle_file5, name="tools_file5"),
+    # url(r'^display/tools_file1/$', views.handle_file1, name="tools_file1"),
+    # url(r'^display/tools_file2/$', views.handle_file2, name="tools_file2"),
+    # url(r'^display/genList/$', views.genList),
+    # url(r'^tools_file4/$', views.handle_file4, name="tools_file4"),
+    # url(r'^tools_file5/$', views.handle_file5, name="tools_file5"),
+
+    url(r'^results/chrLen/$', views.handle_chrLen, name="tools_chrLen"),
+    url(r'^results/density/$', views.handle_density, name="tools_density"),
+    url(r'^results/circrnas/$', views.handle_circrnas, name="tools_circRNAs"),
+    url(r'^results/genes/$', views.handle_genes, name="tools_genes"),
+
 
     # charts
     url(r'^display/lenChart_URL/$', views.lenChart),

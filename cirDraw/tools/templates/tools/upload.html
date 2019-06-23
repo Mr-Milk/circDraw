@@ -5,16 +5,29 @@
 {% block content %}
 <div class="container" style="padding-top: 55px;">
   <div class="form-group">
-    <p class="inlineText">Select your file type</p>
+    <p class="inlineText" data-hint="What's .BED file?">Select your file type</p>
     <select class="selectpicker inlineSelector" id="software">
-      <option>.BED file</option>
-      <option>CIRI2 file</option>
+      <option>BED</option>
+      <option>CIRI</option>
     </select>
     <br>
     <p class="inlineText">Species</p>
     <select class="selectpicker inlineSelector" id="species">
-      <option>Human</option>
+      <option>Human (hg19)</option>
+      <option>Human (hg38)</option>
+      <option>Mouse (mm10)</option>
+      <option>Rat (rn6)</option>
+      <option>Yeast (sacCer3)</option>
+      <option>Zebra Fish (danRer11)</option>
     </select>
+
+    <input class="selectpicker inlineSelector" list="genename-list" id="geneNameSelect" style="width: 5em" />
+    <datalist id="genename-list">
+      <option>Human (hg19)</option>
+      <option>Human (hg38)</option>
+      <option>Mouse (mm10)</option>
+    </datalist>
+
     <br>
     <!--<p class="inlineText">Set Density threshold( 1 ~ 100 ): </p><input type="text" id="denvalue" class="inlineInput" value="10">-->
   </div>
@@ -61,7 +74,6 @@
 {% endblock %}
 
 {% block otherJS %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
 <script src="{% static 'tools/js/upload.js' %}"></script>
 
 {% endblock %}

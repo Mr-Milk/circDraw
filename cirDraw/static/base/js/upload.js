@@ -15,6 +15,8 @@ $(document).ready(function(){
         $('#cancel').show().click(function(){
             $('#filename').text('');
             $('#cancel').hide()
+            document.getElementById('myfile').value = '';
+            console.log('Hello', $('#myfile').val())
         });
     });
 

@@ -15,9 +15,13 @@
             </div>
             <div class="col-sm-10 text-center">
 
-                <h2 id="report">Basic Report</h2>
+                <h2 id="report">Basic Report
+                    <a id='start-tutorial' style='font-size: 7pt; color: #fed136; cursor: pointer;'><u>How to use?</u></a>
+                </h2>
+                
                 <h3 id="len">circRNA length distribution</h3>
-                <div id="lenChart" style="width:1000px;height:500px"></div>
+                <div data-intro="Statistic of circRNA length in the file." data-step="1" id="lenChart"
+                    style="width:1000px;height:500px"></div>
                 <h3 id="top">Top 20: circRNA isoforms</h3>
                 <div id="topChart" style="width:1000px;height:500px"></div>
                 <!--<h3 id="exon">Top 20: circRNA isoforms</h3>
@@ -25,11 +29,13 @@
                 <h3 id="iso">circRNA length</h3>
                 <div id="isoChart" style="width:500px;height:500px"></div>
                 <div id="biocircos"></div>-->
-                <h2 id="density" data-toc-text="Density plot">circRNA density distribution on chromosome</h2>
-                <div class="loader svg" id="load">
-                    <img src='../../../media/dna.gif' class="dna">
-                </div>
-                <svg id="svg2" width="800" height="500" class="svg"></svg>
+                <h2 data-intro="Interactive plot of circRNA density on chromosome. Try to click on the color block."
+                    data-step="2" id="density" data-toc-text="Density plot">circRNA density distribution on chromosome
+                </h2>
+                
+                <svg id="svg2" width="800" height="500" class="svg">
+                    <image id="load" x="360" y="220" width="80" height="80" xlink:href="../../../media/dna.gif"/>
+                </svg>
                 <div class="row justify-content-center mt-3">
                     <div class="col-2">
                         <p class="mt-3">Set density limit: </p>
@@ -98,9 +104,9 @@
                                     class="fas fa-angle-double-left"></i><strong> Last Gene</strong></button>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Name:</p>
                             <!--<p id="geneNameSelect" class="ml-1 mr-1 mb-1 d-inline-block">Unknown</p>-->
-                                <input list="genename-list" id="geneNameSelect" style="width: 5em"/>
-                                <datalist id="genename-list">
-                                </datalist>
+                            <input list="genename-list" id="geneNameSelect" style="width: 5em" />
+                            <datalist id="genename-list">
+                            </datalist>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Chr:</p>
                             <p id="chrSelector" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Start:</p>
@@ -165,7 +171,7 @@
 {% load staticfiles %}
 {% csrf_token %}
 <!-- Outside js -->
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/intro.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.2.3/js/tabulator.js"></script>
 <script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts-en.common.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" type="text/javascript"></script>
@@ -186,6 +192,7 @@
 <script src="{% static 'tools/js/linechart.js' %}" type="text/javascript"></script>
 <script src="{% static 'tools/js/download.js' %}" type="text/javascript"></script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/introjs.css" />
 <link rel="stylesheet" href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css" />
 <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.2.3/css/bootstrap/tabulator_bootstrap4.min.css" />
@@ -193,6 +200,9 @@
 <!-- add after bootstrap.min.js -->
 <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
 <script>
+    $('#start-tutorial').click(function () {
+        introJs().start();
+    })
     $(function () {
         var navSelector = "#toc";
         var $myNav = $(navSelector);

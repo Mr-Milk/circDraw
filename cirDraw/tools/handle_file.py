@@ -1,11 +1,13 @@
 import pymysql
 import os
 import re
+import ujson
 from intervaltree import IntervalTree
 import multiprocessing as mp
 from time import sleep
 from .models import *
 from django.db import connection
+from collections import Counter
 
 
 def line_counter(file):
@@ -149,7 +151,7 @@ def find_exon_combo(chr_num: str, circStart: int, circEnd: int, assembly: str, b
 
             return combo, gene, transcript
 
-def process_file(file, assembly: str, file_type, new_file, bias=2):
+def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
 
     cols = {'bed': [0, 1, 2],
             'ciri': [1, 2, 3]}
@@ -212,10 +214,10 @@ def process_file(file, assembly: str, file_type, new_file, bias=2):
         combo, gene, transcript = find_exon_combo(circ[0].lower(), int(circ[1]), int(circ[2]), assembly)
         if combo is not None:
             try:
-                circ_on_gene[gene][1].append({'start': int(circ[1]),
-                                                    'end': int(circ[2]),
-                                                    'source': 'circDraw_annotated',
-                                                    'components': combo})
+                circ_on_gene[gene][1].append({"start": int(circ[1]),
+                                                    "end": int(circ[2]),
+                                                    "source": "circDraw_annotated",
+                                                    "components": combo})
             except:
                     # get gene info
                 geneINFO_script = f'select * from {assembly}_genome_genes where gene="{gene}";'
@@ -223,17 +225,18 @@ def process_file(file, assembly: str, file_type, new_file, bias=2):
                     cur.execute(geneINFO_script)
                     geneINFO = cur.fetchall()
 
-                circ_on_gene[geneINFO[4]] = [geneINFO, [{'start': int(circ[1]),
-                                                    'end': int(circ[2]),
-                                                    'source': 'circDraw_annotated',
-                                                    'components': combo}]]
+                circ_on_gene[geneINFO[4]] = [geneINFO, [{"start": int(circ[1]),
+                                                    "end": int(circ[2]),
+                                                    "source": "circDraw_annotated",
+                                                    "components": combo}]]
 
 
     #### write to file
+    print('This is new_file:', new_file)
     with open(new_file, 'w+') as f:
         for _,v in circ_on_gene.items():
             info = v[0].append(v[1])
-            line = config["TASK_ID"] + '\t' + '\t'.join(info)
+            line = task_id + '\t' + '\t'.join(info)
             f.write(line+'\n')
         # columns
         # TASK_ID, id, chr, start, end, gene_name, gene_type, circ_on_gene_all
@@ -258,33 +261,54 @@ config = {
 } """
 
 def handle(config):
-    try:
-        split_file(config)
-        path = '/'.join(config['FILE_NAME'].split('/')[0:-1]) + '/'
-        new_files = [f"""{path}{config['FILE_NAME']}.{i}""" for i in config['CORE_NUM']]
-        jobs = []
-        for i in new_files:
-            p = mp.Process(target=process_file, args=(config['FILE_NAME'], config['ASSEMBLY'], config['FILE_TYPE'], new_files[i]))
-            jobs.append(p)
-        
-        for j in jobs:
-            j.start()
-        
-        for j in jobs:
-            j.join()
-        
-        print(f'Finish processing {config["TASK_ID"]}')
+    #try:
+    split_file(config)
+    path = '/'.join(config['FILE_NAME'].split('/')[0:-1]) + '/'
+    new_files = [f"""{config['FILE_NAME']}_circDraw_generate.{i}""" for i in range(1,config['CORE_NUM'] + 1)]
+    jobs = []
+    for i in new_files:
+        p = mp.Process(target=process_file, args=(config['FILE_NAME'], config['ASSEMBLY'], config['FILE_TYPE'], i, config['TASK_ID']))
+        jobs.append(p)
+    
+    for j in jobs:
+        j.start()
+    
+    for j in jobs:
+        j.join()
+    
+    print(f'Finish processing {config["TASK_ID"]}')
 
-        concat_files(config)
-        # load file to database
-        with connection.cursor() as cur:
-            table_name = "UserTable"
-            cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['NEW_FILE']}' IGNORE INTO TABLE {table_name} character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_on_gene_all`);""")
-            connection.commit()     
+    concat_files(config)
 
-        return True
-    except Exception as e:
-        print(e)
-        return False
+    # calculation of density and circRNA length distribution
+    circRNA_length = []
+    with open(f"{path}{config['NEW_FILE']}") as f:
+        with open(f"{path}{config['TASK_ID']}_density") as c:
+            for line in f:
+                info = line.split('\t')
+                circINFO = ujson.loads(info[-1])
+                # density table
+                # md5 id chr_num start end name type circ_num
+                for i in circINFO:
+                    circRNA_length.append(i['end'] - i['start'])
+                c.write('\t'.join(info[0:-1]) + '\t' + len(circINFO) + '\n')
+                
+    circRNA_length_distribution = Counter(circRNA_length)
+
+    # load file to database
+    with connection.cursor() as cur:
+        table_name = "UserTable"
+        density_table = "UserDensity"
+        cur.execute('''SET GLOBAL local_infile = 1;''')
+        cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['NEW_FILE']}' IGNORE INTO TABLE {table_name} character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_on_gene_all`);""")
+        cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['TASK_ID']}_density' IGNORE INTO TABLE {density_table} character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_num`);""")
+        connection.commit()
+            
+
+
+    return False
+    """ except Exception as e:
+        print('Handle Error:', e)
+        return False """
 
 

@@ -82,7 +82,7 @@ $scale.ionRangeSlider({
         //geneListFilter = geneList.filter(function(v){if(v.start >= data.from && v.end <= data.to){return v;}});
         svg.clear();
         // draw a straight line
-        var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
+        var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({ // 50, 0.9*SVG_HEIGHT, SVG_WIDTH-50, 0.9*SVG_HEIGHT
             stroke: "#000",
             strokeWidth: 1
         });
@@ -125,11 +125,13 @@ var table = new Tabulator("#table", {
                 return cell.getValue();
             }
         }},
-        {title:"Mod Link", field:"info.link", width:150, formatter:function(cell){
+        {title:"Mod Link", field:"info.pubmed_id", width:150, formatter:function(cell){
             if (cell.getValue() !== undefined) {
                 return "<i class='fas fa-link'></i>";
             }
-        }, cellClick:function(e, cell){cell.getValue().forEach(function(e){openNewTab(e)})}},
+        }, cellClick:function(e, cell){cell.getValue().forEach(function(e){openNewTab('https://www.ncbi.nlm.nih.gov/pubmed/'+ e);
+        });
+    }},
     ],
 });
 //$.getJSON("example", {'caseid': caseID});
@@ -178,7 +180,7 @@ function redraw(circRNAs, geneList) {
             fill: "#fff",
             stroke: "none"
         });
-        var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({
+        var chr_skeleton = svg.paper.line(50, 450, 750, 450).attr({ // 50, 0.9*SVG_HEIGHT, SVG_WIDTH-50, 0.9*SVG_HEIGHT
             stroke: "#000",
             strokeWidth: 1
         });
@@ -238,9 +240,9 @@ function block(opt) {
         infobox,
         conf = {
             junction: {
-                y: 445,
-                w: 2,
-                h: 10
+                y: 445, // 0.9*SVG_HEIGHT - 5*SVG_HEIGHT/500
+                w: 2, // 2
+                h: 10 // 10*SVG_HEIGHT/500
             },
             exon: {
                 y: 447,
@@ -845,8 +847,7 @@ function ring(opt) {
         path = describeArc(opt.x, opt.y, opt.r, opt.startDegree, opt.endDegree);
 
     if (opt.info !== undefined) {
-        links = opt.info.link;
-        delete opt.info.link;
+        links = opt.info.pubmed_id;
     }
 
     if (opt.endDegree - opt.startDegree === 360) {
@@ -919,9 +920,8 @@ function addAnimation(obj, info) {
     var box = obj.getBBox(),
         infobox, links;
 
-    if (info !== undefined && info.link !== undefined) {
-        links = info.link;
-        delete info.link;
+    if (info !== undefined && info.pubmed_id !== undefined) {
+        links = info.pubmed_id;
     }
 
     obj.mouseover(function (ev, x, y) {

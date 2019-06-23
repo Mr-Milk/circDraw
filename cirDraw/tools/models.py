@@ -146,6 +146,20 @@ class UserTable(models.Model):
     class Meta:
         db_table = 'tools_usertable'
 
+class UserDensity(models.Model):
+    """User table, store processed results"""
+    md5 = models.CharField(max_length=255, primary_key=True)
+    id_gene = models.CharField(max_length=255, db_column='id')
+    chr_num = models.CharField(max_length=100)
+    start = models.IntegerField()
+    end = models.IntegerField()
+    name = models.CharField(max_length=255)
+    gene_type = models.CharField(max_length=100)
+    circ_on_num = models.IntegerField()
+
+    class Meta:
+        db_table = 'tools_userdensity'
+
 
 
 ######## END of TABLE UPDATE ########

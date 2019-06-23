@@ -18,6 +18,15 @@ $(document).ready(function () {
         }
     });
 
+    var species2assembly = {
+        'Human (hg19)': 'hg19',
+        'Human (hg38)': 'hg38',
+        'Mouse (mm10)': 'mm10',
+        'Rat (rn6)': 'rn6',
+        'Yeast (sacCer3)': 'sacCer3',
+        'Zebra Fish (danRer11)': 'danRer11'
+    };
+
     $('#example').click(function () {
         $('#uploadlabel').hide();
         $('.textarea').html(example_content);
@@ -63,20 +72,24 @@ $(document).ready(function () {
     console.log("running");
     $('#myfile').change(function () {
         $("#processtip").text('');
-        var a = $('#myfile').val().toString().split('\\');
+        var a = $('#myfile').val().toString().split('\\'),
+            fileSize = document.getElementById('myfile').files[0].size,
+            fileSize_num = Math.round(100*fileSize/1024)/100 == 0 ? 0.01: Math.round(100*fileSize/1024)/100;
+            displaySize = fileSize_num >= 1024 ? Math.round(100*fileSize_num/1024)/100 + 'MB ' : fileSize_num+'KB ';
         console.log(a);
-        $('#filename').text(a[a.length - 1]);
+        $('#filename').text(displaySize + a[a.length - 1]);
         if ($('#myfile').val() !== "") {
             $('#cancel').show().click(function () {
                 $('#filename').text('');
                 $('#cancel').hide();
                 $('#processtip').children('p').remove();
-                $('#myfile').value = "";
+                $('#myfile').val('');
+                console.log('Hello', $('#myfile').val());
                 $('#submit').removeAttr('disabled');
             });
         }
         console.log("File size: ", document.getElementById('myfile').files[0].size);
-        if (document.getElementById('myfile').files[0].size >= 30 * 1024 * 1024) {
+        if (fileSize >= 30 * 1024 * 1024) {
             $('#submit').prop('disabled', true);
             $('#processtip').append('<p>File size are limited to 50MB. Try following steps to reduce file size: </p>').css("color", "#000");
             $('#processtip').append('<p> 1. Filter your Data</p>' + '<p> 2. Remove useless info</p>' + '<p> 3. Contact us for help</p>').css("color", "#000");
@@ -109,18 +122,19 @@ $(document).ready(function () {
             $('#processtip').text('Please choose a file to upload.').css("color", "#CB4042");
         } else {
             var formdata = new FormData(),
+                species_val = $("#species").val(),
                 parameters = {
-                    "FileType": $("#software").val(),
-                    "Species": $("#species").val(),
-                    "expvalue": $("#expvalue").val(),
-                    "denvalue": 0,
+                    "filetype": $("#software").val(),
+                    "species": species2assembly[species_val],
                 };
+            
+                console.log(parameters);
 
             if ($('.textarea').text() === "") {
                 formdata.append('file', document.getElementById('myfile').files[0]);
                 formdata.append('parameters', JSON.stringify(parameters));
                 console.log(JSON.stringify(parameters));
-
+                console.log(parameters);
                 var ajaxParameters = {
                     url: '/tools/upload/',
                     type: 'POST',
@@ -138,7 +152,7 @@ $(document).ready(function () {
                 formdata.append('text', inputText);
                 formdata.append('parameters', JSON.stringify(parameters));
                 var ajaxParameters = {
-                    url: '/tools/upload_text/',
+                    url: '/tools/upload/',
                     type: 'POST',
                     cache: false,
                     dataType: "json",

@@ -123,13 +123,13 @@ function drawDensityBlocks(densfityInfo) {
             x = (densityInfo[i].start) * 135 / dMIN + 50,
             y = chrSkeletonCordY[chrNameOrder[chr]],
             len = (densityInfo[i].end) * 135 / dMIN + 50 - x + 2,
-            color = palette[densityInfo[i].value - 1],
+            color = palette[Math.round((densityInfo[i].density - denBlockMIN)/(denBlockMAX-denBlockMIN))*100],
             name = densityInfo[i].name,
             info = {
                 chr: chr,
                 position: densityInfo[i].start + "-" + densityInfo[i].end,
                 gene: name,
-                density: densityInfo[i].value
+                density: densityInfo[i].density
             };
         densityBlock(x, y, len, color, info);
     }
@@ -164,7 +164,7 @@ function denPlot(chrSkeleton, densityInfo, limit) {
         fill: "#fff"
     });
     densityFilter = densityInfo.filter(function (el) {
-        if (el.value > limit) {
+        if (el.density > limit) {
             return el;
         }
     });
@@ -308,7 +308,6 @@ var palette = ['#f75c2f',
     chrSkeletonCordY = [40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500];
 
 // Draw Density Plot
-$("#svg2").hide();
 $.getJSON('/tools/tools_file4/', {
     'case_id': caseID
 }).done(function (chrJSON) {
@@ -318,11 +317,19 @@ $.getJSON('/tools/tools_file4/', {
         'case_id': caseID
     }).done(function (densityJSON) {
         densityInfo = densityJSON.slice(1);
+        var denBlockMIN, denBlockMAX;
+        densityInfo.forEach(function(e){
+            denBlockMIN = e.density < denBlockMIN || denBlockMIN === undefined ? e.density : denBlockMIN;
+            denBlockMAX = e.density > denBlockMAX || denBlockMAX === undefined ? e.density : denBlockMAX;
+        });
         console.log(chrSkeleton);
         console.log(densityInfo);
+        $den.data('ionRangeSlider').update({
+            min: denBlockMIN,
+            max: denBlockMAX,
+        });
         denPlot(chrSkeleton, densityInfo, 0);
         $("#load").hide();
-        $("#svg2").show();
         var options = {
             shouldSort: true,
             threshold: 0.6,
