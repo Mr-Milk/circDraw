@@ -51,10 +51,11 @@ RUN set -ex \
         -o \
         \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
     \) -exec rm -rf '{}' +
-
+EXPOSE 80
 
 RUN pip install --upgrade pip
-RUN  pip install -i https://pypi.douban.com/simple -r requirements.txt
+# RUN  pip install -i https://pypi.douban.com/simple -r requirements.txt
+RUN pip install -r requirements.txt
 
 
 
