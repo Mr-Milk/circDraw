@@ -14,7 +14,11 @@ urlpatterns = [
     url(r'^upload/$', views.save_to_files, name='upload&save'),
 
     # Run pre-process
+<<<<<<< HEAD
     # url(r'^run/$', views.run_density),
+=======
+    #url(r'^run/$', views.run_density),
+>>>>>>> 270e972f807f26556a086c5411838c62748a126f
     # url(r'^run/$', views.pixel_run_density),
     #pixel_run_density
 
@@ -45,7 +49,11 @@ urlpatterns = [
     # url(r'^test/$', views.render_display_page_test),
 
     # Biocircos
+<<<<<<< HEAD
     # url(r'^display/URL.DENSITY/$', views.handle_biocircos_density),
+=======
+    #url(r'^display/URL.DENSITY/$', views.handle_biocircos_density),
+>>>>>>> 270e972f807f26556a086c5411838c62748a126f
 
     # TopList
     url(r'^display/toplist/$', views.toplist),

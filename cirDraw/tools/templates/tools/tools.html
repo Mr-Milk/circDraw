@@ -29,23 +29,23 @@
                 <h3 id="iso">circRNA length</h3>
                 <div id="isoChart" style="width:500px;height:500px"></div>
                 <div id="biocircos"></div>-->
-                <h2 data-intro="Interactive plot of circRNA density on chromosome. Try to click on the color block."
-                    data-step="2" id="density" data-toc-text="Density plot">circRNA density distribution on chromosome
+                <h2 id="density" data-toc-text="Density plot">circRNA density distribution on chromosome
                 </h2>
                 
-                <svg id="svg2" width="800" height="500" class="svg">
+                <svg id="svg2" width="800" height="500" class="svg" data-intro="Interactive plot of circRNA density on chromosome. Try to click on the color block."
+                data-step="2">
                     <image id="load" x="360" y="220" width="80" height="80" xlink:href="../../../media/dna.gif"/>
                 </svg>
                 <div class="row justify-content-center mt-3">
                     <div class="col-2">
                         <p class="mt-3">Set density limit: </p>
                     </div>
-                    <div class="col-6 range-slider">
+                    <div data-step="3" data-intro="Use this range selector to filter block. Any block has value lower than the selected value will be hidden." class="col-6 range-slider">
                         <input id="den-selector" type="text" class="js-range-slider" value="" />
                     </div>
                 </div>
                 <div class="row justify-content-center pt-3 pb-5">
-                    <div class="col-2">
+                    <div class="col-2" data-step="4" data-intro="You can download the plot in your prefered format.">
                         <div class="input-group">
                             <select class="custom-select" id="fileType_2">
                                 <option selected>File</option>
@@ -72,7 +72,7 @@
                 </div>-->
 
                 <h2 id="isoform" data-toc-text="Isoform plot">circRNA isoforms on chromosome region</h2>
-                <svg id="svg" width="800" height="500" class="svg">
+                <svg id="svg" width="800" height="500" class="svg" data-intro="Interactive plot of circRNAs back-splicing events on gene, Select a block from above plot, the detail of that block will be displayed here. Click the curve to view the predicted internal structure of circRNAs." data-step="5">
                     <foreignObject width="800" height="500" id="svg-tip">
                         <p style="padding-top: 240px; font-size: 20px; color: grey;"><strong>Please select a region from
                                 density plot</strong></p>
@@ -104,9 +104,10 @@
                                     class="fas fa-angle-double-left"></i><strong> Last Gene</strong></button>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Name:</p>
                             <!--<p id="geneNameSelect" class="ml-1 mr-1 mb-1 d-inline-block">Unknown</p>-->
-                            <input list="genename-list" id="geneNameSelect" style="width: 5em" />
+                            <input data-step="6" data-intro="type in gene name to search for interested gene." list="genename-list" id="geneNameSelect" style="width: 5em" />
                             <datalist id="genename-list">
                             </datalist>
+                            <geneid style="display: none;"></geneid>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Chr:</p>
                             <p id="chrSelector" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Start:</p>
@@ -153,7 +154,7 @@
                             class="btn btn-primary btn-sm mb-3"><i class="fas fa-download"></i></button>
                     </div>
                 </div>
-                <div class="row justify-content-center" id="BaTable2">
+                <div class="row justify-content-center" id="BaTable2" data-step="7" data-intro="When you select a circRNA, related modification info will be displayed here.">
                     <div class="col-9">
                         <div id="table" class="table-sm bd-bottom"></div>
                     </div>

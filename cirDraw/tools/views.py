@@ -278,6 +278,7 @@ def handle_density(request):
                     "start": ob.start,
                     "end": ob.end,
                     "name": ob.name,
+                    "geneID": ob.id_gene,
                     "type": ob.gene_type,
                     "count": ob.circ_num
                 } for ob in obs]
@@ -304,6 +305,7 @@ def handle_circrnas(request):
                     "start": ob.start,
                     "end": ob.end,
                     "source": ob.source,
+                    "best-transcript": ob.transcript,
                     "components": ob.components
                     } for ob in obs]
 
@@ -602,7 +604,6 @@ def aggregate(dic, chr_ci):
     >>> r = aggregate(a, "hi")
     >>> r
     [{'chr': 'hi', 'start':4, 'end':5, 'density':82}, {'chr':'hi', 'start':7, 'end': 7, 'density': 18}]
-
 
     total = 0
     last = 0

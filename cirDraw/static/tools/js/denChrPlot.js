@@ -308,12 +308,12 @@ var palette = ['#f75c2f',
     chrSkeletonCordY = [40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500];
 
 // Draw Density Plot
-$.getJSON('/tools/tools_file4/', {
+$.getJSON('/results/chrLen/', {
     'case_id': caseID
 }).done(function (chrJSON) {
     chrSkeleton = chrJSON;
     $("#svg2").height(20 * chrSkeleton.length + 40);
-    $.getJSON('/tools/tools_file5/', {
+    $.getJSON('/results/density/', {
         'case_id': caseID
     }).done(function (densityJSON) {
         densityInfo = densityJSON.slice(1);
@@ -355,6 +355,7 @@ $.getJSON('/tools/tools_file4/', {
                 $("#js-input-from").text(result[0].start);
                 $("#js-input-to").text(result[0].end);
                 $('#chrSelector').text(result[0].chr);
+                $('geneid').html(result[0].geneID);
             }
         });
     });
@@ -369,6 +370,7 @@ $("#previous").click(function () {
         $("#js-input-from").text(preDen.start);
         $("#js-input-to").text(preDen.end);
         $('#chrSelector').text(preDen.chr);
+        $('geneid').html(preDen.geneID);
         $("#next").removeAttr("disabled");
     } else {
         $("#previous").attr("disabled", "");
@@ -384,6 +386,7 @@ $("#next").click(function () {
         $("#js-input-from").text(nextDen.start);
         $("#js-input-to").text(nextDen.end);
         $('#chrSelector').text(nextDen.chr);
+        $('geneid').html(nextDen.geneID);
         $("#previous").removeAttr("disabled");
     } else {
         $("#next").attr("disabled", "");
