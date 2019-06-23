@@ -29,6 +29,10 @@ var modColor = {
     ORF: '#516E41',
     RBP: '#006284'
 };
+
+var pU_map = ['m5Um','Am','Cm','Gm','Tm','Um'],
+    OMe_map = ['N', 'Y'];
+
 var colorIndex = 0;
 
 // record
@@ -47,17 +51,19 @@ var $name = $('#geneNameSelect'),
     $start = $("#js-input-from"),
     $end = $("#js-input-to"),
     $scale = $("#scale-selector");
+    $geneid = $("geneid");
 
 $start.on('DOMSubtreeModified', function(){
     $('.den-select-info').show();
     $scale.show();
-    updataCircPlot(function(){
+    updateCircPlot(function(){
         var minInterval = Math.min.apply(null,circRNAs.forEach(function(v) {
             return v.end - v.start;
         })),
         chr = $chr.text(),
         start = $start.text(),
         end = $end.text();
+        geneID = $geneid.html();
         $scale.data('ionRangeSlider').update({
             from: start,
             to: end,
@@ -135,15 +141,15 @@ var table = new Tabulator("#table", {
     ],
 });
 //$.getJSON("example", {'caseid': caseID});
-function updataCircPlot(callback, geneName) {
+function updateCircPlot(callback, geneName) {
     $.when(
-        $.getJSON(" http://localhost:3000/" + geneName/* , {),
-        $.getJSON("https://my-json-server.typicode.com/Mr-Milk/circDraw-api/geneList"/* , {
+        $.getJSON("/results/circrnas/",{
             "caseid": caseID,
             "start": start,
             "end": end,
-            "chr": chr
-            } */)
+            "chr": chr,
+            "geneid": geneID
+            })
     ).done(function (circ/* , genes */) {
         console.log(circ/* ,genes */);
         circRNAs = circ;
@@ -457,11 +463,11 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
         color = exonList[exonID];
 
         for (j = 0, up_j = mods.length; j < up_j; j++) {
-            var modType = mods[j].type,
+            var modType = pU_map.includes(mods[j].type) ? 'pU' : 'OMe';
                 modInfo = mods[j].info,
                 modStart = ((mods[j].start - start) / len) * 360 + exStartAngle,
                 modEnd = ((mods[j].end - start) / len) * 360 + exStartAngle;
-            modInfo.type = modType;
+            modInfo.type = mods[j].type;
             modInfo.position = mods[j].start + '-' + mods[j].end;
             console.log('modinfo:',modInfo);
             if (['MRE', 'ORF', 'RBP'].includes(modType)) {
