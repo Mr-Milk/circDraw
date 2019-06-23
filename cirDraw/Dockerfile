@@ -43,14 +43,14 @@ RUN set -ex \
     ' \
     && apt-get update && apt-get install -y $buildDeps $deps --no-install-recommends  && rm -rf /var/lib/apt/lists/* \
     && pip install uwsgi \
-    && apt-get purge -y --auto-remove $buildDeps \
+    && pip install ujson \
+    && apt-get purge --auto-remove -y $buildDeps \
     && find /usr/local -depth \
     \( \
         \( -type d -a -name test -o -name tests \) \
         -o \
         \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
     \) -exec rm -rf '{}' +
-
 
 
 RUN pip install --upgrade pip

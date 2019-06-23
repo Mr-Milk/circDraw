@@ -282,8 +282,8 @@ def handle(config):
 
     # calculation of density and circRNA length distribution
     circRNA_length = []
-    with open(f"{path}{config['NEW_FILE']}") as f:
-        with open(f"{path}{config['TASK_ID']}_density") as c:
+    with open(f"{path}{config['NEW_FILE']}", 'r') as f:
+        with open(f"{path}{config['TASK_ID']}_density", 'w') as c:
             for line in f:
                 info = line.split('\t')
                 circINFO = ujson.loads(info[-1])

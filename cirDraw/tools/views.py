@@ -289,7 +289,7 @@ def handle_density(request):
         raise Http404
 
 def handle_circrnas(request):
-    # database needed: 
+    # database needed:
     if request.method == 'GET':
         case_id = request.GET['caseid']
         gene_id = request.GET['geneid']
@@ -436,7 +436,7 @@ def get_mod(mod_list, start, end, chromosome):
 
 
 
-""" 
+"""
 # ------------------------genList---------------------------------
 @csrf_exempt
 def genList(request):
@@ -543,7 +543,7 @@ def handle_biocircos_density(request):
 # -------------Density computation----------------------------------
 
 def toCHR(num):
-    """convert a number to a chr string"""
+    #convert a number to a chr string
     assert type(num) == int, "Wrong input in toCHR"
     if num == 23:
         c_num = "X"
@@ -572,7 +572,7 @@ def get_chr_num(chr_ci):
                 raise ValueError
 
 def circ_isin(geneob, circob, overlap_rate=0.5):
-    """define how to be counted as in the gene"""
+    #define how to be counted as in the gene
     gene_len = geneob.gene_end - geneob.gene_start
     circ_len = circob.circRNA_end - circob.circRNA_start
     if circob.circRNA_start > geneob.gene_end or circob.circRNA_end < geneob.gene_start:
@@ -590,20 +590,20 @@ def circ_isin(geneob, circob, overlap_rate=0.5):
             return False
 
 def keep_tops(last_lst, now):
-    """A funtion that takes a fix length list, decide whether to keep the now"""
+    # A funtion that takes a fix length list, decide whether to keep the now
 
     lst = [now] + last_lst
     slst = sorted(lst, key=lambda x: x['density'])
     return slst[:-1]
 
 def aggregate(dic, chr_ci):
-    """calculate values in dic and return list of blocks with their calibrated density
+    # calculate values in dic and return list of blocks with their calibrated density
     >>> a = {1: 0, 2:0, 3:0, 4:4, 5:5,6:0,7:2}
     >>> r = aggregate(a, "hi")
     >>> r
     [{'chr': 'hi', 'start':4, 'end':5, 'density':82}, {'chr':'hi', 'start':7, 'end': 7, 'density': 18}]
 
-    """
+
     total = 0
     last = 0
     sep = 0
