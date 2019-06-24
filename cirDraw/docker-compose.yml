@@ -11,13 +11,14 @@ services:
       MYSQL_USER: 'root'
 
   web:
+    container_name: web-container
     build: .
     restart: always
     command: uwsgi -i ./uwsgi_conf/uwsgi.ini
     volumes:
       - .:/docker_api
-    ports:
-      - 80:80
+    expose:
+      - 8888
     depends_on:
       - db
     links:
@@ -30,7 +31,7 @@ services:
       - web
     build: ./nginx
     ports:
-      - 8000:8000
+      - 80:80
     volumes:
       - .:/docker_api
     
