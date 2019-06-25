@@ -239,7 +239,7 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
             line = task_id + '\t' + '\t'.join(info)
             f.write(line+'\n')
         # columns
-        # TASK_ID, id, chr, start, end, gene_name, gene_type, circ_on_gene_all
+        # TASK_ID, id, chr, start, end, gene_name, gene_type, circ_on_gene_all, circ_num
 
 
     # insert into database
@@ -282,6 +282,7 @@ def handle(config):
 
     # calculation of density and circRNA length distribution
     circRNA_length = []
+    circRNA_isoform = []
     with open(f"{path}{config['NEW_FILE']}", 'r') as f:
         with open(f"{path}{config['TASK_ID']}_density", 'w') as c:
             for line in f:
@@ -291,24 +292,29 @@ def handle(config):
                 # md5 id chr_num start end name type circ_num
                 for i in circINFO:
                     circRNA_length.append(i['end'] - i['start'])
+                circRNA_isoform.append(info[5], len(circINFO))
                 c.write('\t'.join(info[0:-1]) + '\t' + len(circINFO) + '\n')
-                
-    circRNA_length_distribution = Counter(circRNA_length)
+
+    tmp_circ_len = Counter(circRNA_length).items()
+    circRNA_length_distribution = ujson.dumps({"x":[k for k in tmp_circ_len],
+                                   "y":[v for _,v in tmp_circ_len]})
+
+    tmp_circRNA_isoform = sorted(circRNA_isoform, key=lambda x: x[1], reverse=True)[0:20]
+    circRNA_isoform = ujson.dumps({"x":[k for k in tmp_circRNA_isoform],
+                        "y":[v for _,v in tmp_circRNA_isoform]})
 
     # load file to database
     with connection.cursor() as cur:
         table_name = "UserTable"
-        density_table = "UserDensity"
         cur.execute('''SET GLOBAL local_infile = 1;''')
-        cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['NEW_FILE']}' IGNORE INTO TABLE {table_name} character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_on_gene_all`);""")
-        cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['TASK_ID']}_density' IGNORE INTO TABLE {density_table} character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_num`);""")
+        cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['TASK_ID']}_density' IGNORE INTO TABLE {table_name} character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_on_gene_all`, `circ_num`);""")
         connection.commit()
             
 
 
-    return False
-    """ except Exception as e:
+    return False,circRNA_length_distribution,circRNA_isoform
+    '''except Exception as e:
         print('Handle Error:', e)
-        return False """
+        return True,circRNA_length_distribution,circRNA_isoform'''
 
 

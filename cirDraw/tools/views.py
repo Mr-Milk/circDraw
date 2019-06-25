@@ -14,7 +14,7 @@ from django.db.models import Max, Min
 import numpy as np
 from math import floor
 import sys, datetime, time
-import json
+import ujson
 import hashlib
 
 # ========================= RENDER PAGES ==============================
@@ -133,8 +133,8 @@ def call_process(file_path, md5ob, parameters):
         'ASSEMBLY': parameters['species'],
         'TASK_ID': md5ob,
     }
-
-    save_status = handle(configuration)
+    save_status,circRNA_length_distribution,circRNA_isoform = handle(configuration)
+    StatisticTable(md5=md5ob, lenChart=circRNA_length_distribution, toplist=circRNA_isoform)
     print("Saved?: {} {}".format(save_status, md5ob))
     return save_status
 
@@ -239,10 +239,6 @@ def check_status(request):
     else:
         raise Http404
 
-
-
-
-
 # ===================== HANDLE AJAX CALL =================================
 
 # ---------------------handle_file1---------------------------------------
@@ -290,7 +286,7 @@ def handle_density(request):
         raise Http404
 
 def handle_circrnas(request):
-    # database needed:
+    # database needed: 
     if request.method == 'GET':
         case_id = request.GET['caseid']
         gene_id = request.GET['geneid']
@@ -339,98 +335,114 @@ def handle_genes(request):
         print("GET /result/circrnas: Failed")
         raise Http404
 
-""" def handle_file1(request):
-    # database needed: ToolsChromosome, ToolsEachobservation
+def lenChart(request):
     if request.method == 'GET':
         case_id = request.GET['caseid']
-        print("File1 caseid: ", case_id)
-        chr_ci = toCHR(int(request.GET['chr']))
-        start = int(request.GET['start'])
-        end = int(request.GET['end'])
-        obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gte=start).filter(circRNA_end__lte=end)
-        print("!!!1:",len(obs))
-        print("parameters: ", chr_ci, start, end)
-        results = []
-        for ob in obs:
-            result_draw = {
-                'start': ob.circRNA_start,
-                'end': ob.circRNA_end
-            }
-            results.append(result_draw)
-
-        print("Handle_file1 results: ", results)
-
-
-
-        return JsonResponse(results, safe=False)
+        data = StatisticTable.objects.filter(md5 = case_id)
+        result = ujson.loads(data.lenChart)
+        return JsonResponse(result, safe=False)
     else:
-        print("your request for file1 is not get")
-        raise Http404 """
+        return Http404
 
-# ------------------------handle_flie2---------------------------------
-def handle_file2(request):
+def toplist(request):
     if request.method == 'GET':
         case_id = request.GET['caseid']
-        chr_ci = toCHR(int(request.GET['chr']))
-        start = int(request.GET['start'])
-        end = int(request.GET['end'])
-        print(start)
-        print(end)
-        print(chr_ci)
-        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
-        print("Gene/exons file2", obs)
-        results = []
-        for ob in obs:
-            my_start = ob.gene_start
-            my_end = ob.gene_end
-            mod_lst = ['m1a', 'm5c', 'm6a']
-            mod = get_mod(mod_lst, my_start, my_end, chr_ci)
-            print("Results of mod:", mod)
-            result = {
-                    'name': ob.gene_name,
-                    'start': ob.gene_start,
-                    'end': ob.gene_end,
-                    'type': ob.gene_type,
-                    'mod': mod,
-                    }
-            results.append(result)
-        #print("file2222", results)
-        return JsonResponse(results,safe=False)
+        data = StatisticTable.objects.filter(md5 = case_id)
+        result = ujson.loads(data.toplist)
+        return JsonResponse(result, safe=False)
     else:
-        print("your request for file2 is not get")
-        raise Http404
+        return Http404
 
 
-def get_mod(mod_list, start, end, chromosome):
-    # get mod by start, end
-    mods = []
-    for i in mod_list:
-        if i == 'm1a':
-            obs = ToolsModM1A.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
-            type_ob = 'm1A'
-        elif i == 'm5c':
-            obs = ToolsModM5C.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
-            type_ob = 'm5C'
-        elif i == 'm6a':
-            obs = ToolsModM6A.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
-            type_ob = 'm6A'
-        else:
-            print("modType {} is not supported for now".format(i))
-            obs = None
+# """ def handle_file1(request):
+#     # database needed: ToolsChromosome, ToolsEachobservation
+#     if request.method == 'GET':
+#         case_id = request.GET['caseid']
+#         print("File1 caseid: ", case_id)
+#         chr_ci = toCHR(int(request.GET['chr']))
+#         start = int(request.GET['start'])
+#         end = int(request.GET['end'])
+#         obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gte=start).filter(circRNA_end__lte=end)
+#         print("!!!1:",len(obs))
+#         print("parameters: ", chr_ci, start, end)
+#         results = []
+#         for ob in obs:
+#             result_draw = {
+#                 'start': ob.circRNA_start,
+#                 'end': ob.circRNA_end
+#             }
+#             results.append(result_draw)
 
-        if obs:
-            for oo in obs:
-                strand = oo.strand
-                link = oo.link.split(",")
-                SNP_id = oo.SNPid
-                disease_content = oo.disease
-                disease = {'SNP': SNP_id, 'disease': disease_content, 'link': link}
-                mod_object = {'type': type_ob, 'start': start, 'end': end, 'strand': strand, 'info': disease}
-                mods.append(mod_object)
-    return mods
+#         print("Handle_file1 results: ", results)
 
 
 
+#         return JsonResponse(results, safe=False)
+#     else:
+#         print("your request for file1 is not get")
+#         raise Http404 """
+
+# # ------------------------handle_flie2---------------------------------
+# def handle_file2(request):
+#     if request.method == 'GET':
+#         case_id = request.GET['caseid']
+#         chr_ci = toCHR(int(request.GET['chr']))
+#         start = int(request.GET['start'])
+#         end = int(request.GET['end'])
+#         print(start)
+#         print(end)
+#         print(chr_ci)
+#         obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
+#         print("Gene/exons file2", obs)
+#         results = []
+#         for ob in obs:
+#             my_start = ob.gene_start
+#             my_end = ob.gene_end
+#             mod_lst = ['m1a', 'm5c', 'm6a']
+#             mod = get_mod(mod_lst, my_start, my_end, chr_ci)
+#             print("Results of mod:", mod)
+#             result = {
+#                     'name': ob.gene_name,
+#                     'start': ob.gene_start,
+#                     'end': ob.gene_end,
+#                     'type': ob.gene_type,
+#                     'mod': mod,
+#                     }
+#             results.append(result)
+#         #print("file2222", results)
+#         return JsonResponse(results,safe=False)
+#     else:
+#         print("your request for file2 is not get")
+#         raise Http404
+
+
+# def get_mod(mod_list, start, end, chromosome):
+#     # get mod by start, end
+#     mods = []
+#     for i in mod_list:
+#         if i == 'm1a':
+#             obs = ToolsModM1A.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+#             type_ob = 'm1A'
+#         elif i == 'm5c':
+#             obs = ToolsModM5C.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+#             type_ob = 'm5C'
+#         elif i == 'm6a':
+#             obs = ToolsModM6A.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+#             type_ob = 'm6A'
+#         else:
+#             print("modType {} is not supported for now".format(i))
+#             obs = None
+
+#         if obs:
+#             for oo in obs:
+#                 strand = oo.strand
+#                 link = oo.link.split(",")
+#                 SNP_id = oo.SNPid
+#                 disease_content = oo.disease
+#                 disease = {'SNP': SNP_id, 'disease': disease_content, 'link': link}
+#                 mod_object = {'type': type_ob, 'start': start, 'end': end, 'strand': strand, 'info': disease}
+#                 mods.append(mod_object)
+#     return mods
 
 
 
@@ -438,7 +450,10 @@ def get_mod(mod_list, start, end, chromosome):
 
 
 
-"""
+
+
+
+""" 
 # ------------------------genList---------------------------------
 @csrf_exempt
 def genList(request):
@@ -545,7 +560,7 @@ def handle_biocircos_density(request):
 # -------------Density computation----------------------------------
 
 def toCHR(num):
-    #convert a number to a chr string
+    '''convert a number to a chr string'''
     assert type(num) == int, "Wrong input in toCHR"
     if num == 23:
         c_num = "X"
@@ -574,7 +589,7 @@ def get_chr_num(chr_ci):
                 raise ValueError
 
 def circ_isin(geneob, circob, overlap_rate=0.5):
-    #define how to be counted as in the gene
+    '''define how to be counted as in the gene'''
     gene_len = geneob.gene_end - geneob.gene_start
     circ_len = circob.circRNA_end - circob.circRNA_start
     if circob.circRNA_start > geneob.gene_end or circob.circRNA_end < geneob.gene_start:
@@ -592,19 +607,20 @@ def circ_isin(geneob, circob, overlap_rate=0.5):
             return False
 
 def keep_tops(last_lst, now):
-    # A funtion that takes a fix length list, decide whether to keep the now
+    '''A funtion that takes a fix length list, decide whether to keep the now'''
 
     lst = [now] + last_lst
     slst = sorted(lst, key=lambda x: x['density'])
     return slst[:-1]
 
 def aggregate(dic, chr_ci):
-    # calculate values in dic and return list of blocks with their calibrated density
+    '''calculate values in dic and return list of blocks with their calibrated density
     >>> a = {1: 0, 2:0, 3:0, 4:4, 5:5,6:0,7:2}
     >>> r = aggregate(a, "hi")
     >>> r
     [{'chr': 'hi', 'start':4, 'end':5, 'density':82}, {'chr':'hi', 'start':7, 'end': 7, 'density': 18}]
 
+    '''
     total = 0
     last = 0
     sep = 0
@@ -896,176 +912,158 @@ def pixel_run_density(request):
  """
 
 
-def lenChart(request):
-    if request.method == 'GET':
-        caseid = request.GET['caseid']
-        partitions = 20
-        circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid)
-        max_circ_len = max([i.max_length_circ for i in circ_info])
-        min_circ_len = min([i.min_length_circ for i in circ_info])
-        step = (max_circ_len - min_circ_len) // partitions
-        points = [i * step for i in range(1, partitions+1)]
-        results = [0]*partitions
-        now_start, now_end = 0, 0
-
-        circs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
-        for i in circs:
-            circ_len = i.circRNA_end - i.circRNA_start
-            group = circ_len // step
-            if group == partitions:
-                group -= 1
-            results[group] += 1
-        re = {'x': points, 'y': results}
-        print("result of lenChart", re)
-
-        return JsonResponse(re, safe=False)
-    else:
-        raise Http404
 
 
+# def lenChart(request):
+#     if request.method == 'GET':
+#         caseid = request.GET['caseid']
+#         partitions = 20
+#         circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid)
+#         max_circ_len = max([i.max_length_circ for i in circ_info])
+#         min_circ_len = min([i.min_length_circ for i in circ_info])
+#         step = (max_circ_len - min_circ_len) // partitions
+#         points = [i * step for i in range(1, partitions+1)]
+#         results = [0]*partitions
+#         now_start, now_end = 0, 0
+
+#         circs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
+#         for i in circs:
+#             circ_len = i.circRNA_end - i.circRNA_start
+#             group = circ_len // step
+#             if group == partitions:
+#                 group -= 1
+#             results[group] += 1
+#         re = {'x': points, 'y': results}
+#         print("result of lenChart", re)
+
+#         return JsonResponse(re, safe=False)
+#     else:
+#         raise Http404
 
 
+# def toplist(request):
+#     if request.method == "GET":
+#         md5 = request.GET['case_id']
+#         sub_path = "tops_result/"
+#         read_path = sub_path + md5
+#         if default_storage.exists(read_path):
+#             results = default_storage.open(read_path).read()
+#             results_ob = json.loads(results)
+#             x = []
+#             y = []
+#             for i in results_ob:
+#                 x.append(i['name'])
+#                 y.append(i['value'])
+#             return_ob = {'x': x, 'y': y}
+#             print("Toplist: ", return_ob)
+
+#             return JsonResponse(return_ob, safe=False)
+#         else:
+#             print("No file for path when reading toplist: ", read_path)
+#             raise Http404
 
 
+#     else:
+#         print("Handle file5's method is not GET")
+#         raise Http404
 
-def exonChart(request):
-    if request.method == 'GET':
-        caseid = request.GET['caseid']
+# def exon_extr(chr_ci, start, end):
+#     obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end).filter(gene_type__exact="exon")
+#     #print("Gene/exons", obs)
+#     if obs.count() == 0:
+#         return []
+#     filtered_obs = remove_replicate(start, end, obs)
 
-    else:
-        raise Http404
+#     results = []
+#     for ob in filtered_obs:
+#         my_start = ob.gene_start
+#         my_end = ob.gene_end
+#         mod_lst = ['m1a', 'm5c', 'm6a']
+#         mod = get_mod(mod_lst, my_start, my_end, chr_ci)
+#         #if mod != []:
+#             #print("Results of mod:", mod)
+#         result = {
+#                 'name': ob.gene_name,
+#                 'start': ob.gene_start,
+#                 'end': ob.gene_end,
+#                 'type': ob.gene_type,
+#                 'mods': mod,
+#                 }
+#         results.append(result)
 
+#     return results
 
-def isoChart(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
+# def remove_replicate(circStart, circEnd, exonList):
+#     exons = sorted(exonList, key=lambda x: x.gene_start)
+#     possible_comb = {}
 
+#     while len(exons) >= 1:
+#         new_comb = [exons[0]]
+#         cover_len = 0
+#         for i in range(1, len(exons)):
+#             if exons[i].gene_start > new_comb[-1].gene_end:
+#                 new_comb.append(exons[i])
+#                 cover_len += exons[i].gene_end - exons[i].gene_start
+#         possible_comb[cover_len] = new_comb
+#         del exons[0]
 
-def toplist(request):
-    if request.method == "GET":
-        md5 = request.GET['case_id']
-        sub_path = "tops_result/"
-        read_path = sub_path + md5
-        if default_storage.exists(read_path):
-            results = default_storage.open(read_path).read()
-            results_ob = json.loads(results)
-            x = []
-            y = []
-            for i in results_ob:
-                x.append(i['name'])
-                y.append(i['value'])
-            return_ob = {'x': x, 'y': y}
-            print("Toplist: ", return_ob)
-
-            return JsonResponse(return_ob, safe=False)
-        else:
-            print("No file for path when reading toplist: ", read_path)
-            raise Http404
-
-
-    else:
-        print("Handle file5's method is not GET")
-        raise Http404
-
-def exon_extr(chr_ci, start, end):
-    obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end).filter(gene_type__exact="exon")
-    #print("Gene/exons", obs)
-    if obs.count() == 0:
-        return []
-    filtered_obs = remove_replicate(start, end, obs)
-
-    results = []
-    for ob in filtered_obs:
-        my_start = ob.gene_start
-        my_end = ob.gene_end
-        mod_lst = ['m1a', 'm5c', 'm6a']
-        mod = get_mod(mod_lst, my_start, my_end, chr_ci)
-        #if mod != []:
-            #print("Results of mod:", mod)
-        result = {
-                'name': ob.gene_name,
-                'start': ob.gene_start,
-                'end': ob.gene_end,
-                'type': ob.gene_type,
-                'mods': mod,
-                }
-        results.append(result)
-
-    return results
-
-def remove_replicate(circStart, circEnd, exonList):
-    exons = sorted(exonList, key=lambda x: x.gene_start)
-    possible_comb = {}
-
-    while len(exons) >= 1:
-        new_comb = [exons[0]]
-        cover_len = 0
-        for i in range(1, len(exons)):
-            if exons[i].gene_start > new_comb[-1].gene_end:
-                new_comb.append(exons[i])
-                cover_len += exons[i].gene_end - exons[i].gene_start
-        possible_comb[cover_len] = new_comb
-        del exons[0]
-
-    exons_len = list(possible_comb.keys())
-    exons_len.sort()
-    return possible_comb[exons_len[-1]]
+#     exons_len = list(possible_comb.keys())
+#     exons_len.sort()
+#     return possible_comb[exons_len[-1]]
 
 
 
 
-def store_example(request):
-    """ gene_obs = ToolsAnnotation.objects.filter(gene_type__exact='gene')
-    all_results = {}
-    case_id = request.GET['caseid']
-    all_lengths = gene_obs.count()
-    print("Gene count", all_lengths)
-    gene_index = 0
-    for gene_ob in gene_obs[1:10000]:
-        chr_ci = gene_ob.chr_ci
-        start = gene_ob.gene_start
-        end = gene_ob.gene_end """
-    all_genes_re = {}
-    case_id = request.GET['caseid']
-    circ_obs = ToolsEachobservation.objects.filter(caseid__exact=case_id)
-    all_length = circ_obs.count()
-    index = 0
-    inital_time = time.time()
-    for circ_ob in circ_obs:
-        print("IN: ", index)
-        print("progress: ", index/all_length)
-        start_time = time.time()
-        chr_ci_cir = circ_ob.chr_ci
-        start_cir = circ_ob.circRNA_start
-        end_cir = circ_ob.circRNA_end
-        exons = exon_extr(chr_ci_cir, start_cir, end_cir)
-        #if exons != []:
-        result_cir = {"start": start_cir, "end": end_cir, "exons": exons}
-        c_gene = ToolsAnnotation.objects.filter(gene_type__exact='gene').filter(gene_start__lte = start_cir).filter(gene_end__gte=end_cir)
-        if c_gene.count() != 0:
-            gene_name = c_gene[0].gene_name
-            if gene_name not in all_genes_re.keys():
-                all_genes_re[gene_name] = [result_cir]
-            else:
-                all_genes_re[gene_name].append(result_cir)
-        index += 1
-        end_time = time.time()
-        print("Interval (s): ", round(end_time - start_time))
-        print("Used time : ", str(datetime.timedelta(seconds=(end_time - inital_time))))
+# def store_example(request):
+#     """ gene_obs = ToolsAnnotation.objects.filter(gene_type__exact='gene')
+#     all_results = {}
+#     case_id = request.GET['caseid']
+#     all_lengths = gene_obs.count()
+#     print("Gene count", all_lengths)
+#     gene_index = 0
+#     for gene_ob in gene_obs[1:10000]:
+#         chr_ci = gene_ob.chr_ci
+#         start = gene_ob.gene_start
+#         end = gene_ob.gene_end """
+#     all_genes_re = {}
+#     case_id = request.GET['caseid']
+#     circ_obs = ToolsEachobservation.objects.filter(caseid__exact=case_id)
+#     all_length = circ_obs.count()
+#     index = 0
+#     inital_time = time.time()
+#     for circ_ob in circ_obs:
+#         print("IN: ", index)
+#         print("progress: ", index/all_length)
+#         start_time = time.time()
+#         chr_ci_cir = circ_ob.chr_ci
+#         start_cir = circ_ob.circRNA_start
+#         end_cir = circ_ob.circRNA_end
+#         exons = exon_extr(chr_ci_cir, start_cir, end_cir)
+#         #if exons != []:
+#         result_cir = {"start": start_cir, "end": end_cir, "exons": exons}
+#         c_gene = ToolsAnnotation.objects.filter(gene_type__exact='gene').filter(gene_start__lte = start_cir).filter(gene_end__gte=end_cir)
+#         if c_gene.count() != 0:
+#             gene_name = c_gene[0].gene_name
+#             if gene_name not in all_genes_re.keys():
+#                 all_genes_re[gene_name] = [result_cir]
+#             else:
+#                 all_genes_re[gene_name].append(result_cir)
+#         index += 1
+#         end_time = time.time()
+#         print("Interval (s): ", round(end_time - start_time))
+#         print("Used time : ", str(datetime.timedelta(seconds=(end_time - inital_time))))
 
 
 
 
-    print("ALL DONE")
-    all_genes_re = json.dumps(all_genes_re)
-    default_storage.save("example/hi", ContentFile(all_genes_re))
-    return JsonResponse([], safe=False)
+#     print("ALL DONE")
+#     all_genes_re = json.dumps(all_genes_re)
+#     default_storage.save("example/hi", ContentFile(all_genes_re))
+#     return JsonResponse([], safe=False)
 
 
 
 
 
-    # exon
+#     # exon
 
