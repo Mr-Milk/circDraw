@@ -1,15 +1,6 @@
 version: '3'
 
 services:
-  db:
-    image: mysql:8.0
-    expose:
-        - 3306
-    environment:
-      MYSQL_DATABASE: 'circDraw'
-      MYSQL_ROOT_PASSWORD: '12345678'
-      MYSQL_USER: 'root'
-
   web:
     container_name: web-container
     build: .
