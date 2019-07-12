@@ -14,7 +14,11 @@ urlpatterns = [
     url(r'^upload/$', views.save_to_files, name='upload&save'),
 
     # Run pre-process
+<<<<<<< HEAD
+    #url(r'^run/$', views.run_density),
+=======
     # url(r'^run/$', views.run_density),
+>>>>>>> a7197c83c1e16838d666694143ab62b2d2280469
     # url(r'^run/$', views.pixel_run_density),
     #pixel_run_density
 
