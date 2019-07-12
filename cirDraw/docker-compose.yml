@@ -22,7 +22,7 @@ services:
     depends_on:
       - db
     links:
-      - db
+        - db:mysql
 
   nginx:
     container_name: nginx-container
@@ -30,6 +30,8 @@ services:
     depends_on:
       - web
     build: ./nginx
+    environment:
+       - "affinity:container==*web-container*"
     ports:
       - 80:80
     volumes:
