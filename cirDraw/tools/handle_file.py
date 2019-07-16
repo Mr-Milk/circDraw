@@ -58,7 +58,7 @@ def concat_files(config, delete_old=True):
                 os.remove(f)
         except Exception as e:
             print('Delete splited files failed:', e)
-    
+
     return path + config['NEW_FILE']
 
 def find_exons(assembly, transcript, start, end):
@@ -69,7 +69,7 @@ def find_exons(assembly, transcript, start, end):
         cur.execute(get_exons_script)
         get_exons = cur.fetchall()
 
-    
+
 
     # add index to column `transcript`
 
@@ -184,7 +184,7 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
                 with connection.cursor() as cur:
                     cur.execute(result_script)
                     result = cur.fetchall()
-                
+
                 possible_circ = [
                     (i[4] - i[3] - (end - start), i) for i in result]
 
@@ -250,7 +250,7 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
     # using mysql: SELECT geneid,COUNT(*) as count FROM tablename GROUP BY geneid ORDER BY count DESC;
 
 
-""" 
+"""
 config = {
     'FILE_NAME':'./epiData/hg19_genome_genes.txt',
     'CORE_NUM': 4,
@@ -269,13 +269,13 @@ def handle(config):
     for i in new_files:
         p = mp.Process(target=process_file, args=(config['FILE_NAME'], config['ASSEMBLY'], config['FILE_TYPE'], i, config['TASK_ID']))
         jobs.append(p)
-    
+
     for j in jobs:
         j.start()
-    
+
     for j in jobs:
         j.join()
-    
+
     print(f'Finish processing {config["TASK_ID"]}')
 
     concat_files(config)
@@ -307,9 +307,9 @@ def handle(config):
     with connection.cursor() as cur:
         table_name = "UserTable"
         cur.execute('''SET GLOBAL local_infile = 1;''')
-        cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['TASK_ID']}_density' IGNORE INTO TABLE {table_name} character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_on_gene_all`, `circ_num`);""")
+        cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['TASK_ID']}_density' IGNORE INTO TABLE {table_name} character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_on_gene_all`, `circ_on_num`);""")
         connection.commit()
-            
+
 
 
     return False,circRNA_length_distribution,circRNA_isoform

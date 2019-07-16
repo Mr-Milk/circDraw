@@ -51,7 +51,7 @@ urlpatterns = [
     url(r'^display/toplist/$', views.toplist),
 
     # example
-    url(r'^display/example', views.store_example, name="example"),
+    #url(r'^display/example', views.store_example, name="example"),
 
 ]
 

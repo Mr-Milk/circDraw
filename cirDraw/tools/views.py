@@ -14,7 +14,7 @@ from django.db.models import Max, Min
 import numpy as np
 from math import floor
 import sys, datetime, time
-import ujson
+import ujson, json
 import hashlib
 
 # ========================= RENDER PAGES ==============================
@@ -286,7 +286,7 @@ def handle_density(request):
         raise Http404
 
 def handle_circrnas(request):
-    # database needed: 
+    # database needed:
     if request.method == 'GET':
         case_id = request.GET['caseid']
         gene_id = request.GET['geneid']
@@ -453,7 +453,7 @@ def toplist(request):
 
 
 
-""" 
+"""
 # ------------------------genList---------------------------------
 @csrf_exempt
 def genList(request):
@@ -1015,16 +1015,6 @@ def pixel_run_density(request):
 
 
 # def store_example(request):
-#     """ gene_obs = ToolsAnnotation.objects.filter(gene_type__exact='gene')
-#     all_results = {}
-#     case_id = request.GET['caseid']
-#     all_lengths = gene_obs.count()
-#     print("Gene count", all_lengths)
-#     gene_index = 0
-#     for gene_ob in gene_obs[1:10000]:
-#         chr_ci = gene_ob.chr_ci
-#         start = gene_ob.gene_start
-#         end = gene_ob.gene_end """
 #     all_genes_re = {}
 #     case_id = request.GET['caseid']
 #     circ_obs = ToolsEachobservation.objects.filter(caseid__exact=case_id)

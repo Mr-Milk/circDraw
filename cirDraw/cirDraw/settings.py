@@ -87,8 +87,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'circDraw',
         'USER': 'root',
-        'PASSWORD': '12345678',
-        'HOST': '127.0.0.1',
+        'PASSWORD': 'mypassword',
+        'HOST': 'localhost',
+        'PORT': 6603,
         'OPTIONS': {'local_infile': 1}
     }
 }
