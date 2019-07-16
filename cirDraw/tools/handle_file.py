@@ -297,7 +297,7 @@ def handle(config):
 
         tmp_circ_len = Counter(circRNA_length).items()
         circRNA_length_distribution = ujson.dumps({"x":[k for k in tmp_circ_len],
-                                       "y":[v for _,v in tmp_circ_len]})
+                                    "y":[v for _,v in tmp_circ_len]})
 
         tmp_circRNA_isoform = sorted(circRNA_isoform, key=lambda x: x[1], reverse=True)[0:20]
         circRNA_isoform = ujson.dumps({"x":[k for k in tmp_circRNA_isoform],
@@ -312,9 +312,9 @@ def handle(config):
 
 
 
-        return False,circRNA_length_distribution,circRNA_isoform
+        return True,circRNA_length_distribution,circRNA_isoform
     except Exception as e:
         print('Handle Error:', e)
-        return True,circRNA_length_distribution,circRNA_isoform
+        return False,circRNA_length_distribution,circRNA_isoform
 
 
