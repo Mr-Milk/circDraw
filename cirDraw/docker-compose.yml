@@ -4,20 +4,21 @@ services:
   db:
     image: mysql:8.0
     expose:
-        - 3306
+        - 3307
+    ports:
+      - 3307:3306
     environment:
       MYSQL_DATABASE: 'circDraw'
       MYSQL_ROOT_PASSWORD: '12345678'
       MYSQL_USER: 'root'
 
   web:
+    container_name: uwsgi_django_container
     build: .
     restart: always
-    command: uwsgi -i ./uwsgi_conf/uwsgi.ini
+    command: uwsgi -i docker/uwsgi_conf/uwsgi.ini
     volumes:
       - .:/docker_api
-    ports:
-      - 8000:8000
     depends_on:
       - db
     links:
@@ -28,9 +29,9 @@ services:
     restart: always
     depends_on:
       - web
-    build: ./nginx
+    build: docker/nginx
     ports:
-      - 8000:80
+      - 8888:80
     volumes:
       - .:/docker_api
     
