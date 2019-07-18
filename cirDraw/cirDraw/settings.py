@@ -84,7 +84,8 @@ WSGI_APPLICATION = 'cirDraw.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        #'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'dj_db_conn_pool.backends.mysql',
         'NAME': 'circDraw',
         'USER': 'root',
         'PASSWORD': 'mypassword',
