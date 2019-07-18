@@ -134,6 +134,7 @@ def call_process(file_path, md5ob, parameters):
         'TASK_ID': md5ob,
     }
     save_status,circRNA_length_distribution,circRNA_isoform = handle(configuration)
+    print(circRNA_length_distribution, circRNA_isoform)
     StatisticTable(md5=md5ob, lenChart=circRNA_length_distribution, toplist=circRNA_isoform)
     print("Saved?: {} {}".format(save_status, md5ob))
     return save_status
@@ -246,7 +247,7 @@ def check_status(request):
 def handle_chrLen(request):
     # database needed: chromosome_length
     if request.method == 'GET':
-        case_id = request.GET['caseid']
+        case_id = request.GET['case_id']
         print("File1 caseid: ", case_id)
         case_species = UploadParametersMD5.objects.filter(md5 = case_id)
         obs = chromosome_length.objects.filter(assembly = case_species.species)
@@ -338,17 +339,18 @@ def handle_genes(request):
 def lenChart(request):
     if request.method == 'GET':
         case_id = request.GET['caseid']
-        data = StatisticTable.objects.filter(md5 = case_id)
-        result = ujson.loads(data.lenChart)
+        data = StatisticTable.objects.filter(md5__exact=case_id)
+        print(data)
+        result = ujson.loads(data[0].lenChart)
         return JsonResponse(result, safe=False)
     else:
         return Http404
 
 def toplist(request):
     if request.method == 'GET':
-        case_id = request.GET['caseid']
-        data = StatisticTable.objects.filter(md5 = case_id)
-        result = ujson.loads(data.toplist)
+        case_id = request.GET['case_id']
+        data = StatisticTable.objects.filter(md5__exact=case_id)
+        result = ujson.loads(data[0].toplist)
         return JsonResponse(result, safe=False)
     else:
         return Http404

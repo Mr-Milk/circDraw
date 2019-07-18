@@ -181,11 +181,11 @@ $(document).ready(function () {
                             finishProcess(md5);
                         } else if (status === true || status === "Running") {
 
-                            if (status === true) {
-                                $.getJSON("/tools/run", {
-                                    'md5': md5
-                                });
-                            }
+                            // if (status === true) {
+                            //     $.getJSON("/tools/run", {
+                            //         'md5': md5
+                            //     });
+                            // }
                             var now = new Date();
                             uploadUsed = now.getTime().toString().substr(0, 10) - systime.substr(0, 10);
                             interval_1 = setInterval(

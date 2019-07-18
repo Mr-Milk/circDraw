@@ -134,8 +134,8 @@ def main(login_file_name, inp):
         remigrations(connector)
 
     elif inp == "clean":
-        clean_box = ['tools_chromosome', 'tools_eachobservation', 'tools_uploadmd5']
-        path_box = ["../cirDraw/media/density_result/", "../cirDraw/media/md5_data/", "../cirDraw/media/tops_result/"]
+        clean_box = ['tools_species_circrnas', 'tools_species_genome_exons_introns', 'tools_species_genome_genes', 'tools_species_genome_transcripts', 'tools_uploadmd5']
+        path_box = ["../cirDraw/media/md5_data/"]
         empty_db(connector, clean_box)
         empty_dir(path_box)
     connector.commit_close_db()
