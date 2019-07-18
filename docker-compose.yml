@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  web:
+    container_name: web-container
+    build: ./docker-deploy/django-uwsgi/.
+    restart: always
+    command: uwsgi -i /docker_api/uwsgi.ini
+    volumes:
+      - ./docker-deploy/logs/uwsgi/:/tmp/
+      - ./cirDraw:/docker_api/app
+    expose:
+      - 8888
+    external_links:
+        - circ-mysql:mysql
+
+  nginx:
+    container_name: nginx-container
+    restart: always
+    depends_on:
+      - web
+    build: ./docker-deploy/nginx
+    environment:
+       - "affinity:container==*web-container*"
+    ports:
+      - 80:80
+    expose:
+      - 80
+    volumes:
+      - ./cirDraw/:/docker_api/app/
+      - ./docker-deploy:/docker_api/deploy/
+    
+

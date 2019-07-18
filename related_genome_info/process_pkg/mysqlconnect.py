@@ -15,6 +15,7 @@ class Connector:
         self.password = self.admin['password']
         self.host = self.admin['host']
         self.database = self.admin['database']
+        self.port = int(self.admin['port'])
         self._connect_to_db()
         self.checkpoint = CheckpointConnector(self)
 
@@ -31,11 +32,12 @@ class Connector:
             password = login['password']
             host = login['host']
             database = login['database']
-        return {'user': user, 'password': password, 'host': host, 'database': database}
+            port = login['port']
+        return {'user': user, 'password': password, 'host': host, 'database': database, 'port': port}
 
     def _connect_to_db(self):
         """connect to database and create the cursor and cnx attribute"""
-        self.cnx = mysql.connector.connect(user=self.user, password=self.password, host=self.host, database=self.database, auth_plugin='mysql_native_password')
+        self.cnx = mysql.connector.connect(user=self.user, password=self.password, host=self.host, database=self.database, port=self.port, auth_plugin='mysql_native_password')
         self.origin_cursor = self.cnx.cursor(buffered=True)
         return self.cnx, self.origin_cursor
 

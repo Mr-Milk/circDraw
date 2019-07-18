@@ -1,0 +1,14 @@
+argh==0.26.2
+Django==2.1.4
+django-annoying==0.10.4
+ijson==2.3
+intervaltree==3.0.2
+mysql-connector-python==8.0.13
+numpy==1.15.4
+protobuf==3.6.1
+PyMySQL==0.9.3
+pytz==2018.7
+PyYAML==5.1
+six==1.12.0
+sortedcontainers==2.1.0
+watchdog3==0.8.5

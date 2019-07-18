@@ -27,7 +27,7 @@ SECRET_KEY = 'zaa7(53a2vvo)41!#xf-n$_p+np1znjqq67*g!27s(vy465pw4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['144.202.111.235', '127.0.0.1', '144.202.101.9', 'www.circdraw.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -87,8 +87,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'circDraw',
         'USER': 'root',
-        'PASSWORD': '12345678',
-        'HOST': '127.0.0.1',
+        'PASSWORD': 'mypassword',
+        'HOST': '167.179.90.87',
+        'PORT': 6603,
         'OPTIONS': {'local_infile': 1}
     }
 }

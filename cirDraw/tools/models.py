@@ -16,7 +16,7 @@ class chromosome_length(models.Model):
     chr_length = models.IntegerField()
 
     class Meta:
-        db_table = 'tools_chromosome_length'
+        db_table = 'chromosome_length'
         managed = False
 
 # Species genome
@@ -73,22 +73,22 @@ class species_circRNAs(models.Model):
 
 _genes_scripts = """class {}_species_genome_genes(species_genome_genes):
     class Meta:
-        db_table = '{}_species_genome_genes'
+        db_table = '{}_genome_genes'
         managed = False"""
 
 _transcripts_scripts = """class {}_species_genome_transcripts(species_genome_transcripts):
     class Meta:
-        db_table = '{}_species_genome_transcripts'
+        db_table = '{}_genome_transcripts'
         managed = False"""
 
 _exinons_scripts = """class {}_species_genome_exons_introns(species_genome_exons_introns):
     class Meta:
-        db_table = '{}_species_genome_exons_introns'
+        db_table = '{}_genome_exons_introns'
         managed = False"""
 
 _circRNAs_scripts = """class {}_species_circRNAs(species_circRNAs):
     class Meta:
-        db_table = '{}_species_circRNAs'
+        db_table = '{}_circRNAs'
         managed = False"""
 
 
@@ -145,47 +145,56 @@ class UserTable(models.Model):
     circ_on_num = models.IntegerField()
 
     class Meta:
-        db_table = 'tools_usertable'
+        db_table = 'UserTable'
+
+class StatisticTable(models.Model):
+    """User table, store processed results"""
+    md5 = models.CharField(max_length=255, primary_key=True)
+    lenChart = models.TextField()
+    toplist = models.TextField()
+
+    class Meta:
+        db_table = 'StatsticTable'
 
 
 
 
 ######## END of TABLE UPDATE ########
-class ToolsChromosome(models.Model):
-    caseid = models.ForeignKey('UploadParametersMD5', on_delete=models.CASCADE, blank=True, null=True)
-    chr_ci = models.CharField(max_length=50)
-    chr_start = models.IntegerField()
-    chr_end = models.IntegerField()
-    max_length_circ = models.IntegerField()
-    min_length_circ = models.IntegerField()
+# class ToolsChromosome(models.Model):
+#     caseid = models.ForeignKey('UploadParametersMD5', on_delete=models.CASCADE, blank=True, null=True)
+#     chr_ci = models.CharField(max_length=50)
+#     chr_start = models.IntegerField()
+#     chr_end = models.IntegerField()
+#     max_length_circ = models.IntegerField()
+#     min_length_circ = models.IntegerField()
 
-    class Meta:
-        db_table = 'tools_chromosome'
+#     class Meta:
+#         db_table = 'tools_chromosome'
 
-class ToolsScalegenome(models.Model):
-    species = models.CharField(max_length=255)
-    chr_ci = models.CharField(max_length=30)
-    gene_min_start = models.IntegerField()
-    gene_max_end = models.IntegerField()
-    genelens_wiki = models.IntegerField()
+# class ToolsScalegenome(models.Model):
+#     species = models.CharField(max_length=255)
+#     chr_ci = models.CharField(max_length=30)
+#     gene_min_start = models.IntegerField()
+#     gene_max_end = models.IntegerField()
+#     genelens_wiki = models.IntegerField()
 
-    class Meta:
-        managed = False
-        db_table = 'tools_scalegenome'
+#     class Meta:
+#         managed = False
+#         db_table = 'tools_scalegenome'
 
 
-class ToolsAnnotation(models.Model):
-    gene_type = models.CharField(max_length=50)
-    gene_name = models.CharField(max_length=200)
-    chr_ci = models.CharField(max_length=50)
-    gene_start = models.IntegerField()
-    gene_end = models.IntegerField()
-    gene_id = models.CharField(max_length=200, primary_key=True)
-    species = models.CharField(max_length=200)
+# class ToolsAnnotation(models.Model):
+#     gene_type = models.CharField(max_length=50)
+#     gene_name = models.CharField(max_length=200)
+#     chr_ci = models.CharField(max_length=50)
+#     gene_start = models.IntegerField()
+#     gene_end = models.IntegerField()
+#     gene_id = models.CharField(max_length=200, primary_key=True)
+#     species = models.CharField(max_length=200)
 
-    class Meta:
-        managed = False
-        db_table = 'tools_annotation'
+#     class Meta:
+#         managed = False
+#         db_table = 'tools_annotation'
 
 
 #class ToolsEachobservation(models.Model):
