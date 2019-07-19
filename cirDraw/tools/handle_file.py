@@ -170,7 +170,7 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
                 sl = line.split()
                 print("Before try", l)
                 l = [sl[i] for i in cols[file_type]]
-                print("L": l)
+                print("L":, l)
                 assert l[0].lower().startswith('chr')
                 assert len(l[0][3:-1]) <= 3
                 assert int(l[1]) < int(l[2])
@@ -305,7 +305,7 @@ def handle(config):
                         circRNA_length.append(i['end'] - i['start'])
                     circRNA_isoform.append(info[5], len(circINFO))
                     c.write('\t'.join(info[0:-1]) + '\t' + len(circINFO) + '\n')
-        
+
         print(f'circRNA length capacity: {len(circRNA_length)}',
         f'circRNA isoform capacity: {len(circRNA_isoform)}')
 
