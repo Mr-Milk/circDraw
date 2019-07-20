@@ -1,19 +1,22 @@
-import pymysql
 import os
 import re
 import ujson
 from intervaltree import IntervalTree
 import multiprocessing as mp
-from time import sleep
+import time 
 from .models import *
-from django.db import connection
+#from django.db import connection
 from collections import Counter
+import pymysql
+import sqlalchemy
+from sqlalchemy.pool import QueuePool
 
+#engine = sqlalchemy.create_engine('mysql+pymysql://root:mypassword@167.179.90.87:6603/circDraw', poolclass=QueuePool)
+engine = sqlalchemy.create_engine('mysql+pymysql://root:mypassword@127.0.0.1:6603/circDraw', poolclass=QueuePool)
+print('Running handle')
 
 def line_counter(file):
     line_count = 0
-
-
     with open(file,'r') as f:
         for line in f:
             line_count += 1
@@ -152,6 +155,8 @@ def find_exon_combo(chr_num: str, circStart: int, circEnd: int, assembly: str, b
             return combo, gene, transcript
 
 def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
+    engine.dispose()
+    connection = engine.raw_connection()
 
     cols = {'bed': [0, 1, 2],
             'ciri': [1, 2, 3]}
@@ -168,29 +173,28 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
             valid_line = True
             try:
                 sl = line.split()
-                print("Before try", l)
-                l = [sl[i] for i in cols[file_type]]
-                print("L":, l)
+                l = [sl[i] for i in cols[file_type.lower()]]
                 assert l[0].lower().startswith('chr')
                 assert len(l[0][3:-1]) <= 3
                 assert int(l[1]) < int(l[2])
             except:
                 valid_line = False
-
-            print(valid_line)
+            
+            print("Line:", valid_line)
 
             if valid_line:
                 # map circ to annotated_circ
                 chr_num = l[0].lower()
                 start = int(l[1])
                 end = int(l[2])
-
+                time1 = time.time()
                 result_script = f'select * from {assembly}_circRNAs where chr_num="{chr_num}" and start>={start-bias} and start<={start+bias} and end<={end+bias} and end>={end-bias};'
                 with connection.cursor() as cur:
                     cur.execute(result_script)
                     result = cur.fetchall()
+                time2 = time.time()
 
-                print('Query MySQL', len(result))
+                print('Query MySQL1', len(result), f'Used {round(time2-time1,2)}s')
 
                 possible_circ = [
                     (i[4] - i[3] - (end - start), i) for i in result]
@@ -198,36 +202,46 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
                 if len(possible_circ) > 0:
                     # append to circ_on_gene
                     circ = sorted(possible_circ, key=lambda x: x[0])[
-                                  0][1].dict()
-                    circ['source'] = 'CIRCpedia V2'
+                                  0][1]
+                    circ_json = {"start": int(circ[3]),
+                            "end": int(circ[4]),
+                            "source": "CIRCpedia V2",
+                            "gene": circ[0],
+                            "transcript": circ[1],
+                            "components": circ[-1]}
 
                     try:
-                        circ_on_gene[circ['gene']][1].append(circ)
+                        circ_on_gene[circ_json['gene']][1].append(circ_json)
                     except:
                          # get gene info
-                        geneINFO_script = f'''select * from {assembly}_genome_genes where gene="{circ['gene']}";'''
-
+                        geneINFO_script = f'''select * from {assembly}_genome_genes where id="{circ_json['gene']}";'''
+                        time3 = time.time()
                         with connection.cursor() as cur:
                             cur.execute(geneINFO_script)
                             geneINFO = cur.fetchall()
+                        time4 = time.time()
+                        print('Query MySQL2', f'Used {round(time4-time3,2)}s')
 
-                        circ_on_gene[geneINFO[0].id] = [
-                            geneINFO[0].dict(), [circ]]
+                        circ_on_gene[geneINFO[0][4]] = [
+                            list(geneINFO[0]), [circ]]
 
                 else:
                     unmap_circ.append(l)
-
+    print('Unmapped circ number:', len(unmap_circ))
     for circ in unmap_circ:
         combo, gene, transcript = find_exon_combo(circ[0].lower(), int(circ[1]), int(circ[2]), assembly)
+        print(gene, transcript)
         if combo is not None:
             try:
                 circ_on_gene[gene][1].append({"start": int(circ[1]),
                                                     "end": int(circ[2]),
                                                     "source": "circDraw_annotated",
+                                                    "gene": gene,
+                                                    "transcript": transcript,
                                                     "components": combo})
             except:
                     # get gene info
-                geneINFO_script = f'select * from {assembly}_genome_genes where gene="{gene}";'
+                geneINFO_script = f'select * from {assembly}_genome_genes where id="{gene}";'
                 with connection.cursor() as cur:
                     cur.execute(geneINFO_script)
                     geneINFO = cur.fetchall()
@@ -235,6 +249,8 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
                 circ_on_gene[geneINFO[4]] = [geneINFO, [{"start": int(circ[1]),
                                                     "end": int(circ[2]),
                                                     "source": "circDraw_annotated",
+                                                    "gene": gene,
+                                                    "transcript": transcript,
                                                     "components": combo}]]
 
     print('Mapped circ:', len(circ_on_gene))
@@ -330,6 +346,6 @@ def handle(config):
         return True,circRNA_length_distribution,circRNA_isoform
     except Exception as e:
         print('Handle Error:', e)
-        return False,circRNA_length_distribution,circRNA_isoform
+        return False,{"x":[],"y":[]},{"x":[],"y":[]}
 
 
