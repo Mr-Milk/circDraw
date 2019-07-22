@@ -11,6 +11,7 @@ import uuid
 ######## TABLE UPDATE ########
 class chromosome_length(models.Model):
     """Store known chromosome length, fixed by existed knowledge."""
+    chr_id = models.AutoField(primary_key=True)
     assembly = models.CharField(max_length=100)
     chr_num = models.CharField(max_length=50)
     chr_length = models.IntegerField()
@@ -134,8 +135,8 @@ for i in _assembly:
 
 class UserTable(models.Model):
     """User table, store processed results"""
-    md5 = models.CharField(max_length=255, primary_key=True)
-    id_gene = models.CharField(max_length=255, db_column='id')
+    md5 = models.CharField(max_length=255)
+    gene_id = models.CharField(max_length=255, db_column='gene_id', default='')
     chr_num = models.CharField(max_length=100)
     start = models.IntegerField()
     end = models.IntegerField()
@@ -147,14 +148,28 @@ class UserTable(models.Model):
     class Meta:
         db_table = 'UserTable'
 
+class UserDensity(models.Model):
+    """User table, store density info"""
+    md5 = models.CharField(max_length=255)
+    gene_id = models.CharField(max_length=255, db_column='gene_id',default='')
+    chr_num = models.CharField(max_length=100)
+    start = models.IntegerField()
+    end = models.IntegerField()
+    name = models.CharField(max_length=255)
+    gene_type = models.CharField(max_length=100)
+    circ_num = models.IntegerField()
+
+    class Meta:
+        db_table = 'UserDensity'
+
 class StatisticTable(models.Model):
-    """User table, store processed results"""
+    """User table, store statistic result"""
     md5 = models.CharField(max_length=255, primary_key=True)
     lenChart = models.TextField()
     toplist = models.TextField()
 
     class Meta:
-        db_table = 'StatsticTable'
+        db_table = 'StatisticTable'
 
 
 

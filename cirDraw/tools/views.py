@@ -11,8 +11,6 @@ from .models import *
 from .handle_file import handle
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
-import numpy as np
-from math import floor
 import sys, datetime, time
 import ujson, json
 import hashlib
@@ -29,7 +27,18 @@ def render_upload_page(request):
 
 def render_display_page(request, md5):
     context = {"md5": md5}
-    return render(request, 'tools/tools.html', context)
+    print('Render display1:',md5)
+    case = UploadParametersMD5.objects.get(md5 = md5)
+    try:
+        code = case.status
+        print('Render display2:',case.status)
+        if code != 200:
+            return render(request, 'tools/HTTP404.html', context)
+        else:
+            return render(request, 'tools/tools.html', context)
+    except:
+        return render(request, 'tools/HTTP404.html', context)
+        #raise Http404
 
 # ======================== UPLOAD & SAVE ==============================
 
@@ -134,8 +143,9 @@ def call_process(file_path, md5ob, parameters):
         'TASK_ID': md5ob,
     }
     save_status,circRNA_length_distribution,circRNA_isoform = handle(configuration)
-    print(circRNA_length_distribution, circRNA_isoform)
-    StatisticTable(md5=md5ob, lenChart=circRNA_length_distribution, toplist=circRNA_isoform)
+    print('In View:', circRNA_length_distribution, circRNA_isoform)
+    st = StatisticTable(md5=md5ob, lenChart=circRNA_length_distribution, toplist=circRNA_isoform)
+    st.save()
     print("Saved?: {} {}".format(save_status, md5ob))
     return save_status
 
@@ -248,26 +258,31 @@ def handle_chrLen(request):
     # database needed: chromosome_length
     if request.method == 'GET':
         case_id = request.GET['case_id']
-        print("File1 caseid: ", case_id)
-        case_species = UploadParametersMD5.objects.filter(md5 = case_id)
-        obs = chromosome_length.objects.filter(assembly = case_species.species)
-        print("GET /result/chrLen:", len(obs))
+        print("chrLen caseid: ", case_id)
+        case_species = UploadParametersMD5.objects.get(md5 = case_id)
+        print(case_species.species)
+        try:
+            ob_chr = UserDensity.objects.raw(f'SELECT DISTINCT chr_num FROM UserDensity where md5="{case_id}"')
+            obs = chromosome_length.objects.filter(assembly = case_species.species)
+            distinct_chr = [t.chr_num for t in ob_chr]
+            print(distinct_chr)
+        except Exception as e:
+            print(e)
         results = [{
                 'chr': ob.chr_num,
                 'chrLen': ob.chr_length
             } for ob in obs]
-
-        print("GET /result/chrLen:", results)
+        print("GET /tools/display/chrLen:", len(result))
         return JsonResponse(results, safe=False)
     else:
-        print("GET /result/chrLen: Failed")
+        print("GET /tools/display/chrLen: Failed")
         raise Http404
 
 def handle_density(request):
     # database needed: UserDensity
     if request.method == 'GET':
         case_id = request.GET['caseid']
-        print("File1 caseid: ", case_id)
+        print("density caseid: ", case_id)
         obs = UserDensity.objects.filter(md5 = case_id)
         print("GET /result/density:", len(obs))
         results = [{
@@ -275,7 +290,7 @@ def handle_density(request):
                     "start": ob.start,
                     "end": ob.end,
                     "name": ob.name,
-                    "geneID": ob.id_gene,
+                    "geneID": ob.gene_id,
                     "type": ob.gene_type,
                     "count": ob.circ_num
                 } for ob in obs]
@@ -294,8 +309,8 @@ def handle_circrnas(request):
         chr_num = request.GET['chr']
         start = request.GET['start']
         end = request.GET['end']
-        print("File1 caseid: ", case_id)
-        obs = UserTable.objects.filter(md5 = case_id).filter(id_gene = gene_id)
+        print("circrnas caseid: ", case_id)
+        obs = UserTable.objects.filter(md5 = case_id).filter(gene_id = gene_id)
         print("GET /result/density:", len(obs))
         results = [{
                     "name": ob.name,
@@ -319,8 +334,8 @@ def handle_genes(request):
         chr_num = request.GET['chr']
         start = request.GET['start']
         end = request.GET['end']
-        print("File1 caseid: ", case_id)
-        case_species = UploadParametersMD5.objects.filter(md5 = case_id)
+        print("gene caseid: ", case_id)
+        case_species = UploadParametersMD5.objects.get(md5 = case_id)
         obs = exec(f"""{case_species.species}_speceis_genome_genes.objects.filter(chr_num = chr_num).filter(start >= start).filter(end <= end)""")
         print("GET /result/genes:", len(obs))
         results = [{
@@ -344,7 +359,7 @@ def lenChart(request):
         result = ujson.loads(data[0].lenChart)
         return JsonResponse(result, safe=False)
     else:
-        return Http404
+        raise Http404
 
 def toplist(request):
     if request.method == 'GET':
@@ -353,7 +368,7 @@ def toplist(request):
         result = ujson.loads(data[0].toplist)
         return JsonResponse(result, safe=False)
     else:
-        return Http404
+        raise Http404
 
 
 # """ def handle_file1(request):
