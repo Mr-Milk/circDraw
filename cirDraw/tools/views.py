@@ -28,15 +28,17 @@ def render_upload_page(request):
 def render_display_page(request, md5):
     context = {"md5": md5}
     print('Render display1:',md5)
-    case = UploadParametersMD5.objects.get(md5 = md5)
-    try:
-        code = case.status
-        print('Render display2:',case.status)
+    case = UploadParametersMD5.objects.filter(md5 = md5).values('status')
+    if case.exists():
+        print(case)
+        code = case[0]['status']
+        print('Render display2:',case[0]['status'])
         if code != 200:
             return render(request, 'tools/HTTP404.html', context)
         else:
             return render(request, 'tools/tools.html', context)
-    except:
+    else:
+        print('This md5 not exist.')
         return render(request, 'tools/HTTP404.html', context)
         #raise Http404
 
@@ -136,7 +138,7 @@ def call_process(file_path, md5ob, parameters):
 
     configuration = {
         'FILE_NAME': file_path,
-        'CORE_NUM': 4,
+        'CORE_NUM': 8,
         'FILE_TYPE': parameters['filetype'],
         'NEW_FILE': f'{md5ob}_circDraw_generate',
         'ASSEMBLY': parameters['species'],
@@ -260,19 +262,20 @@ def handle_chrLen(request):
         case_id = request.GET['case_id']
         print("chrLen caseid: ", case_id)
         case_species = UploadParametersMD5.objects.get(md5 = case_id)
-        print(case_species.species)
         try:
-            ob_chr = UserDensity.objects.raw(f'SELECT DISTINCT chr_num FROM UserDensity where md5="{case_id}"')
-            obs = chromosome_length.objects.filter(assembly = case_species.species)
-            distinct_chr = [t.chr_num for t in ob_chr]
-            print(distinct_chr)
+            ob_distinct_chr = UserDensity.objects.filter(md5 = case_id).values('chr_num').distinct()
+            distinct_chr = [ob['chr_num'] for ob in ob_distinct_chr]
+            obs = chromosome_length.objects.filter(assembly = case_species.species).values('chr_num', 'chr_length')
         except Exception as e:
             print(e)
-        results = [{
-                'chr': ob.chr_num,
-                'chrLen': ob.chr_length
-            } for ob in obs]
-        print("GET /tools/display/chrLen:", len(result))
+        results = []
+        for ob in obs:
+            if ob['chr_num'] in distinct_chr:
+                results.append({
+                'chr': ob['chr_num'],
+                'chrLen': ob['chr_length']
+            })
+        print("GET /tools/display/chrLen:", len(results))
         return JsonResponse(results, safe=False)
     else:
         print("GET /tools/display/chrLen: Failed")
@@ -281,10 +284,13 @@ def handle_chrLen(request):
 def handle_density(request):
     # database needed: UserDensity
     if request.method == 'GET':
-        case_id = request.GET['caseid']
-        print("density caseid: ", case_id)
-        obs = UserDensity.objects.filter(md5 = case_id)
-        print("GET /result/density:", len(obs))
+        case_id = request.GET['case_id']
+        print("density case_id: ", case_id)
+        try:
+            obs = UserDensity.objects.filter(md5 = case_id)
+        except Exception as e:
+            print(e)
+        print("GET /tools/display/density:", len(obs))
         results = [{
                     "chr": ob.chr_num,
                     "start": ob.start,
@@ -294,11 +300,9 @@ def handle_density(request):
                     "type": ob.gene_type,
                     "count": ob.circ_num
                 } for ob in obs]
-
-        print("GET /result/density:", results)
         return JsonResponse(results, safe=False)
     else:
-        print("GET /result/density: Failed")
+        print("GET /tools/display/density: Failed")
         raise Http404
 
 def handle_circrnas(request):
@@ -309,22 +313,20 @@ def handle_circrnas(request):
         chr_num = request.GET['chr']
         start = request.GET['start']
         end = request.GET['end']
-        print("circrnas caseid: ", case_id)
+        """ print("circrnas parameters: ", case_id)
+        print(gene_id)
+        print(chr_num)
+        print(start)
+        print(end) """
         obs = UserTable.objects.filter(md5 = case_id).filter(gene_id = gene_id)
-        print("GET /result/density:", len(obs))
-        results = [{
-                    "name": ob.name,
-                    "start": ob.start,
-                    "end": ob.end,
-                    "source": ob.source,
-                    "best-transcript": ob.transcript,
-                    "components": ob.components
-                    } for ob in obs]
-
-        print("GET /result/circrnas:", results)
+        print("GET /tools/display/circrnas:", len(obs))
+        results = []
+        for ob in obs:
+            for i in ujson.loads(ob.circ_on_gene_all):
+                results.append(i)
         return JsonResponse(results, safe=False)
     else:
-        print("GET /result/circrnas: Failed")
+        print("GET /tools/display/circrnas: Failed")
         raise Http404
 
 def handle_genes(request):

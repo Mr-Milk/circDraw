@@ -11,7 +11,7 @@ import uuid
 ######## TABLE UPDATE ########
 class chromosome_length(models.Model):
     """Store known chromosome length, fixed by existed knowledge."""
-    chr_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     assembly = models.CharField(max_length=100)
     chr_num = models.CharField(max_length=50)
     chr_length = models.IntegerField()

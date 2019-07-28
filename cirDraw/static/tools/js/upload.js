@@ -91,7 +91,7 @@ $(document).ready(function () {
         console.log("File size: ", document.getElementById('myfile').files[0].size);
         if (fileSize >= 30 * 1024 * 1024) {
             $('#submit').prop('disabled', true);
-            $('#processtip').append('<p>File size are limited to 50MB. Try following steps to reduce file size: </p>').css("color", "#000");
+            $('#processtip').append('<p>File size are limited to 30MB. Try following steps to reduce file size: </p>').css("color", "#000");
             $('#processtip').append('<p> 1. Filter your Data</p>' + '<p> 2. Remove useless info</p>' + '<p> 3. Contact us for help</p>').css("color", "#000");
         }
     });
@@ -164,7 +164,7 @@ $(document).ready(function () {
 
             $('#submit').text('✓ Submitted').prop('disabled', true);
             $('#cancel').hide();
-            $('#processtip').after('<div class="lds-roller d-inline-block"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><p class="d-inine-block" id="upload-text">Uploading...</p>');
+            $('#processtip').after('<div class="lds-roller d-inline-block"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><p class="d-inine-block" id="upload-text">Processing...</p>');
 
             $.ajax(ajaxParameters)
                 .done(
@@ -180,41 +180,22 @@ $(document).ready(function () {
                         } else if (status === "Finished") {
                             finishProcess(md5);
                         } else if (status === true || status === "Running") {
-
-                            // if (status === true) {
-                            //     $.getJSON("/tools/run", {
-                            //         'md5': md5
-                            //     });
-                            // }
-                            var now = new Date();
-                            uploadUsed = now.getTime().toString().substr(0, 10) - systime.substr(0, 10);
-                            interval_1 = setInterval(
-                                function () {
-                                    var d = new Date();
-                                    console.log(d.getTime(), systime);
-                                    processTime = d.getTime().toString().substr(0, 10) - systime.substr(0, 10) - uploadUsed;
-                                    $('#processtip').html('<p id="timer">Uploading used: ' + uploadUsed + 's, now processing: ' + processTime + 's.</p>');
-                                }, 1000);
-
                             interval_2 = setInterval(function () {
                                 $.getJSON("statusfile", {
                                     'caseid': md5
                                 }).done(function (processStatus) {
-
                                     var status = processStatus[0].status;
                                     console.log(status, processStatus);
                                     if (status == 200) {
-                                        clearInterval(interval_1);
                                         finishProcess(md5);
                                         clearInterval(interval_2);
                                     } else if (status == 404) {
-                                        clearInterval(interval_1);
                                         $('#timer').remove();
                                         $('#processtip').text('Server Error!');
                                         clearInterval(interval_2);
                                     } else if (status == 101) {}
                                 });
-                            }, 2500);
+                            }, 1000);
                         }
                     }).fail(
                     function () {

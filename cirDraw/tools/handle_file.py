@@ -1,12 +1,12 @@
 import os
 import re
-import ujson
+import ujson, demjson
 from intervaltree import IntervalTree
 import multiprocessing as mp
 import time
 from .models import *
 #from django.db import connection
-from collections import Counter
+import numpy as np
 import pymysql
 import sqlalchemy
 from sqlalchemy.pool import QueuePool
@@ -154,7 +154,7 @@ def find_exon_combo(chr_num: str, circStart: int, circEnd: int, assembly: str, b
 
             return combo, gene, transcript
 
-def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
+def process_file(file, assembly: str, file_type, task_id, bias=2):
     engine.dispose()
     connection = engine.raw_connection()
 
@@ -205,18 +205,24 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
                     # append to circ_on_gene
                     circ = sorted(possible_circ, key=lambda x: x[0])[
                                 0][1]
+                    try:
+                        components = demjson.decode(circ[-1])
+                    except Exception as e:
+                        print('demjson decode ERROR:', e)
+                    for i in components:
+                        i['mods'] = ujson.loads(i['mods'])
                     circ_json = {"start": int(circ[3]),
                             "end": int(circ[4]),
                             "source": "CIRCpedia V2",
                             "gene": circ[0],
                             "transcript": circ[1],
-                            "components": circ[-1]}
+                            "components": components}
                     #print('This is gene of circ', circ[0])
 
                     if circ[0] in circ_on_gene.keys():
                         #print('Check if key in circ_on_gene exist:', circ_on_gene.keys())
                         circ_on_gene[circ[0]][1].append(circ_json)
-                        print('Gene existed:', len(circ_on_gene[circ[0]][1]))
+                        #print('Gene existed:', len(circ_on_gene[circ[0]][1]))
                     else:
                         # get gene info
                         geneINFO_script = f'''select * from {assembly}_genome_genes where id="{circ[0]}";'''
@@ -227,7 +233,7 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
                         #time4 = time.time()
                         #print('Query MySQL2', f'Used {round(time4-time3,2)}s')
                         geneINFO = [str(i) for i in geneINFO[0]]
-                        print(geneINFO)
+                        #print(geneINFO)
                         circ_on_gene[geneINFO[4]] = [
                             list(geneINFO), [circ_json]]
                         #print('Gene not existed:', circ_on_gene)
@@ -239,7 +245,10 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
     print('Unmapped circ number:', len(unmap_circ))
     for circ in unmap_circ:
         combo, gene, transcript = find_exon_combo(circ[0].lower(), int(circ[1]), int(circ[2]), assembly)
-        print(gene, transcript)
+        #print(gene, transcript)
+        components = demjson.decode(combo)
+        for i in components:
+            i['mods'] = ujson.loads(i['mods'])
         if combo is not None:
             try:
                 circ_on_gene[gene][1].append({"start": int(circ[1]),
@@ -247,7 +256,7 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
                                                     "source": "circDraw_annotated",
                                                     "gene": gene,
                                                     "transcript": transcript,
-                                                    "components": combo})
+                                                    "components": components})
             except:
                     # get gene info
                 geneINFO_script = f'select * from {assembly}_genome_genes where id="{gene}";'
@@ -256,31 +265,17 @@ def process_file(file, assembly: str, file_type, new_file, task_id, bias=2):
                     geneINFO = cur.fetchall()
 
                 geneINFO = [str(i) for i in geneINFO[0]]
-
                 circ_on_gene[geneINFO[4]] = [geneINFO, [{"start": int(circ[1]),
                                                     "end": int(circ[2]),
                                                     "source": "circDraw_annotated",
                                                     "gene": gene,
                                                     "transcript": transcript,
-                                                    "components": combo}]]
+                                                    "components": components}]]
 
     print('Mapped circ:', len(circ_on_gene))
+    return circ_on_gene
     #print(circ_on_gene)
     #### write to file
-    path = '/'.join(file.split('/')[0:-1]) + '/'
-    print('This is new_file:', path + new_file)
-    with open(path + new_file, 'w+') as f:
-        for _,v in circ_on_gene.items():
-            #print('Before Info',k, v[0],type(v[0]), type(v[1]))
-            gene = v[0]
-            info = [gene[4],gene[0],gene[1],gene[2],gene[5],gene[6]]
-            info.append(ujson.dumps(v[1]))
-            info.append(str(len(v[1])))
-            line = task_id + '\t' + '\t'.join(info)
-            print('Check columns number:', len(line.split('\t')) == 9)
-            print(line.split('\t')[-1])
-            f.write(line+'\n')
-    print('Finish process file:', new_file)
         # columns
         # TASK_ID, id, chr, start, end, gene_name, gene_type, circ_on_gene_all, circ_num
 
@@ -310,25 +305,40 @@ def handle(config):
         split_file(config)
         path = '/'.join(config['FILE_NAME'].split('/')[0:-1]) + '/'
         splited_files = [f"""{config['FILE_NAME']}.{i}""" for i in range(1,config['CORE_NUM'] + 1)]
-        print(splited_files)
-        jobs = []
-        n = 0
+        #print(splited_files)
+        args = []
         for i in splited_files:
-            n += 1
-            p = mp.Process(target=process_file, args=(i, config['ASSEMBLY'], config['FILE_TYPE'], f"{config['NEW_FILE']}.{n}", config['TASK_ID']))
-            jobs.append(p)
+            args.append((i, config['ASSEMBLY'], config['FILE_TYPE'], config['TASK_ID']))
+        
+        with mp.Pool(len(args)) as p:
+            circ_on_gene_all = p.starmap(process_file, args)
 
-        for j in jobs:
-            j.start()
+        result = {}
+        for i in circ_on_gene_all:
+            for k,v in i.items():
+                try:
+                    result[k][1] += v[1]
+                except:
+                    result[k] = v
+        
+        print('Create result file:', path + config['NEW_FILE'])
+        with open(path + config['NEW_FILE'], 'w+') as f:
+            for _,v in result.items():
+                #print('Before Info',k, v[0],type(v[0]), type(v[1]))
+                gene = v[0]
+                info = [gene[4],gene[0],gene[1],gene[2],gene[5],gene[6]]
+                info.append(ujson.dumps(v[1]))
+                info.append(str(len(v[1])))
+                line = config["TASK_ID"] + '\t' + '\t'.join(info)
+                print('Check columns number:', len(line.split('\t')) == 9)
+                print(line.split('\t')[-1])
+                f.write(line+'\n')
 
-        for j in jobs:
-            j.join()
+        print(f'Finish processing {config["TASK_ID"]} | Generated new file {config["NEW_FILE"]}')
 
-        print(f'Finish processing {config["TASK_ID"]}')
+        #concat_files(config, delete_old=False)
 
-        concat_files(config, delete_old=False)
-
-        print(f'Concating success {config["TASK_ID"]}')
+        #print(f'Concating success {config["TASK_ID"]}')
 
         # calculation of density and circRNA length distribution
         circRNA_length = []
@@ -349,14 +359,43 @@ def handle(config):
         print(f'circRNA length capacity: {len(circRNA_length)}',
         f'circRNA isoform capacity: {len(circRNA_isoform)}')
 
-        tmp_circ_len = Counter(circRNA_length).items()
-
-        circRNA_length_distribution = ujson.dumps({"x":[k for k,_ in tmp_circ_len],
-                                    "y":[v for _,v in tmp_circ_len]})
+        def count_dist(array, step):
+            up_edge = int(array.max())
+            down_edge = int(array.min())
+            interval = int(round((up_edge - down_edge)/step,0))
+            s = [down_edge]
+            start = down_edge
+            for i in range(step):
+                new = start + interval
+                s.append(new)
+                start = new
+            s[-1] = up_edge
+            cord = {}
+            for i in range(1,len(s)):
+                sum_val = 0
+                for el in array:
+                    if el >= s[i-1] and el < s[i]:
+                        sum_val += 1
+                cord[s[i]] = sum_val
+                if i == len(s) or i == 1:
+                    cord[s[i]] += 1
+            return cord
+        try:
+            if len(circRNA_length) > 16:
+                tmp_circ_len = count_dist(np.array(circRNA_length,dtype=np.float64),16)
+            else:
+                tmp_circ_len = count_dist(np.array(circRNA_length,dtype=np.float64),len(circRNA_length))
+        except Exception as e:
+            print(e)
+        #print(tmp_circ_len)
+        circRNA_length_distribution = ujson.dumps({"x":[k for k in tmp_circ_len.keys()],
+                                    "y":[v for v in tmp_circ_len.values()]})
+        #print("circRNA_length_distribution", circRNA_length_distribution)
         
         tmp_circRNA_isoform = sorted(circRNA_isoform, key=lambda x: x[1], reverse=True)[0:20]
         circRNA_isoform = ujson.dumps({"x":[k for k,_ in tmp_circRNA_isoform],
                             "y":[v for _,v in tmp_circRNA_isoform]})
+        #print(circRNA_length_distribution)
         # load file to database
         with connection.cursor() as cur:
             cur.execute('''SET GLOBAL local_infile = 'ON';''')

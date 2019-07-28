@@ -16,16 +16,44 @@ function denInfoBox(x, y, info) {
             key = keys[i];
             text = key + ': ' + info[key];
             texts.add(den.paper.text(x + 10, y + addY, text).attr({
+                fill: '#FFFFFF',
+                stroke: 'none',
                 'font-size': 10,
-                'font-family': 'arial'
+                // 'font-family': 'arial'
             }));
             addY += 13;
         }
 
         var textBBox = texts.getBBox(),
-            box = den.paper.rect(textBBox.x - 2.5, textBBox.y - 2.5, textBBox.w + 5, textBBox.h + 5).attr({
-                fill: '#fed136',
-                fillOpacity: 0.5,
+            textBottomX = textBBox.x + textBBox.w,
+            textBottomY = textBBox.y + textBBox.h,
+            Xoverflow = textBottomX > $('#svg2').attr('width'),
+            Yoverflow = textBottomY > $('#svg2').attr('height');
+        
+        //console.log("overflow:", Xoverflow, Yoverflow)
+        
+        x = Xoverflow ? x - 2*(10 + textBBox.w) : x
+        y = Yoverflow ? y - 2*textBBox.h : y
+
+        if (Xoverflow || Yoverflow) {
+            texts.remove()
+            texts = den.paper.g()
+            for (var i = 0, up = keys.length; i < up; i++) {
+                key = keys[i];
+                text = key + ': ' + info[key];
+                texts.add(den.paper.text(x + 10, y + addY, text).attr({
+                    fill: '#FFFFFF',
+                    stroke: 'none',
+                    'font-size': 10,
+                    // 'font-family': 'arial'
+                }));
+                addY += 13;
+            }
+        };
+        textBBox = texts.getBBox();
+        var box = den.paper.rect(textBBox.x - 2.5, textBBox.y - 2.5, textBBox.w + 5, textBBox.h + 5).attr({
+                fill: '#91989F',
+                fillOpacity: 0.7,
                 stroke: '#211E55',
                 strokeWidth: 0.5,
                 strokeOpacity: 0.5
@@ -55,7 +83,7 @@ function chrBlock(y, len, name) {
     });
 
     var t1 = den.paper.text(20, y + 8, name).attr({
-        'font-family': 'arial',
+        //'font-family': 'arial',
         'font-size': 10
     });
 
@@ -90,6 +118,7 @@ function densityBlock(x, y, len, color, info) {
         $("#js-input-to").text(position[1]);
         $('#chrSelector').text(info.chr);
         $('svg-tips').remove();
+        $('geneid').html(info.id)
     });
 
     return denBlock;
@@ -123,13 +152,17 @@ function drawDensityBlocks(densfityInfo) {
             x = (densityInfo[i].start) * 135 / dMIN + 50,
             y = chrSkeletonCordY[chrNameOrder[chr]],
             len = (densityInfo[i].end) * 135 / dMIN + 50 - x + 2,
-            color = palette[Math.round((densityInfo[i].density - denBlockMIN)/(denBlockMAX-denBlockMIN))*100],
+            index = Math.round((densityInfo[i].count - denBlockMIN)/(denBlockMAX-denBlockMIN))*99
+            color = palette[index],
             name = densityInfo[i].name,
             info = {
+                //color: [color,index],
                 chr: chr,
                 position: densityInfo[i].start + "-" + densityInfo[i].end,
                 gene: name,
-                density: densityInfo[i].density
+                id: densityInfo[i].geneID,
+                type: densityInfo[i].type,
+                count: densityInfo[i].count,
             };
         densityBlock(x, y, len, color, info);
     }
@@ -146,13 +179,13 @@ function gradientLegend(x, y) {
         fill: palette[0],
         stroke: 'none',
         'font-size': 8,
-        'font-family': 'arial'
+        //'font-family': 'arial'
     });
     den.paper.text(x + 203, y + 5, '100').attr({
         fill: palette[99],
         stroke: 'none',
         'font-size': 8,
-        'font-family': 'arial'
+        //'font-family': 'arial'
     });
 }
 
@@ -164,7 +197,7 @@ function denPlot(chrSkeleton, densityInfo, limit) {
         fill: "#fff"
     });
     densityFilter = densityInfo.filter(function (el) {
-        if (el.density > limit) {
+        if (el.count > limit) {
             return el;
         }
     });
@@ -174,14 +207,9 @@ function denPlot(chrSkeleton, densityInfo, limit) {
     drawDensityBlocks(densityFilter);
 }
 
-function print(text) {
-    console.log(text);
-}
-
 // Get URL and split to caseID
 var url = $(location).attr('href').split("/");
 var caseID = url[url.length - 1].split("#")[0];
-
 
 // handle range slider
 var $den = $('#den-selector'),
@@ -307,20 +335,20 @@ var palette = ['#f75c2f',
     ],
     chrSkeletonCordY = [40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500];
 
+var denBlockMIN, denBlockMAX;
 // Draw Density Plot
-$.getJSON('/results/chrLen/', {
+$.getJSON('chrLen/', {
     'case_id': caseID
 }).done(function (chrJSON) {
     chrSkeleton = chrJSON;
-    $("#svg2").height(20 * chrSkeleton.length + 40);
-    $.getJSON('/results/density/', {
+    $("#svg2").attr('height', 20 * chrSkeleton.length + 60);
+    $.getJSON('density/', {
         'case_id': caseID
     }).done(function (densityJSON) {
         densityInfo = densityJSON.slice(1);
-        var denBlockMIN, denBlockMAX;
         densityInfo.forEach(function(e){
-            denBlockMIN = e.density < denBlockMIN || denBlockMIN === undefined ? e.density : denBlockMIN;
-            denBlockMAX = e.density > denBlockMAX || denBlockMAX === undefined ? e.density : denBlockMAX;
+            denBlockMIN = e.count < denBlockMIN || denBlockMIN === undefined ? e.count : denBlockMIN;
+            denBlockMAX = e.count > denBlockMAX || denBlockMAX === undefined ? e.count : denBlockMAX;
         });
         console.log(chrSkeleton);
         console.log(densityInfo);
@@ -342,6 +370,7 @@ $.getJSON('/results/chrLen/', {
     
         var fuse = new Fuse(densityInfo, options);
         $("#geneNameSelect").on("input", function () {
+            console.log('Activate fuse search.')
             var searchText = $(this).val();
             console.log(searchText);
             var result = fuse.search(searchText),
