@@ -25,15 +25,15 @@ function denInfoBox(x, y, info) {
         }
 
         var textBBox = texts.getBBox(),
-            textBottomX = textBBox.x + textBBox.w,
-            textBottomY = textBBox.y + textBBox.h,
+            textBottomX = textBBox.x + textBBox.w + 2.5,
+            textBottomY = textBBox.y + textBBox.h + 2.5,
             Xoverflow = textBottomX > $('#svg2').attr('width'),
             Yoverflow = textBottomY > $('#svg2').attr('height');
         
         //console.log("overflow:", Xoverflow, Yoverflow)
         
-        x = Xoverflow ? x - 2*(10 + textBBox.w) : x
-        y = Yoverflow ? y - 2*textBBox.h : y
+        x = Xoverflow ? x - 2*10 - textBBox.w : x
+        y = Yoverflow ? y - 2*textBBox.h : y - textBBox.h
 
         if (Xoverflow || Yoverflow) {
             texts.remove()
@@ -104,28 +104,44 @@ function densityBlock(x, y, len, color, info) {
     denBlock.mouseover(function (ev, x, y) {
         denBlock.animate({
             transform: 's(1,1.5)' + denBlockBBox.cx + ',' + denBlockBBox.cy
-        }, 200);
+        }, 200).attr({
+            fill: '#E83015',
+        });
         infobox = denInfoBox(x, y, info);
     }).mouseout(function () {
         denBlock.animate({
             transform: 's(1,1)' + denBlockBBox.cx + ',' + denBlockBBox.cy
-        }, 200);
+        }, 200).attr({
+            fill: color,
+        });
         infobox.remove();
     }).click(function () {
+        denBlock.attr({
+            stroke: '#E83015',
+            strokeWidth: 1,
+        });
         position = info.position.split("-");
         $('#geneNameSelect').val(info.gene);
         $("#js-input-from").text(position[0]);
         $("#js-input-to").text(position[1]);
         $('#chrSelector').text(info.chr);
         $('svg-tips').remove();
-        $('geneid').html(info.id)
+        $('geneid').html(info.id);
+        
+        //console.log(currentClickBlock)
+        if (currentClickBlock !== undefined) {
+            blockRecord[currentClickBlock].attr({
+                stroke: 'none',
+            })
+        }
+        currentClickBlock = info.chr + position[0];
     });
 
     return denBlock;
 }
 
 function drawChrSkeletons(chrSkeleton) {
-    console.log("drawing chr skeleton");
+    //console.log("drawing chr skeleton");
     // calculate the MIN and MAX of chrskeleton
     for (var i = 0, up = chrSkeleton.length; i < up; i++) {
         dMIN = chrSkeleton[i].chrLen >= dMIN ? dMIN : chrSkeleton[i].chrLen;
@@ -133,9 +149,9 @@ function drawChrSkeletons(chrSkeleton) {
     }
     dRAN = dMAX - dMIN;
 
-    console.log("MIN:", dMIN,
-        "\nMAX:", dMAX,
-        "\nRAN:", dRAN);
+    //console.log("MIN:", dMIN,
+    //    "\nMAX:", dMAX,
+    //    "\nRAN:", dRAN);
 
     // draw chrskeleton
     for (var t = 0; t < up; t++) {
@@ -145,8 +161,9 @@ function drawChrSkeletons(chrSkeleton) {
     }
 }
 
-function drawDensityBlocks(densfityInfo) {
-    console.log(chrNameOrder);
+function drawDensityBlocks(densityInfo) {
+    //console.log(chrNameOrder);
+    var densityBlockRecord = {}
     for (var i = 0, up = densityInfo.length; i < up; i++) {
         var chr = densityInfo[i].chr,
             x = (densityInfo[i].start) * 135 / dMIN + 50,
@@ -164,8 +181,10 @@ function drawDensityBlocks(densfityInfo) {
                 type: densityInfo[i].type,
                 count: densityInfo[i].count,
             };
-        densityBlock(x, y, len, color, info);
+        densityBlockRecord[chr+densityInfo[i].start] = densityBlock(x, y, len, color, info);
     }
+
+    return densityBlockRecord
 }
 
 function gradientLegend(x, y) {
@@ -197,14 +216,30 @@ function denPlot(chrSkeleton, densityInfo, limit) {
         fill: "#fff"
     });
     densityFilter = densityInfo.filter(function (el) {
-        if (el.count > limit) {
+        if (el.count >= limit) {
             return el;
         }
     });
+    var densityDraw = $.extend([], densityFilter);
+    densityFilter.sort(function(a,b){
+        var comp1 = a.chr.slice(3),
+            comp2 = b.chr.slice(3),
+            chr_order = {
+                X: 100,
+                Y: 150,
+                M: 200,
+            };
+        comp1 = ['X','Y','M'].includes(comp1) ? chr_order[comp1] : parseInt(comp1)
+        comp2 = ['X','Y','M'].includes(comp2) ? chr_order[comp2] : parseInt(comp2)
+        if (comp1 == comp2) {
+            return a.start - b.start
+        }
+        return (comp1 - comp2)
+    })
     gradientLegend(550, 20);
-    console.log(densityFilter);
+    //console.log(densityFilter);
     drawChrSkeletons(chrSkeleton);
-    drawDensityBlocks(densityFilter);
+    blockRecord = drawDensityBlocks(densityDraw);
 }
 
 // Get URL and split to caseID
@@ -221,118 +256,119 @@ $den.ionRangeSlider({
     from: 0,
     step: 1,
     onFinish: function (data) {
-        console.log('Setting limit at: ', data.from);
+        //console.log('Setting limit at: ', data.from);
         den.clear();
         denPlot(chrSkeleton, densityInfo, data.from);
+        $("#previous").removeAttr("disabled");
+        $("#next").removeAttr("disabled");
     }
 });
 
 // Initiate Density Plot
 var den = Snap("#svg2");
 
-var dMIN, dMAX, dRAN, chrSkeleton, densityInfo, densityFilter, chrNameOrder = {};
+var dMIN, dMAX, dRAN, chrSkeleton, densityInfo, densityFilter, blockRecord, currentClickBlock, chrNameOrder = {};
 
-var palette = ['#f75c2f',
-        '#f7612e',
-        '#f6662d',
-        '#f66b2d',
-        '#f5702c',
-        '#f5752b',
-        '#f47a2a',
-        '#f47f2a',
-        '#f38429',
-        '#f38928',
-        '#f28e27',
-        '#f29327',
-        '#f19826',
-        '#f19d25',
-        '#f0a225',
-        '#f0a724',
-        '#efac23',
-        '#efb122',
-        '#eeb622',
-        '#eebb21',
-        '#edc020',
-        '#edc620',
-        '#eccb1f',
-        '#ecd01e',
-        '#ebd51e',
-        '#eada1d',
-        '#eadf1c',
-        '#e9e41c',
-        '#e8e91b',
-        '#e2e81a',
-        '#dbe81a',
-        '#d5e719',
-        '#cfe618',
-        '#c8e519',
-        '#c1e319',
-        '#bae21a',
-        '#b3e01a',
-        '#addf1a',
-        '#a6dd1b',
-        '#a0db1b',
-        '#99da1b',
-        '#93d81b',
-        '#8dd71c',
-        '#87d51c',
-        '#81d41c',
-        '#7cd21d',
-        '#76d11d',
-        '#70cf1d',
-        '#6bce1e',
-        '#66cc1e',
-        '#60cb1e',
-        '#5bc91e',
-        '#56c81f',
-        '#51c61f',
-        '#4cc51f',
-        '#48c31f',
-        '#43c220',
-        '#3ec020',
-        '#3abf20',
-        '#35be20',
-        '#31bc21',
-        '#2dbb21',
-        '#29b921',
-        '#25b821',
-        '#21b622',
-        '#22b527',
-        '#22b32b',
-        '#22b22f',
-        '#22b133',
-        '#22af37',
-        '#23ae3b',
-        '#23ac3e',
-        '#23ab42',
-        '#23aa46',
-        '#23a849',
-        '#23a74c',
-        '#24a550',
-        '#24a453',
-        '#24a356',
-        '#24a159',
-        '#24a05c',
-        '#249f5f',
-        '#249d62',
-        '#259c64',
-        '#259b67',
-        '#25996a',
-        '#25986c',
-        '#25976e',
-        '#259571',
-        '#259473',
-        '#259375',
-        '#259177',
-        '#269079',
-        '#268f7b',
-        '#268d7d',
-        '#268c7f',
-        '#268b80',
-        '#268a82',
-        '#268884',
-        '#268785'
-    ],
+var palette = ['#ffc802',
+'#ffc601',
+'#ffc300',
+'#fdc000',
+'#fcbd00',
+'#fbbb00',
+'#fab800',
+'#f9b500',
+'#f7b200',
+'#f6af00',
+'#f5ac00',
+'#f4aa00',
+'#f3a700',
+'#f2a400',
+'#f0a100',
+'#ef9f00',
+'#ee9c00',
+'#ed9900',
+'#ec9700',
+'#ea9400',
+'#e99200',
+'#e88f00',
+'#e78c00',
+'#e68a00',
+'#e48700',
+'#e38500',
+'#e28200',
+'#e18000',
+'#e07e00',
+'#de7b00',
+'#dd7900',
+'#dc7600',
+'#db7400',
+'#da7200',
+'#d86f00',
+'#d76d00',
+'#d66b00',
+'#d56800',
+'#d46600',
+'#d36400',
+'#d16200',
+'#d05f00',
+'#cf5d00',
+'#ce5b00',
+'#cd5900',
+'#cb5700',
+'#ca5500',
+'#c95300',
+'#c85100',
+'#c74e00',
+'#c54c00',
+'#c44a00',
+'#c34800',
+'#c24600',
+'#c14500',
+'#bf4300',
+'#be4100',
+'#bd3f00',
+'#bc3d00',
+'#bb3b00',
+'#b93900',
+'#b83700',
+'#b73600',
+'#b63400',
+'#b53200',
+'#b43000',
+'#b22f00',
+'#b12d00',
+'#b02b00',
+'#af2900',
+'#ae2800',
+'#ac2600',
+'#ab2500',
+'#aa2300',
+'#a92100',
+'#a82000',
+'#a61e00',
+'#a51d00',
+'#a41b00',
+'#a31a00',
+'#a21800',
+'#a01700',
+'#9f1500',
+'#9e1400',
+'#9d1300',
+'#9c1100',
+'#9a1000',
+'#990f00',
+'#980d00',
+'#970c00',
+'#960b00',
+'#950900',
+'#930800',
+'#920700',
+'#910600',
+'#900500',
+'#8f0300',
+'#8d0200',
+'#8c0100',
+'#8b0000'],
     chrSkeletonCordY = [40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500];
 
 var denBlockMIN, denBlockMAX;
@@ -350,13 +386,15 @@ $.getJSON('chrLen/', {
             denBlockMIN = e.count < denBlockMIN || denBlockMIN === undefined ? e.count : denBlockMIN;
             denBlockMAX = e.count > denBlockMAX || denBlockMAX === undefined ? e.count : denBlockMAX;
         });
-        console.log(chrSkeleton);
-        console.log(densityInfo);
+        //console.log(chrSkeleton);
+        //console.log(densityInfo);
         $den.data('ionRangeSlider').update({
             min: denBlockMIN,
             max: denBlockMAX,
+            from: Math.round((denBlockMAX-denBlockMIN)*0.05)
         });
-        denPlot(chrSkeleton, densityInfo, 0);
+        denPlot(chrSkeleton, densityInfo, Math.round((denBlockMAX-denBlockMIN)*0.05));
+        blockRecord[Object.keys(blockRecord)[0]].click()
         $("#load").hide();
         var options = {
             shouldSort: true,
@@ -370,9 +408,9 @@ $.getJSON('chrLen/', {
     
         var fuse = new Fuse(densityInfo, options);
         $("#geneNameSelect").on("input", function () {
-            console.log('Activate fuse search.')
+            //console.log('Activate fuse search.')
             var searchText = $(this).val();
-            console.log(searchText);
+            //console.log(searchText);
             var result = fuse.search(searchText),
                 html;
             for (var i = 0, up = result.length >= 6 ? 6 : result.length; i < up; i++) {
@@ -394,13 +432,14 @@ $.getJSON('chrLen/', {
 $("#previous").click(function () {
     index = getIndex();
     if (index > 0) {
-        preDen = densityFilter[index - 1];
+        blockRecord[densityFilter[index - 1].chr+densityFilter[index - 1].start].click();
+        /* preDen = densityFilter[index - 1];
         $('#geneNameSelect').val(preDen.name);
         $("#js-input-from").text(preDen.start);
         $("#js-input-to").text(preDen.end);
         $('#chrSelector').text(preDen.chr);
         $('geneid').html(preDen.geneID);
-        $("#next").removeAttr("disabled");
+        $("#next").removeAttr("disabled"); */
     } else {
         $("#previous").attr("disabled", "");
     }
@@ -408,15 +447,16 @@ $("#previous").click(function () {
 
 $("#next").click(function () {
     index = getIndex();
-    console.log('Next index:', index);
+    // console.log('Next index:', index);
     if (index < densityFilter.length - 1) {
-        nextDen = densityFilter[index + 1];
+        blockRecord[densityFilter[index + 1].chr+densityFilter[index + 1].start].click();
+        /*
         $('#geneNameSelect').val(nextDen.name);
         $("#js-input-from").text(nextDen.start);
         $("#js-input-to").text(nextDen.end);
         $('#chrSelector').text(nextDen.chr);
         $('geneid').html(nextDen.geneID);
-        $("#previous").removeAttr("disabled");
+        $("#previous").removeAttr("disabled"); */
     } else {
         $("#next").attr("disabled", "");
     }

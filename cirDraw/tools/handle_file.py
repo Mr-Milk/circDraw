@@ -13,7 +13,7 @@ from sqlalchemy.pool import QueuePool
 
 #engine = sqlalchemy.create_engine('mysql+pymysql://root:mypassword@167.179.90.87:6603/circDraw', poolclass=QueuePool)
 engine = sqlalchemy.create_engine('mysql+pymysql://root:mypassword@127.0.0.1:6603/circDraw?charset=utf8&local_infile=1', poolclass=QueuePool)
-print('Running handle')
+
 
 def line_counter(file):
     line_count = 0
@@ -65,14 +65,14 @@ def concat_files(config, delete_old=True):
     return path + config['NEW_FILE']
 
 def find_exons(assembly, transcript, start, end):
-
+    global engine
+    engine.dispose()
+    connection = engine.raw_connection()
     get_exons_script = f'select * from {assembly}_genome_exons_introns where transcript="{transcript}";'
 
     with connection.cursor() as cur:
         cur.execute(get_exons_script)
         get_exons = cur.fetchall()
-
-
 
     # add index to column `transcript`
 
@@ -113,10 +113,12 @@ def find_exon_combo(chr_num: str, circStart: int, circEnd: int, assembly: str, b
     {'type': 'intron', 'start': 5687, 'end': 9867,
             'strand': '+', 'id': 'ENSE0004356'}]
     '''
-
     # 这里查找genes
+    global engine
+    engine.dispose()
+    connection = engine.raw_connection()
     try:
-        get_gene_script = f'select id from {assembly}_genome_genes where start<={circStart+bias} and end>={circEnd-bias};'
+        get_gene_script = f'select id from {assembly}_genome_genes where chr_num="{chr_num}" and start<={circStart+bias} and end>={circEnd-bias};'
         with connection.cursor() as cur:
             cur.execute(get_gene_script)
             get_gene = cur.fetchall()
@@ -130,7 +132,7 @@ def find_exon_combo(chr_num: str, circStart: int, circEnd: int, assembly: str, b
     elif len(get_gene) > 0:
 
         for i in get_gene:
-            get_transcripts_script = f'select id from {assembly}_genome_transcripts where gene="{i.id}" and start<={circStart+bias} and end>={circEnd-bias};'
+            get_transcripts_script = f'select id from {assembly}_genome_transcripts where gene="{i[0]}" and start<={circStart+bias} and end>={circEnd-bias};'
             with connection.cursor() as cur:
                 cur.execute(get_transcripts_script)
                 get_transcripts = cur.fetchall()
@@ -149,15 +151,15 @@ def find_exon_combo(chr_num: str, circStart: int, circEnd: int, assembly: str, b
             sort_transcripts_pool = sorted(
                     transcripts_pool, key=lambda x: x[0])
             combo = sort_transcripts_pool[-1][-1]
-            gene = sort_transcripts_pool[-1][2]
+            gene = sort_transcripts_pool[-1][2][0]
             transcript = sort_transcripts_pool[-1][1]
 
             return combo, gene, transcript
 
 def process_file(file, assembly: str, file_type, task_id, bias=2):
+    global engine
     engine.dispose()
     connection = engine.raw_connection()
-
     cols = {'bed': [0, 1, 2],
             'ciri': [1, 2, 3]}
 
@@ -185,93 +187,113 @@ def process_file(file, assembly: str, file_type, task_id, bias=2):
 
             if valid_line:
                 # map circ to annotated_circ
-                #try:
-                chr_num = 'chr' + l[0][3::].upper()
-                start = int(l[1])
-                end = int(l[2])
-                #time1 = time.time()
-                result_script = f'select * from {assembly}_circRNAs_{chr_num} where start>={start-bias} and start<={start+bias} and end<={end+bias} and end>={end-bias};'
-                with connection.cursor() as cur:
-                    cur.execute(result_script)
-                    result = cur.fetchall()
-                #time2 = time.time()
+                try:
+                    chr_num = 'chr' + l[0][3::].upper()
+                    start = int(l[1])
+                    end = int(l[2])
+                    #time1 = time.time()
+                    result_script = f'select * from {assembly}_circRNAs_{chr_num} where start>={start-bias} and start<={start+bias} and end<={end+bias} and end>={end-bias};'
+                    with connection.cursor() as cur:
+                        cur.execute(result_script)
+                        result = cur.fetchall()
+                    #time2 = time.time()
 
-                #print('Query MySQL1', len(result), f'Used {round(time2-time1,2)}s')
+                    #print('Query MySQL1', len(result), f'Used {round(time2-time1,2)}s')
 
-                possible_circ = [
-                    (i[4] - i[3] - (end - start), i) for i in result]
+                    possible_circ = [
+                        (i[4] - i[3] - (end - start), i) for i in result]
 
-                if len(possible_circ) > 0:
-                    # append to circ_on_gene
-                    circ = sorted(possible_circ, key=lambda x: x[0])[
-                                0][1]
-                    try:
-                        components = demjson.decode(circ[-1])
-                    except Exception as e:
-                        print('demjson decode ERROR:', e)
-                    for i in components:
-                        i['mods'] = ujson.loads(i['mods'])
-                    circ_json = {"start": int(circ[3]),
-                            "end": int(circ[4]),
-                            "source": "CIRCpedia V2",
-                            "gene": circ[0],
-                            "transcript": circ[1],
-                            "components": components}
-                    #print('This is gene of circ', circ[0])
+                    if len(possible_circ) > 0:
+                        # append to circ_on_gene
+                        circ = sorted(possible_circ, key=lambda x: x[0])[
+                                    0][1]
+                        try:
+                            if type(circ[-1]) == list:
+                                components = circ[-1]
+                            elif type(circ[-1]) == str:
+                                components = demjson.decode(circ[-1].encode('utf-8'))
+                        except Exception as e:
+                            print('demjson decode ERROR:', e)
+                        for i in components:
+                            i['mods'] = ujson.loads(i['mods'])
+                        circ_json = {"start": int(circ[3]),
+                                "end": int(circ[4]),
+                                "source": "CIRCpedia V2",
+                                "gene": circ[0],
+                                "transcript": circ[1],
+                                "components": components}
+                        #print('This is gene of circ', circ[0])
 
-                    if circ[0] in circ_on_gene.keys():
-                        #print('Check if key in circ_on_gene exist:', circ_on_gene.keys())
-                        circ_on_gene[circ[0]][1].append(circ_json)
-                        #print('Gene existed:', len(circ_on_gene[circ[0]][1]))
+                        if circ[0] in circ_on_gene.keys():
+                            #print('Check if key in circ_on_gene exist:', circ_on_gene.keys())
+                            circ_on_gene[circ[0]][1].append(circ_json)
+                            #print('Gene existed:', len(circ_on_gene[circ[0]][1]))
+                        else:
+                            # get gene info
+                            geneINFO_script = f'''select * from {assembly}_genome_genes where id="{circ[0]}";'''
+                            #time3 = time.time()
+                            with connection.cursor() as cur:
+                                cur.execute(geneINFO_script)
+                                geneINFO = cur.fetchall()
+                            #time4 = time.time()
+                            #print('Query MySQL2', f'Used {round(time4-time3,2)}s')
+                            geneINFO = [str(i) for i in geneINFO[0]]
+                            #print(geneINFO)
+                            circ_on_gene[geneINFO[4]] = [
+                                list(geneINFO), [circ_json]]
+                            #print('Gene not existed:', circ_on_gene)
+
                     else:
-                        # get gene info
-                        geneINFO_script = f'''select * from {assembly}_genome_genes where id="{circ[0]}";'''
-                        #time3 = time.time()
-                        with connection.cursor() as cur:
-                            cur.execute(geneINFO_script)
-                            geneINFO = cur.fetchall()
-                        #time4 = time.time()
-                        #print('Query MySQL2', f'Used {round(time4-time3,2)}s')
-                        geneINFO = [str(i) for i in geneINFO[0]]
-                        #print(geneINFO)
-                        circ_on_gene[geneINFO[4]] = [
-                            list(geneINFO), [circ_json]]
-                        #print('Gene not existed:', circ_on_gene)
+                        unmap_circ.append(l)
+                except Exception as e:
+                    print(mp.current_process().name, "Failed to process:", line, e)
 
-                else:
-                    unmap_circ.append(l)
-                #except Exception as e:
-                    #print(mp.current_process().name, "Failed to process:", line, e)
     print('Unmapped circ number:', len(unmap_circ))
+
     for circ in unmap_circ:
-        combo, gene, transcript = find_exon_combo(circ[0].lower(), int(circ[1]), int(circ[2]), assembly)
-        #print(gene, transcript)
-        components = demjson.decode(combo)
-        for i in components:
-            i['mods'] = ujson.loads(i['mods'])
-        if combo is not None:
-            try:
-                circ_on_gene[gene][1].append({"start": int(circ[1]),
-                                                    "end": int(circ[2]),
-                                                    "source": "circDraw_annotated",
-                                                    "gene": gene,
-                                                    "transcript": transcript,
-                                                    "components": components})
-            except:
-                    # get gene info
-                geneINFO_script = f'select * from {assembly}_genome_genes where id="{gene}";'
-                with connection.cursor() as cur:
-                    cur.execute(geneINFO_script)
-                    geneINFO = cur.fetchall()
-
-                geneINFO = [str(i) for i in geneINFO[0]]
-                circ_on_gene[geneINFO[4]] = [geneINFO, [{"start": int(circ[1]),
-                                                    "end": int(circ[2]),
-                                                    "source": "circDraw_annotated",
-                                                    "gene": gene,
-                                                    "transcript": transcript,
-                                                    "components": components}]]
-
+        try:
+            combo, gene, transcript = find_exon_combo(circ[0], int(circ[1]), int(circ[2]), assembly)
+            #print(gene, transcript)
+            if combo != None:
+                #print('before components')
+                try:
+                    #print(type(combo))
+                    if type(combo) == list:
+                        components = combo
+                    elif type(combo) == str:
+                        components = demjson.decode(combo.encode('utf-8'))
+                except Exception as e:
+                    print(e)
+                #print('After components')
+                for i in components:
+                    i['mods'] = ujson.loads(i['mods'])
+                #print('alter components')
+                try:
+                    circ_on_gene[gene][1].append({"start": int(circ[1]),
+                                                        "end": int(circ[2]),
+                                                        "source": "circDraw_annotated",
+                                                        "gene": gene,
+                                                        "transcript": transcript,
+                                                        "components": components})
+                except:
+                        # get gene info
+                    geneINFO_script = f'select * from {assembly}_genome_genes where id="{gene}";'
+                    with connection.cursor() as cur:
+                        cur.execute(geneINFO_script)
+                        geneINFO = cur.fetchall()
+                    try:
+                        geneINFO = [str(i) for i in geneINFO[0]]
+                        circ_on_gene[geneINFO[4]] = [geneINFO, [{"start": int(circ[1]),
+                                                            "end": int(circ[2]),
+                                                            "source": "circDraw_annotated",
+                                                            "gene": gene,
+                                                            "transcript": transcript,
+                                                            "components": components}]]
+                    except Exception as e:
+                        print("Add circ error:", e)
+        except Exception as e:                
+            print(mp.current_process().name, "Failed to process one unmapped circ:", e)
+    
     print('Mapped circ:', len(circ_on_gene))
     return circ_on_gene
     #print(circ_on_gene)
@@ -299,13 +321,15 @@ config = {
 } """
 
 def handle(config):
+    global engine
     engine.dispose()
     connection = engine.raw_connection()
+    print("Running handle")
     try:
         split_file(config)
         path = '/'.join(config['FILE_NAME'].split('/')[0:-1]) + '/'
         splited_files = [f"""{config['FILE_NAME']}.{i}""" for i in range(1,config['CORE_NUM'] + 1)]
-        #print(splited_files)
+        print(splited_files)
         args = []
         for i in splited_files:
             args.append((i, config['ASSEMBLY'], config['FILE_TYPE'], config['TASK_ID']))
@@ -330,8 +354,8 @@ def handle(config):
                 info.append(ujson.dumps(v[1]))
                 info.append(str(len(v[1])))
                 line = config["TASK_ID"] + '\t' + '\t'.join(info)
-                print('Check columns number:', len(line.split('\t')) == 9)
-                print(line.split('\t')[-1])
+                #print('Check columns number:', len(line.split('\t')) == 9)
+                #print(line.split('\t')[-1])
                 f.write(line+'\n')
 
         print(f'Finish processing {config["TASK_ID"]} | Generated new file {config["NEW_FILE"]}')
@@ -343,18 +367,26 @@ def handle(config):
         # calculation of density and circRNA length distribution
         circRNA_length = []
         circRNA_isoform = []
+        gene_density = []
         with open(f"{path}{config['NEW_FILE']}", 'r') as f:
-            with open(f"{path}{config['TASK_ID']}_density", 'w') as c:
-                for line in f:
-                    #print(line)
-                    info = line.split('\t')
-                    circINFO = ujson.loads(info[-2])
-                    # density table
-                    # md5 id chr_num start end name type circ_num
-                    for i in circINFO:
-                        circRNA_length.append(i['end'] - i['start'])
-                    circRNA_isoform.append((info[5], len(circINFO)))
-                    c.write('\t'.join(info[0:-2]) + '\t' + str(len(circINFO)) + '\n')
+            for line in f:
+                #print(line)
+                info = line.split('\t')
+                circINFO = ujson.loads(info[-2])
+                # density table
+                # md5 id chr_num start end name type circ_num
+                for i in circINFO:
+                    circRNA_length.append(i['end'] - i['start'])
+                circRNA_isoform.append((info[5], len(circINFO)))
+                density_info = info[0:-2]
+                #print(type(density_info), density_info)
+                density_info.append(len(circINFO))
+                gene_density.append(density_info)
+        #print(gene_density)
+        tmp_gene_density = sorted(gene_density, key=lambda x:x[-1])
+        with open(f"{path}{config['TASK_ID']}_density", 'w') as c:
+            for t in tmp_gene_density:
+                c.write('\t'.join([str(i)for i in t]) + '\n')
 
         print(f'circRNA length capacity: {len(circRNA_length)}',
         f'circRNA isoform capacity: {len(circRNA_isoform)}')
@@ -398,8 +430,8 @@ def handle(config):
         #print(circRNA_length_distribution)
         # load file to database
         with connection.cursor() as cur:
-            cur.execute('''SET GLOBAL local_infile = 'ON';''')
-            cur.execute('''SHOW GLOBAL VARIABLES LIKE 'local_infile';''')
+            cur.execute('''SET global local_infile = 'ON';''')
+            cur.execute('''SHOW global VARIABLES LIKE 'local_infile';''')
             local_infile = cur.fetchall()
             print('LOCAL_INFILE =',local_infile)
             cur.execute(f"""LOAD DATA LOCAL INFILE '{path}{config['NEW_FILE']}' IGNORE INTO TABLE UserTable character set utf8mb4 fields terminated by '\t' lines terminated by '\n' (`md5`,`gene_id`,`chr_num`, `start`,`end`,`name`,`gene_type`, `circ_on_gene_all`, `circ_on_num`);""")

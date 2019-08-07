@@ -65,16 +65,19 @@ $.fn.extend({
         });
         return input;
     },
-    addCircList: function (id) {
-        $(this).parent().parent().after("<div><p class='d-inline-block'>circRNA: " + "<b>" + id + "</b>" +
-            "</p>\n" + "<p class='d-inline-block ml-1' style='cursor: pointer;' id='delete" + id + "'><u>Delete</u></p>" +
-            "<p class='d-inline-block ml-1' style='cursor: pointer;' id='edit" + id + "'><u>Edit</u></p></div>");
+    addCircList: function (id, type) {
+        var split_id = id.split(':');
+        if (split_id[1].length >= 10) {
+            var display_id = split_id[0] + ':' + split_id[1].slice(0,6) + '...' + split_id[1].slice(-5);
+        }
+        else {
+            var display_id = id;
+        }
+        
+        $(this).parent().parent().after("<div><p class='d-inline-block'>" + type + ": " + "<b>" + display_id + "</b>" +
+            "</p>\n" + "<p class='d-inline-block ml-1' style='cursor: pointer;' id='delete" + display_id + "'><u>Delete</u></p>" +
+            "<p class='d-inline-block ml-1' style='cursor: pointer;' id='edit" + display_id + "'><u>Edit</u></p></div>");
     },
-    addGeneList: function (id) {
-        $(this).parent().parent().after("<div><p class='d-inline-block'>Gene: " + "<b>" + id + "</b>" +
-            "</p>\n" + "<p class='d-inline-block ml-1' style='cursor: pointer;' id='delete" + id + "'><u>Delete</u></p>" +
-            "<p class='d-inline-block ml-1' style='cursor: pointer;' id='edit" + id + "'><u>Edit</u></p></div>");
-    }
 });
 
 function background() { // canvas background
@@ -227,6 +230,7 @@ function infoBox(x, y, info) {
             key = keys[i];
             text = key + ': ' + info[key];
             texts.add(svg.paper.text(x + 10, y + addY, text).attr({
+                fill: '#FFFFFF',
                 'font-size': 10,
                 /* 'font-family': 'arial' */
             }));
@@ -234,9 +238,36 @@ function infoBox(x, y, info) {
         }
 
         var textBBox = texts.getBBox(),
-            box = svg.paper.rect(textBBox.x - 2.5, textBBox.y - 2.5, textBBox.w + 5, textBBox.h + 5).attr({
-                fill: '#0B346E',
-                fillOpacity: 0.5,
+            textBottomX = textBBox.x + textBBox.w + 2.5,
+            textBottomY = textBBox.y + textBBox.h + 2.5,
+            Xoverflow = textBottomX > $('#svg').attr('width'),
+            Yoverflow = textBottomY > $('#svg').attr('height');
+        
+        //console.log("overflow:", Xoverflow, Yoverflow)
+        
+        x = Xoverflow ? x - 2*10 - textBBox.w : x
+        y = Yoverflow ? y - 2*textBBox.h : y - textBBox.h
+
+        if (Xoverflow || Yoverflow) {
+            texts.remove()
+            texts = svg.paper.g()
+            for (var i = 0, up = keys.length; i < up; i++) {
+                key = keys[i];
+                text = key + ': ' + info[key];
+                texts.add(svg.paper.text(x + 10, y + addY, text).attr({
+                    'font-size': 10,
+                    fill: '#FFFFFF',
+                    stroke: 'none',
+                    // 'font-family': 'arial'
+                }));
+                addY += 13;
+            }
+        };
+        textBBox = texts.getBBox();
+
+        var box = svg.paper.rect(textBBox.x - 2.5, textBBox.y - 2.5, textBBox.w + 5, textBBox.h + 5).attr({
+                fill: '#91989F',
+                fillOpacity: 0.7,
                 stroke: '#211E55',
                 strokeWidth: 0.5,
                 strokeOpacity: 0.5
@@ -468,9 +499,24 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
         color = exonList[exonID];
 
         for (j = 0, up_j = mods.length; j < up_j; j++) {
-            var modType = mods[j].type,
-                modStart = ((mods[j].start - start) / len) * 360 + exStartAngle,
-                modEnd = ((mods[j].end - start) / len) * 360 + exStartAngle;
+            draw_modifications = mods[j].start >= start && mods[j].end <= end
+            if (draw_modifications) {
+                var modInfo = mods[j].info,
+                    modStart = ((mods[j].start - start) / len) * 360 + exStartAngle,
+                    modEnd = ((mods[j].end - start) / len) * 360 + exStartAngle,
+                    modType;
+                modInfo.type = mods[j].type;
+                modInfo.position = mods[j].start + '-' + mods[j].end;
+            }
+            if (pU_map.includes(mods[j].type)) {
+                modType = 'pU'
+            }
+            else if (OMe_map.includes(mods[j].type)) {
+                modType = 'OMe'
+            }
+            else {
+                modType = mods[j].type
+            };
             if (['MRE', 'ORF', 'RBP'].includes(modType)) {
                 if (modSTAT1[modType] === undefined) {
                     modR1 -= 0.015;
@@ -603,35 +649,34 @@ function drawExons(exons) {
 
         if (exonList[exonID] === undefined) {
             exonList[exonID] = colorList[colorIndex];
-            color = exonList[exonID];
-            colorIndex = colorIndex < colorList.length ? colorIndex + 1 : 0;
-            if (type === 'exon') {
-                block({
-                    x: exStart,
-                    len: exEnd - exStart,
-                    color: color,
-                    type: type,
-                    info: {
-                        name: name,
-                        type: type,
-                        position: start + '-' + end
-                    }
-                });
-            } else if (type === 'intron') {
-                block({
-                    x: exStart,
-                    len: exEnd - exStart,
-                    color: "#000",
-                    type: type,
-                    info: {
-                        name: name,
-                        type: type,
-                        position: start + '-' + end
-                    }
-                });
-            }
         }
-        else {
+        color = exonList[exonID];
+        colorIndex = colorIndex < colorList.length ? colorIndex + 1 : 0;
+
+        if (type === 'exon') {
+            block({
+                x: exStart,
+                len: exEnd - exStart,
+                color: color,
+                type: type,
+                info: {
+                    name: name,
+                    type: type,
+                    position: start + '-' + end
+                }
+            });
+        } else if (type === 'intron') {
+            block({
+                x: exStart,
+                len: exEnd - exStart,
+                color: "#000",
+                type: type,
+                info: {
+                    name: name,
+                    type: type,
+                    position: start + '-' + end
+                }
+            });
         }
     }
 }
@@ -712,7 +757,8 @@ function drawArc(data) {
             }
             circ = drawCircRNA(exons, data.start, data.end);
             CURRENT_STAT = {id: id,
-                            circ: circ};
+                            circ: circ
+                        };
         }
     }).mouseover(function (ev, x, y) {
         Snap.animate(1, 5, function (val) {
@@ -967,6 +1013,8 @@ var colorList = ["#92C9FF", "#8FD16F", "#108757", "#0B3A42", "#FF404A", "#5CA0F2
     '#1a6f00', '#ffa12c'
 ];
 var colorIndex = 0;
+var pU_map = ['m5Um','Am','Cm','Gm','Tm','Um'],
+    OMe_map = ['N', 'Y'];
 var modColor = {
     m6A: '#E98B2A',
     m1A: '#64363C',
@@ -1051,7 +1099,7 @@ $('#addcirc').click(function () {
             var newCirc = processData(circName, circStart, circEnd, exons, mods),
                 id = circName + ':' + circStart + '-' + circEnd;
             circRNAs[id] = newCirc;
-            $('#addcirc').addCircList(id);
+            $('#addcirc').addCircList(id, 'circRNA');
 
             $(document.getElementById("delete" + id)).click(function () {
                 $(this).parent().remove();
@@ -1138,7 +1186,7 @@ $('#addgene').click(function () {
         $('#geneName').val("");
         $('#geneStart').val("");
         $('#geneEnd').val("");
-        $('#addgene').addGeneList(id);
+        $('#addgene').addCircList(id, 'Gene');
 
         $(document.getElementById('edit' + id)).click(function () {
             $(this).parent().remove();
@@ -1165,3 +1213,15 @@ $('#addgene').click(function () {
         }
     }
 });
+
+$("#download-diy").click(function () {
+    var svg = Snap("#svg");
+    var saveSvgAsSvg = svg.paper.toString(),
+        blob = new Blob([saveSvgAsSvg], {
+            type: 'text/plain'
+        });
+    $("#download-diy").attr({
+        "href": window.URL.createObjectURL(blob),
+        "download": "circ.svg"
+    })
+})

@@ -39,6 +39,7 @@ var colorIndex = 0;
 var circRNAs = {},
     geneList = {},
     exonList = {},
+    arcRecord = [],
     CURRENT_STAT = {id: undefined, circ: undefined}, MIN, MAX, RAN;
 
 // Get URL and split to caseid
@@ -53,6 +54,12 @@ var $name = $('#geneNameSelect'),
     $scale = $("#scale-selector"),
     $geneid = $("geneid");
 
+$('#origin-data').click(function(){
+    $('#origin-data').attr({
+        'href': url.slice(0,-1).join('/') + '/downloadresult/?case_id=' + caseID,
+    })
+})
+
 $geneid.on('DOMSubtreeModified', function(){
     if ($geneid.html() === "") {
     }
@@ -60,11 +67,15 @@ $geneid.on('DOMSubtreeModified', function(){
         $('.den-select-info').show();
         $scale.show();
         updateCircPlot(function(){
-            var minInterval = Math.min.apply(null,circRNAs.forEach(function(v) {
-                return v.end - v.start;
-            })),
+            //console.log(circRNAs)
+            var serial = [];
+            for (i=0;i<circRNAs.length;i++){
+                serial.push(circRNAs[i].end-circRNAs[i].start)
+            }
+            var minInterval = Math.min.apply(null,serial),
             start = $start.text(),
             end = $end.text();
+            //console.log(minInterval)
             $scale.data('ionRangeSlider').update({
                 from: start,
                 to: end,
@@ -72,7 +83,7 @@ $geneid.on('DOMSubtreeModified', function(){
                 max: end,
                 min_interval: minInterval
             });
-            console.log("running callback");
+            //console.log("running callback");
             redraw(circRNAs, geneList);}, $name.val());
     }
 });
@@ -99,11 +110,12 @@ $scale.ionRangeSlider({
 });
 
 var table = new Tabulator("#table", {
-    layout:"fitData",
+    layout:"fitDataFill",
+    height:"350px",
     headerFilterPlaceholder:"Search",
     placeholder:"No Data Available",
     columns:[
-        {title:"Type", field:"type", width: 100, headerFilter:true, formatter: function(cell){
+        {title:"Type", field:"type", /* width: 100, */ headerFilter:true, formatter: function(cell){
             cellValue = cell.getValue();
             if (cellValue === 'pU') {
                 return 'pseudo-U';
@@ -115,17 +127,9 @@ var table = new Tabulator("#table", {
                 return cellValue;
             }
         }},
-        {title:"Start", field:"start", width: 140, headerFilter: true},
-        {title:"End", field:"end", width: 140, headerFilter: true},
-        {title:"SNP", field:"info.SNP", formatter: function(cell){
-            if (cell.getValue() === undefined || cell.getValue() === "") {
-                return '----';
-            }
-            else {
-                return cell.getValue();
-            }
-        }, width: 140, headerFilter: true},
-        {title:"Disease", field:"info.disease", width: 180, headerFilter: true, formatter: function(cell){
+        {title:"Start", field:"start", /* width: 140, */ headerFilter: true},
+        {title:"End", field:"end", /* width: 140, */ headerFilter: true},
+        {title:"Target", field:"info.target", /* width: 140, */ headerFilter: true, formatter: function(cell){
             if (cell.getValue() === undefined || cell.getValue() === "") {
                 return '----';
             }
@@ -133,18 +137,41 @@ var table = new Tabulator("#table", {
                 return cell.getValue();
             }
         }},
-        {title:"Mod Link", field:"info.pubmed_id", width:150, formatter:function(cell){
-            if (cell.getValue() !== undefined) {
+        {title:"Links", field:"info.pubmed_id", /* width:150, */ formatter:function(cell){
+            if (cell.getValue() === undefined || cell.getValue() === "") {
+                return '----';
+            }
+            else {
                 return "<i class='fas fa-link'></i>";
             }
-        }, cellClick:function(e, cell){cell.getValue().forEach(function(e){openNewTab('https://www.ncbi.nlm.nih.gov/pubmed/'+ e);
-        });
-    }},
+        }, cellClick:function(e, cell){
+            var links = cell.getValue().split(',');
+            for (i=0,up=links.length; i<up ; i++){
+                openNewTab('https://www.ncbi.nlm.nih.gov/pubmed/'+ links[i]);
+            }
+        }
+    },
+        {title:"SNP", field:"info.snp_id", formatter: function(cell){
+            if (cell.getValue() === undefined || cell.getValue() === "") {
+                return '----';
+            }
+            else {
+                return cell.getValue();
+            }
+        }, width: 140, headerFilter: true},
+        {title:"Disease", field:"info.disease", /* width: 180,  */headerFilter: true, formatter: function(cell){
+            if (cell.getValue() === undefined || cell.getValue() === "") {
+                return '----';
+            }
+            else {
+                return cell.getValue();
+            }
+        }},
     ],
 });
 
 function updateCircPlot(callback) {
-    console.log('?caseid='+caseID+'&start='+$start.text()+'&end='+$end.text()+'&geneid='+$geneid.html()+'&chr='+$chr.text())
+    //console.log('?caseid='+caseID+'&start='+$start.text()+'&end='+$end.text()+'&geneid='+$geneid.html()+'&chr='+$chr.text())
     $.when(
         $.getJSON("circrnas/",{
             "caseid": caseID,
@@ -154,7 +181,7 @@ function updateCircPlot(callback) {
             "geneid": $geneid.html()
             })
     ).done(function (circ/* , genes */) {
-        console.log(circ/* ,genes */);
+        //console.log(circ/* ,genes */);
         circRNAs = circ;
         // geneList = genes[0];
         callback();
@@ -162,7 +189,7 @@ function updateCircPlot(callback) {
 }
 
 function redraw(circRNAs, geneList) {
-    console.log("redraw:", circRNAs,"\n", geneList);
+    //console.log("redraw:", circRNAs,"\n", geneList);
     exonList = {};
     colorIndex = 0;
 
@@ -196,12 +223,13 @@ function redraw(circRNAs, geneList) {
 
         //draw gene
         drawGene(geneList);
-
+        arcRecord = []
         //draw circRNAs
         for (var v in circRNAs) {
-            drawArc(circRNAs[v]);
+            arcRecord.push(drawArc(circRNAs[v]));
         }
     }
+    arcRecord[0].click();
 }
 
 //----------------------------------------- Functions For Drawing --------------------------------------
@@ -233,15 +261,15 @@ function infoBox(x, y, info) {
             }
         }
         var textBBox = texts.getBBox(),
-            textBottomX = textBBox.x + textBBox.w,
-            textBottomY = textBBox.y + textBBox.h,
-            Xoverflow = textBottomX > $('#svg2').attr('width'),
-            Yoverflow = textBottomY > $('#svg2').attr('height');
+            textBottomX = textBBox.x + textBBox.w + 2.5,
+            textBottomY = textBBox.y + textBBox.h + 2.5,
+            Xoverflow = textBottomX > $('#svg').attr('width'),
+            Yoverflow = textBottomY > $('#svg').attr('height');
         
         //console.log("overflow:", Xoverflow, Yoverflow)
         
-        x = Xoverflow ? x - 2*(10 + textBBox.w) : x
-        y = Yoverflow ? y - 2*textBBox.h : y
+        x = Xoverflow ? x - 2*10 - textBBox.w : x
+        y = Yoverflow ? y - 2*textBBox.h : y - textBBox.h
 
         if (Xoverflow || Yoverflow) {
             texts.remove()
@@ -443,7 +471,10 @@ function drawLegend(conf) {
 }
 
 function drawCircRNA(exonComponents, circStart, circEnd) {
-    console.log(exonComponents);
+    //console.log(exonComponents);
+    exonComponents.sort(function(a,b){
+        return (a.start-b.start)
+    });
     var len = 0,
         startAngle = 90,
         exons = JSON.parse(JSON.stringify(exonComponents)),
@@ -495,60 +526,64 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
         color = exonList[exonID];
 
         for (j = 0, up_j = mods.length; j < up_j; j++) {
-            var modInfo = mods[j].info,
-                modStart = ((mods[j].start - start) / len) * 360 + exStartAngle,
-                modEnd = ((mods[j].end - start) / len) * 360 + exStartAngle,
-                modType, printInfo;
-            modInfo.type = mods[j].type;
-            modInfo.position = mods[j].start + '-' + mods[j].end;
+            draw_modifications = mods[j].start >= start && mods[j].end <= end
+            //console.log(mods[j].start >= start, mods[j].end <= end, draw_modifications)
+            if (draw_modifications) {
+                var modInfo = mods[j].info,
+                    modStart = ((mods[j].start - start) / len) * 360 + exStartAngle,
+                    modEnd = ((mods[j].end - start) / len) * 360 + exStartAngle,
+                    modType;
+                modInfo.type = mods[j].type;
+                modInfo.position = mods[j].start + '-' + mods[j].end;
 
-            if (pU_map.includes(mods[j].type)) {
-                modType = 'pU'
-            }
-            else if (OMe_map.includes(mods[j].type)) {
-                modType = 'OMe'
-            }
-            else {
-                modType = mods[j].type
-            };
-            //console.log('modinfo:',modInfo);
-            if (['MRE', 'ORF', 'RBP'].includes(modType)) {
-                if (modSTAT1[modType] === undefined) {
-                    modR1 -= 0.015;
-                    modSTAT1[modType] = modR1;
-                    r1 = modR1;
-                } else {
-                    r1 = modSTAT1[modType];
+                if (pU_map.includes(mods[j].type)) {
+                    modType = 'pU'
                 }
-                circRNA.add(ring({
-                    x: CENTER_X,
-                    y: CENTER_Y,
-                    r: r1 * SVG_HEIGHT,
-                    width: 5,
-                    startDegree: modStart,
-                    endDegree: modEnd,
-                    color: modColor[modType],
-                    info: modInfo
-                }));
-            } else {
-                if (modSTAT2[modType] === undefined) {
-                    modR2 += 3;
-                    modSTAT2[modType] = modR2;
-                    r2 = modR2;
-                } else {
-                    r2 = modSTAT2[modType];
+                else if (OMe_map.includes(mods[j].type)) {
+                    modType = 'OMe'
                 }
-                circRNA.add(shapeOnCircle({
-                    x: CENTER_X,
-                    y: CENTER_Y,
-                    r: 0.15 * SVG_HEIGHT,
-                    degree: modStart,
-                    shapeSize: opt[modType][0],
-                    height: r2,
-                    color: modColor[modType],
-                    type: opt[modType][1],
-                    info: modInfo
-                }));
+                else {
+                    modType = mods[j].type
+                };
+                //console.log('modinfo:',modInfo);
+                if (['MRE', 'ORF', 'RBP'].includes(modType)) {
+                    if (modSTAT1[modType] === undefined) {
+                        modR1 -= 0.015;
+                        modSTAT1[modType] = modR1;
+                        r1 = modR1;
+                    } else {
+                        r1 = modSTAT1[modType];
+                    }
+                    circRNA.add(ring({
+                        x: CENTER_X,
+                        y: CENTER_Y,
+                        r: r1 * SVG_HEIGHT,
+                        width: 5,
+                        startDegree: modStart,
+                        endDegree: modEnd,
+                        color: modColor[modType],
+                        info: modInfo
+                    }));
+                } else {
+                    if (modSTAT2[modType] === undefined) {
+                        modR2 += 3;
+                        modSTAT2[modType] = modR2;
+                        r2 = modR2;
+                    } else {
+                        r2 = modSTAT2[modType];
+                    }
+                    circRNA.add(shapeOnCircle({
+                        x: CENTER_X,
+                        y: CENTER_Y,
+                        r: 0.15 * SVG_HEIGHT,
+                        degree: modStart,
+                        shapeSize: opt[modType][0],
+                        height: r2,
+                        color: modColor[modType],
+                        type: opt[modType][1],
+                        info: modInfo
+                    }));
+                }
             }
         }
 
@@ -637,41 +672,40 @@ function drawExons(exons) {
             exEnd = (end - MIN) / RAN * CHR_LEN + OFFSET_DIST,
             color;
         
-        console.log('drawExons', exonList[exonID]);
+        //console.log('drawExons', exonList[exonID]);
 
         if (exonList[exonID] === undefined) {
             exonList[exonID] = colorList[colorIndex];
-            color = exonList[exonID];
-            colorIndex = colorIndex < colorList.length ? colorIndex + 1 : 0;
-            if (type === 'exon') {
-                block({
-                    x: exStart,
-                    len: exEnd - exStart,
-                    color: color,
-                    type: type,
-                    info: {
-                        id: id,
-                        type: type,
-                        strand: strand,
-                        position: start + '-' + end
-                    }
-                });
-            } else if (type === 'intron') {
-                block({
-                    x: exStart,
-                    len: exEnd - exStart,
-                    color: "#000",
-                    type: type,
-                    info: {
-                        id: id,
-                        type: type,
-                        strand: strand,
-                        position: start + '-' + end
-                    }
-                });
-            }
         }
-        else {
+        color = exonList[exonID];
+        colorIndex = colorIndex < colorList.length ? colorIndex + 1 : 0;
+
+        if (type === 'exon') {
+            block({
+                x: exStart,
+                len: exEnd - exStart,
+                color: color,
+                type: type,
+                info: {
+                    id: id,
+                    type: type,
+                    strand: strand,
+                    position: start + '-' + end
+                }
+            });
+        } else if (type === 'intron') {
+            block({
+                x: exStart,
+                len: exEnd - exStart,
+                color: "#000",
+                type: type,
+                info: {
+                    id: id,
+                    type: type,
+                    strand: strand,
+                    position: start + '-' + end
+                }
+            });
         }
     }
 }
@@ -698,7 +732,7 @@ function drawGene(geneList) {
 function drawArc(data) {
     var arcStart = (data.start - MIN) / RAN * CHR_LEN + OFFSET_DIST,
         arcEnd = (data.end - MIN) / RAN * CHR_LEN + OFFSET_DIST,
-        circName = data.name,
+        // circName = data.name,
         exons = data.components,
         rx = (arcEnd - arcStart) / 2,
         ry = 2 * rx / 5,
@@ -765,6 +799,7 @@ function drawArc(data) {
                     'font-size': 12
                 });
             })();
+            $('#circ-name').text(name)
             CURRENT_STAT = {id: id,
                             circ: circ,
                             circname: circName};
@@ -776,6 +811,7 @@ function drawArc(data) {
                     tableData.push(m);
                 });
             });
+            //console.log(tableData)
             
             table.replaceData(tableData);
 
@@ -793,7 +829,8 @@ function drawArc(data) {
         }, 200);
         infobox = infoBox(x, y, {
             name: $chr.text() + ' : ' + data.start + ' - ' + data.end,
-            position: data.start + "-" + data.end
+            position: data.start + "-" + data.end,
+            source: data.source
         });
     }).mouseout(function () {
         Snap.animate(5, 1, function (val) {
@@ -904,6 +941,7 @@ function ring(opt) {
     }
 
     delete opt.info['link'];
+    delete info['pubmed_id'];
 
     if (opt.endDegree - opt.startDegree === 360) {
         ring = svg.paper.circle(CENTER_X, CENTER_Y, opt.r).attr({
@@ -931,6 +969,7 @@ function ring(opt) {
             }
         }).click(function () {
             if (links !== undefined & links !== null) {
+                elink = links.split(',')
                 for (var i = 0, up = links.length; i < up; i++) {
                     openNewTab(links[i]);
                 }
@@ -980,6 +1019,7 @@ function addAnimation(obj, info) {
     }
 
     delete info['link'];
+    delete info['pubmed_id'];
 
     obj.mouseover(function (ev, x, y) {
         obj.animate({

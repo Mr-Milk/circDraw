@@ -2,7 +2,7 @@ var url = $(location).attr('href').split("/");
 var case_id = url[url.length -1].split('#')[0];
 $.getJSON('lenChart_URL', {'caseid': case_id})
 .done(function(lenChartData){
-    console.log(lenChartData);
+    //console.log(lenChartData);
     var x = lenChartData.x;
     var y = lenChartData.y;
     var lenChart = echarts.init(document.getElementById('lenChart'));
@@ -66,15 +66,20 @@ $.getJSON('lenChart_URL', {'caseid': case_id})
     };
 
     lenChart.setOption(option1);
+    $(window).on('resize', function(){
+        if(lenChart != null && lenChart != undefined){
+            lenChart.resize();
+        }
+    });
 });
 
 $.getJSON('toplist/', {'case_id': case_id})
 .done(function(topData){
-    console.log(topData);
+    //console.log(topData);
     var x = topData.x.slice(0,20)
     var y = topData.y.slice(0,20)
-    var lenChart = echarts.init(document.getElementById('topChart'));
-    var option1 = {
+    var topChart = echarts.init(document.getElementById('topChart'));
+    var option2 = {
         grid:{
             x:125,
             y:45,
@@ -85,7 +90,7 @@ $.getJSON('toplist/', {'case_id': case_id})
             name: 'Gene',
             nameLocation: 'center',
             type: 'category',
-            nameGap: 25,
+            nameGap: 35,
             nameTextStyle: {
                 fontSize: 15,
             },
@@ -95,7 +100,8 @@ $.getJSON('toplist/', {'case_id': case_id})
             },
             axisLabel: {
                 interval: 0,
-                fontSize: 10
+                fontSize: 10,
+                rotate: 30,
             }
         },
         yAxis: {
@@ -135,5 +141,10 @@ $.getJSON('toplist/', {'case_id': case_id})
             }
     };
 
-    lenChart.setOption(option1);
+    topChart.setOption(option2);
+    $(window).on('resize', function(){
+        if(topChart != null && topChart != undefined){
+            topChart.resize();
+        }
+    });
 });

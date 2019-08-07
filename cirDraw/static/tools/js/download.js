@@ -2,25 +2,25 @@ $("#dendownload").click(function () {
     var filetype = $("#fileType_2").val();
     var den = Snap("#svg2");
     if (filetype == "SVG") {
-        console.log('dendownload SVG');
+        //console.log('dendownload SVG');
         var saveSvgAsSvg = den.paper.toString(),
             blob = new Blob([saveSvgAsSvg], {
                 type: 'text/plain'
             });
-        console.log(saveSvgAsSvg, blob);
+        //console.log(saveSvgAsSvg, blob);
         $("#dendownload").attr({
             "href": window.URL.createObjectURL(blob),
             "download": "circ.svg"
         });
     } else if (filetype == "PNG") {
-        console.log('dendownload PNG');
+        //console.log('dendownload PNG');
         var saveSvgAsPng = svg2png(den);
         $("#dendownload").attr({
             "href": saveSvgAsPng,
             "download": "circ.png"
         });
     } else if (filetype == "PDF") {
-        console.log('dendownload PDF');
+        //console.log('dendownload PDF');
         var doc = new jsPDF('l', 'mm', [291, 210]),
             imgData = svg2png(den);
         doc.addImage(imgData, 'PNG', 10, 10, 80, 50);

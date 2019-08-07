@@ -92,7 +92,10 @@ DATABASES = {
         #'HOST': '167.179.90.87',
         'HOST': '127.0.0.1',
         'PORT': 6603,
-        'POOL_OPTIONS': {'local_infile': 1}
+        'POOL_OPTIONS': {
+            'POOL_SIZE': 50,
+            'MAX_OVERFLOW': 10
+        }
     }
 }
 

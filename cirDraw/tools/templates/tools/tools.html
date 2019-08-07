@@ -17,12 +17,16 @@
 
                 
                 <a id='start-tutorial' style='font-size: 7pt; color: #fed136; cursor: pointer;'><u>How to use?</u></a>
+                <a id='origin-data' style='font-size: 7pt; color: #fed136; cursor: pointer;'><u>Result data</u></a>
                 <h2 id="report">Basic Report</h2>
-                <h3 id="len">circRNA length distribution</h3>
-                <div data-intro="Statistic of circRNA length in the file." data-step="1" id="lenChart"
-                    style="width:1000px;height:500px"></div>
-                <h3 id="top">Top 20: circRNA isoforms</h3>
-                <div id="topChart" style="width:1000px;height:500px"></div>
+                <div class="row justify-content-center mt-3">
+                    <div class="col-12">
+                    <h3 id="len">circRNA length distribution</h3>
+                <div data-intro="Statistic of circRNA length in the file." data-step="1" id="lenChart" style="width: 100%; min-height: 400px"></div>
+                <h3 id="top">Top 20 genes with most circRNA isoforms</h3>
+                <div id="topChart" style="width: 100%; min-height: 400px"></div>
+                    </div>
+                    </div>
                 <!--<h3 id="exon">Top 20: circRNA isoforms</h3>
                 <div id="exonChart" style="width:500px;height:500px"></div>
                 <h3 id="iso">circRNA length</h3>
@@ -37,7 +41,7 @@
                 </svg>
                 <div class="row justify-content-center mt-3">
                     <div class="col-2">
-                        <p class="mt-3">Set density limit: </p>
+                        <p class="mt-3">Set count limit: </p>
                     </div>
                     <div data-step="3" data-intro="Use this range selector to filter block. Any block has value lower than the selected value will be hidden." class="col-6 range-slider">
                         <input id="den-selector" type="text" class="js-range-slider" value="" />
@@ -146,13 +150,17 @@
                     </div>
                 </div>
 
-                <div class="row justify-content-center mb-2">
+                <div class="row justify-content-center">
 
-                    <div class="col-4">
-                        <h2 id="BaTable" class="d-inline-block mr-3">circRNA Table</h2><button id="download-csv"
+                    <div class="col-6">
+                        <h2 id="BaTable" class="d-inline-block mr-3">Possible modifications on circRNA</h2>
+                        
+                        <button id="download-csv"
                             class="btn btn-primary btn-sm mb-3"><i class="fas fa-download"></i></button>
                     </div>
+                    
                 </div>
+                <span class="help-block" style="color:grey;" id="circ-name"></span>
                 <div class="row justify-content-center" id="BaTable2" data-step="7" data-intro="When you select a circRNA, related modification info will be displayed here.">
                     <div class="col-9">
                         <div id="table" class="table-sm bd-bottom"></div>

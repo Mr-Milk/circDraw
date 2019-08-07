@@ -14,6 +14,7 @@ from django.db.models import Max, Min
 import sys, datetime, time
 import ujson, json
 import hashlib
+import csv
 
 # ========================= RENDER PAGES ==============================
 def render_index_page(request):
@@ -30,11 +31,13 @@ def render_display_page(request, md5):
     print('Render display1:',md5)
     case = UploadParametersMD5.objects.filter(md5 = md5).values('status')
     if case.exists():
-        print(case)
+        #print(case)
         code = case[0]['status']
-        print('Render display2:',case[0]['status'])
+        #print('Render display2:',case[0]['status'])
         if code != 200:
             return render(request, 'tools/HTTP404.html', context)
+        elif code == 202:
+            return render(request, 'tools/wait.html', context)
         else:
             return render(request, 'tools/tools.html', context)
     else:
@@ -75,10 +78,10 @@ def save_to_files(request):
                 if status_old == 200:
                     return_json = [{'md5': md5, 'time': time_, 'save_status': 'Finished'}]
                     return JsonResponse(return_json, safe=False)
-                elif status_old == 201:
-                    return_json = [{'md5': md5, 'time': time_, 'save_status': True}]
-                    return JsonResponse(return_json, safe=False)
-                elif status_old == 101:
+                ##elif status_old == 201:
+                ##    return_json = [{'md5': md5, 'time': time_, 'save_status': True}]
+                ##    return JsonResponse(return_json, safe=False)
+                elif status_old == 202:
                     return_json = [{'md5': md5, 'time': time_, 'save_status': "Running"}]
                     return JsonResponse(return_json, safe=False)
 
@@ -93,6 +96,7 @@ def save_to_files(request):
             return_json = [{'md5': md5, 'time': time_}]
 
             # store md5 value and parameters into database, store file
+            print("saving upload file...")
             path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
             file_path = settings.MEDIA_ROOT + '/' + path
             # distribute parameters details
@@ -102,13 +106,13 @@ def save_to_files(request):
 
             # insert to data base the info of file, paramerter and time
             # initial code 202
+            print("create model instance")
             a = UploadParametersMD5(md5 = md5, status = 202, file_type = file_type, species = species, time = time_, path = path)
-            md5ob = a.md5
             a.save()
 
 
             # calling for process
-            save_status = call_process(file_path, md5ob, parameters)
+            save_status = call_process(file_path, md5, parameters)
             if save_status:
                 ss_status = True
                 a.status = 200
@@ -117,6 +121,7 @@ def save_to_files(request):
             else:
                 ss_status = False
                 a.status = 404
+                print("MD5 {} status 404! Call process return False...".format(md5))
                 print("Save data into database failed, deleting uploaded file now...")
                 default_storage.delete(path)
                 a.save()
@@ -127,9 +132,8 @@ def save_to_files(request):
             return JsonResponse(return_json, safe=False)
 
 
-def call_process(file_path, md5ob, parameters):
+def call_process(file_path, md5, parameters):
     """Function to control the file process precedure"""
-    assert md5ob, "Md5 object should be valid"
 
     # info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
     # save_status = handle_uploaded_file(form_file, info_needed, md5ob, parameters, toCHR, get_chr_num, circ_isin)
@@ -138,17 +142,18 @@ def call_process(file_path, md5ob, parameters):
 
     configuration = {
         'FILE_NAME': file_path,
-        'CORE_NUM': 8,
+        'CORE_NUM': 4,
         'FILE_TYPE': parameters['filetype'],
-        'NEW_FILE': f'{md5ob}_circDraw_generate',
+        'NEW_FILE': f'{md5}_circDraw_generate',
         'ASSEMBLY': parameters['species'],
-        'TASK_ID': md5ob,
+        'TASK_ID': md5,
     }
+
     save_status,circRNA_length_distribution,circRNA_isoform = handle(configuration)
     print('In View:', circRNA_length_distribution, circRNA_isoform)
-    st = StatisticTable(md5=md5ob, lenChart=circRNA_length_distribution, toplist=circRNA_isoform)
+    st = StatisticTable(md5=md5, lenChart=circRNA_length_distribution, toplist=circRNA_isoform)
     st.save()
-    print("Saved?: {} {}".format(save_status, md5ob))
+    print("Saved?: {} {}".format(save_status, md5))
     return save_status
 
 
@@ -371,6 +376,23 @@ def toplist(request):
         return JsonResponse(result, safe=False)
     else:
         raise Http404
+
+def download_UserFile(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    if request.method == 'GET':
+        case_id = request.GET['case_id']
+        print(f'Generating result file for {case_id}')
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="circDraw_results_{case_id}.csv"'
+        print('Finished writing http head-content')
+        writer = csv.writer(response,delimiter='\t')
+        print('Create csv writer')
+        all_results = UserTable.objects.filter(md5=case_id)
+        print('Get from database')
+        for r in all_results:
+            writer.writerow([r.gene_id,r.chr_num, r.start, r.end, r.name, r.gene_type, r.circ_on_gene_all, r.circ_on_num])
+
+    return response
 
 
 # """ def handle_file1(request):

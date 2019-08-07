@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^display/density/$', views.handle_density, name="tools_density"),
     url(r'^display/circrnas/$', views.handle_circrnas, name="tools_circRNAs"),
     url(r'^display/genes/$', views.handle_genes, name="tools_genes"),
+    url(r'^display/downloadresult/$', views.download_UserFile, name="tools_downloadresult"),
 
 
     # charts
