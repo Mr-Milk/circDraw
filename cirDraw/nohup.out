@@ -1,0 +1,1469 @@
+Watching for file changes with StatReloader
+Performing system checks...
+
+origin:  <django.forms.fields.CharField object at 0x7f6d3d44b080>
+System check identified no issues (0 silenced).
+July 19, 2019 - 08:47:27
+Django version 2.2.3, using settings 'cirDraw.settings'
+Starting development server at http://0.0.0.0:8888/
+Quit the server with CONTROL-C.
+[19/Jul/2019 08:47:31] "GET / HTTP/1.1" 200 7331
+[19/Jul/2019 08:47:33] "GET /static/base/img/logo.png HTTP/1.1" 200 13881
+[19/Jul/2019 08:47:34] "GET /tools/ HTTP/1.1" 200 7465
+Md5 existed in DB?:  UploadParametersMD5 object (b0455d2418c83616bd6a9b1915db2641)
+existed in databse, code:  202
+Previous saving failed, Re-saving now...
+Md5 existed in DB?:  UploadParametersMD5 object (b0455d2418c83616bd6a9b1915db2641)
+existed in databse, code:  202
+Previous saving failed, Re-saving now...
+/home/circ/circDraw/cirDraw/tools/handle_file.py changed, reloading.
+[19/Jul/2019 08:53:29] "GET / HTTP/1.1" 200 7331
+[19/Jul/2019 08:53:31] "GET /tools/ HTTP/1.1" 200 7465
+Md5 existed in DB?:  UploadParametersMD5 object (b0455d2418c83616bd6a9b1915db2641)
+existed in databse, code:  202
+Previous saving failed, Re-saving now...
+Md5 existed in DB?:  UploadParametersMD5 object (b0455d2418c83616bd6a9b1915db2641)
+existed in databse, code:  202
+Previous saving failed, Re-saving now...
+Line: True
+Query MySQL1 19 Used 25.01s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 24.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 24.04s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.71s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.79s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.78s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 25.31s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.94s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 22.91s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 22.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 25.37s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 25.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 25.59s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 23.7s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 6 Used 23.13s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 24.1s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 25.19s
+Line: True
+Query MySQL1 13 Used 23.63s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 22.89s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.9s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 7 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 49 Used 23.83s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.73s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.1
+Line: True
+Query MySQL1 19 Used 25.01s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 24.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 24.04s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.71s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.8s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.78s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 25.31s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.94s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 22.9s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 22.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 25.37s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 25.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 25.59s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 23.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.14s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 24.1s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 25.18s
+Line: True
+Query MySQL1 13 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 22.89s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.9s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 49 Used 23.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.73s
+Query MySQL2 Used 0.01s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.3
+Process Process-1:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Process Process-3:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Line: True
+Query MySQL1 19 Used 25.0s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 24.28s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 24.04s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.71s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.8s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.78s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 44 Used 25.31s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.94s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 22.91s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 22.73s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 25.37s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 25.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 25.59s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 23.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.13s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 23 Used 24.1s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 25.18s
+Line: True
+Query MySQL1 13 Used 23.62s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 35 Used 22.89s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.89s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 7 Used 23.04s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 49 Used 23.83s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.73s
+Query MySQL2 Used 0.01s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.2
+Line: True
+Query MySQL1 19 Used 25.01s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 24.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 24.04s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.71s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.8s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.78s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 25.3s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.94s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 22.91s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 22.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 25.37s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 32 Used 25.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 25.59s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 23.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.14s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 25.19s
+Line: True
+Query MySQL1 13 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 22.89s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.9s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 23.03s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 1 Used 24.41s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 23.84s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 3 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.74s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.4
+Process Process-2:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Process Process-4:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+[19/Jul/2019 08:58:06] "POST /tools/upload/ HTTP/1.1" 200 95
+Line: True
+Query MySQL1 19 Used 22.31s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 25.31s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 23.94s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 22.91s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 25.37s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 25.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 25.59s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 23.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 23.13s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 24.1s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 32 Used 25.19s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 22.89s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.9s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.41s
+Line: True
+Query MySQL1 13 Used 23.84s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 35 Used 24.7s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.73s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 23.25s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.39s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 10 Used 22.14s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.3
+Process Process-7:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Line: True
+Query MySQL1 19 Used 22.32s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 25.31s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 23.94s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 22.91s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 25.37s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 25.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 25.59s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 23.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 23.13s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 24.1s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 32 Used 25.18s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 22.89s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.9s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 23 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.41s
+Line: True
+Query MySQL1 13 Used 23.84s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 35 Used 24.7s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.73s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 23.26s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 22.15s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.4
+Process Process-8:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Line: True
+Query MySQL1 19 Used 22.31s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 25.31s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 23.94s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 22.91s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 25.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 25.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 25.59s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 23.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 23.13s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 24.1s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 32 Used 25.18s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 22.89s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.9s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.41s
+Line: True
+Query MySQL1 13 Used 23.85s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.73s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 7 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 23.25s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 22.15s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.1
+Process Process-5:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Line: True
+Query MySQL1 19 Used 22.32s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 25.31s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 51 Used 23.95s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 22.9s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.09s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 25.37s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 25.27s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 25.59s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 23.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 23.13s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 24.1s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 25.19s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 22.89s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.9s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 23 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.42s
+Line: True
+Query MySQL1 13 Used 23.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.7s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.74s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 23.3s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 1 Used 23.24s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 22.14s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.2
+Process Process-6:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Finish processing b0455d2418c83616bd6a9b1915db2641
+Concating success b0455d2418c83616bd6a9b1915db2641
+circRNA length capacity: 0 circRNA isoform capacity: 0
+Handle Error: name 'connection' is not defined
+{'x': [], 'y': []} {'x': [], 'y': []}
+Saved?: False b0455d2418c83616bd6a9b1915db2641
+Save data into database failed, deleting uploaded file now...
+Watching for file changes with StatReloader
+Performing system checks...
+
+origin:  <django.forms.fields.CharField object at 0x7f2786f36f28>
+Running handle
+System check identified no issues (0 silenced).
+July 19, 2019 - 09:00:02
+Django version 2.2.3, using settings 'cirDraw.settings'
+Starting development server at http://0.0.0.0:8888/
+Quit the server with CONTROL-C.
+Line: True
+Query MySQL1 19 Used 25.61s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 24.1s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 25.19s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 22.89s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 23.9s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 23.04s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 24.41s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 23.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 23.74s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 23.26s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 17 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 22.15s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 22.69s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 22.73s
+Line: True
+Query MySQL1 13 Used 23.86s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.28s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 22.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 23.35s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.33s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.29s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.1
+Line: True
+Query MySQL1 19 Used 25.56s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 24.1s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 25.19s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 22.89s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 49 Used 23.9s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 23.04s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 22 Used 23.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 23.74s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.3s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 32 Used 23.26s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 22.14s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 22.69s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 22.73s
+Line: True
+Query MySQL1 13 Used 23.86s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.28s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 22.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 23.35s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.33s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.28s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.2
+Line: True
+Query MySQL1 19 Used 25.57s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 24.1s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 25.18s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 22.89s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 49 Used 23.89s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 44 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 22 Used 23.83s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 2 Used 24.7s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 18 Used 23.73s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 17 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 23.25s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 22.15s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 22.68s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 22.73s
+Line: True
+Query MySQL1 13 Used 23.86s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.28s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 22.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 23.36s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.33s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.29s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.3
+Process Process-11:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Process Process-9:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Process Process-10:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Line: True
+Query MySQL1 19 Used 25.6s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 24.1s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 25.18s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.62s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 22.89s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 49 Used 23.9s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 44 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 24.42s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 23.83s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 2 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 23.73s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 17 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 23.26s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 17 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 22.14s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 23 Used 22.68s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 22.73s
+Line: True
+Query MySQL1 13 Used 23.86s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.28s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 22.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 23.36s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 24.33s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.29s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.4
+Process Process-12:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Line: True
+Query MySQL1 19 Used 22.61s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 3 Used 23.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.7s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 49 Used 23.73s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 44 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.26s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 22.15s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 22.68s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 22.73s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.86s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 24.28s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 22.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.35s
+Line: True
+Query MySQL1 13 Used 23.4s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.33s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 20 Used 23.29s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 25.21s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 24.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 25.02s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 25.67s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.84s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.2
+Line: True
+Query MySQL1 19 Used 22.61s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 3 Used 23.83s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.7s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 49 Used 23.73s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 44 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.26s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 22.14s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 22.68s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 22.73s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.86s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 39 Used 24.28s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 22.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.35s
+Line: True
+Query MySQL1 13 Used 23.4s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.33s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.29s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 25.21s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 24.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 25.02s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 25.67s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.84s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.1
+Process Process-14:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Process Process-13:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Line: True
+Query MySQL1 19 Used 22.61s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 50 Used 23.04s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 3 Used 23.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 24.71s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 23.73s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 44 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.26s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 22.15s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 22.68s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 22.73s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.86s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 39 Used 24.29s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.71s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 22.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.35s
+Line: True
+Query MySQL1 13 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.33s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.29s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 25.21s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 24.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 25.02s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 25.67s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.84s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.3
+Process Process-15:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable
+Line: True
+Query MySQL1 19 Used 22.61s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 50 Used 23.03s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 51 Used 24.41s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 3 Used 23.84s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 7 Used 24.7s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 23.74s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 44 Used 23.3s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.25s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 22 Used 22.46s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 2 Used 23.39s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 18 Used 22.15s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 22.68s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 32 Used 22.73s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 17 Used 23.86s
+Query MySQL2 Used 0.01s
+Line: True
+Query MySQL1 39 Used 24.28s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 6 Used 23.72s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 23 Used 22.38s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 23.35s
+Line: True
+Query MySQL1 13 Used 23.4s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 35 Used 24.33s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 20 Used 23.29s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 7 Used 25.21s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 1 Used 24.84s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 49 Used 25.02s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 3 Used 25.67s
+Query MySQL2 Used 0.0s
+Line: True
+Query MySQL1 10 Used 23.84s
+Query MySQL2 Used 0.0s
+Unmapped circ number: 0
+Mapped circ: 25
+This is new_file: /home/circ/circDraw/cirDraw/media/md5_data/b0455d2418c83616bd6a9b1915db2641_circDraw_generate.4
+Process Process-16:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
+    info = v[0].append(v[1])
+TypeError: can only join an iterable

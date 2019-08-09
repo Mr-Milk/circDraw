@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block othersorce %}
+
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.1.0/material.min.css'>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+        <div class="row flex-xl-nowrap mb-3">
+                <div class="col-12 col-md-4 col-xl-4 bd-sidebar mt-5">
+                <a id="download-diy" style="position: absolute;right:1rem;cursor: pointer" class="mt-2">
+                                <svg t="1564882554170" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2126" width="32" height="32"><path d="M857.6 956.8H166.4c-54.4 0-102.4-48-102.4-105.6v-182.4c0-19.2 12.8-32 32-32s32 12.8 32 32v182.4c0 22.4 16 41.6 38.4 41.6h694.4c19.2 0 38.4-19.2 38.4-41.6v-182.4c0-19.2 12.8-32 32-32s32 12.8 32 32v182.4c-3.2 57.6-48 105.6-105.6 105.6z" fill="#fed136" p-id="2127"></path><path d="M512 758.4c-19.2 0-32-12.8-32-32v-640c0-19.2 12.8-32 32-32s32 12.8 32 32v640c0 16-12.8 32-32 32z" fill="#fed136" p-id="2128"></path><path d="M512 764.8c-9.6 0-16-3.2-22.4-9.6l-208-208c-12.8-12.8-12.8-32 0-44.8s32-12.8 44.8 0l185.6 185.6 185.6-185.6c12.8-12.8 32-12.8 44.8 0s12.8 32 0 44.8l-208 208c-6.4 6.4-12.8 9.6-22.4 9.6z" fill="#fed136" p-id="2129"></path></svg>
+                                </a>
+                        <div class='mt-3'>
+                                <!--<div class='row justify-content-start'>
+                                        <div class="col-7">
+                                                <div class='input-group mb-3'>
+                                                        <div class='input-group-prepend'>
+                                                                <label class='input-group-text' for='circName'>Chromosome</label>
+                                                        </div>
+                                                        <input type='text' class='form-control alpha-num-only'
+                                                                placeholder='Ex: 1' id='chr'>
+                                                </div>
+                                        </div>
+                                </div>-->
+
+
+                                <label for='circInput' id='appendCircForm'>circRNA</label>
+                                
+                                
+                                <div class='input-group mb-3' id='circInput'>
+                                        <input type='text' class='form-control alpha-num-only' placeholder='name' id='circName'>
+                                        <input type='text' class='form-control num-only' placeholder='start' id='circStart'
+                                                pattern='number'>
+                                        <input type='text' class='form-control num-only' placeholder='end' id='circEnd'>
+                                </div>
+
+                                <div class='row justify-content-end'>
+                                        <div class='col-11' id='exon'>
+                                                <label for='circInput'>Exons & Introns</label>
+                                                <div class='input-group mb-3'>
+                                                <select class='custom-select' id='exon-intron'>
+                                                                <option selected value='exon'>Exon</option>
+                                                                <!--<option value='exon'>Exon</option>-->
+                                                                <option value='intron'>Intron</option>
+                                                        </select>
+                                                        <input type='text' class='form-control alpha-num-only'
+                                                                placeholder='name' id='exonName'>
+                                                        <input type='text' class='form-control num-only' placeholder='start'
+                                                                id='exonStart'>
+                                                        <input type='text' class='form-control num-only' placeholder='end'
+                                                                id='exonEnd'>
+                                                        <div class='input-group-append'>
+                                                                <button class='btn btn-outline-secondary' type='button'
+                                                                        id='exonAdd'>+</button>
+                                                        </div>
+                                                </div>
+
+                                        </div>
+                                </div>
+
+                                <!--<div class='row justify-content-end'>
+                                        <div class='col-11' id='mod'>
+                                                <label for='circInput'>Modifications & Functional Regions</label>
+                                                <div class='input-group mb-3'>
+                                                        <select class='custom-select' id='inputGroupSelect01'>
+                                                                <option selected>Type</option>
+                                                                <option value='m6A'>m6A</option>
+                                                                <option value='m1C'>m1C</option>
+                                                                <option value='m1A'>m1A</option>
+                                                        </select>
+                                                        <input type='text' class='form-control num-only' placeholder='site'
+                                                                id='modsite'>
+                                                        <div class='input-group-append'>
+                                                                <button class='btn btn-outline-secondary' type='button'
+                                                                        id='modAdd'>+</button>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>-->
+
+                                <div class='row justify-content-end'>
+                                        <div class='col-11' id='mod'>
+                                                <label for='circInput'>Modifications & Functional Regions</label>
+                                                <div class='input-group mb-3'>
+                                                        <select class='custom-select' id='inputGroupSelect01'>
+                                                                <option selected>Type</option>
+                                                                <option value='m6A'>m6A</option>
+                                                                <option value='m5C'>m5C</option>
+                                                                <option value='m1A'>m1A</option>
+                                                                <option value='pU'>pseudo-U</option>
+                                                                <option value='OMe'>2-O-Me</option>
+                                                                <option value='MRE'>MRE</option>
+                                                                <option value='RBP'>RBP</option>
+                                                                <option value='ORF'>ORF</option>
+                                                        </select>
+                                                        <input type='text' class='form-control num-only' placeholder='start'
+                                                                id='modstart'>
+                                                        <input type='text' class='form-control num-only' placeholder='end'
+                                                                id='modend'>
+                                                        <div class='input-group-append'>
+                                                                <button class='btn btn-outline-secondary' type='button'
+                                                                        id='modAdd'>+</button>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+                                <div class='row mb-3 justify-content-start align-middle'>
+                                        <div class='col-12'>
+                                                <button class='btn btn-primary btn-sm' type='button' id='addcirc'>Add
+                                                        circRNA</button>
+                                        </div>
+                                </div>
+
+
+
+                                <label for='circInput'>Genes</label>
+                                <div class='input-group mb-3' id='gene'>
+                                        <input type='text' class='form-control alpha-num-only' placeholder='name' id='geneName'>
+                                        <input type='text' class='form-control num-only' placeholder='start' id='geneStart'>
+                                        <input type='text' class='form-control num-only' placeholder='end' id='geneEnd'>
+                                </div>
+
+                                <div class='row mb-3 justify-content-start align-middle'>
+                                        <div class='col-12'>
+                                                <button class='btn btn-primary btn-sm' type='button' id='addgene'>Add
+                                                        Gene</button>
+                                        </div>
+                                </div>
+
+                        </div>
+                </div>
+                <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-bottom">
+
+                        <div class='mt-5 center'>
+                                <svg id='svg' width='800' height='500' style="border:3px solid #fed136;">
+                        </div>
+
+                </main>
+        </div>
+</div>
+
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block otherJS %}
+<!-- Outside js -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" type="text/javascript"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js' integrity='sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/'
+        crossorigin='anonymous'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/canvg/1.4/rgbcolor.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/canvg@2.0.0-beta.0/dist/browser/canvg.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js' integrity='sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49'
+        crossorigin='anonymous'></script>
+
+<!-- Custom js for this template -->
+<script src="{% static 'diy/js/circDIY.js' %}" type="text/javascript"></script>
+{% endblock %}

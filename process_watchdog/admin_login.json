@@ -1,0 +1,15 @@
+[
+    {
+        "user": "root",
+        "password": "mypassword",
+        "host": "127.0.0.1",
+        "database": "circDraw",
+        "port": 6603
+    },
+    {
+        "user": "root",
+        "password": "mypassword",
+        "host": "production_host",
+        "database": "cirDraw"
+    }
+]

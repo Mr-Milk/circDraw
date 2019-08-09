@@ -1,0 +1,207 @@
+Collecting uwsgi
+  Using cached https://files.pythonhosted.org/packages/e7/1e/3dcca007f974fe4eb369bf1b8629d5e342bb3055e2001b2e5340aaefae7a/uwsgi-2.0.18.tar.gz
+Building wheels for collected packages: uwsgi
+  Running setup.py bdist_wheel for uwsgi: started
+  Running setup.py bdist_wheel for uwsgi: finished with status 'error'
+  Complete output from command /usr/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-ae983wv1/uwsgi/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" bdist_wheel -d /tmp/tmp09loixvxpip-wheel- --python-tag cp36:
+  /usr/lib/python3.6/distutils/dist.py:261: UserWarning: Unknown distribution option: 'descriptions'
+    warnings.warn(msg)
+  running bdist_wheel
+  running build
+  running build_py
+  creating build
+  creating build/lib
+  copying uwsgidecorators.py -> build/lib
+  installing to build/bdist.linux-x86_64/wheel
+  running install
+  using profile: buildconf/default.ini
+  detected include path: ['/usr/lib/gcc/x86_64-linux-gnu/8/include', '/usr/local/include', '/usr/lib/gcc/x86_64-linux-gnu/8/include-fixed', '/usr/include/x86_64-linux-gnu', '/usr/include']
+  Patching "bin_name" to properly install_scripts dir
+  detected CPU cores: 2
+  configured CFLAGS: -O2 -I. -Wall -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -DUWSGI_HAS_IFADDRS -DUWSGI_LOCK_USE_MUTEX -DUWSGI_EVENT_USE_EPOLL -DUWSGI_EVENT_TIMER_USE_TIMERFD -DUWSGI_EVENT_FILEMONITOR_USE_INOTIFY -DUWSGI_VERSION="\"2.0.18\"" -DUWSGI_VERSION_BASE="2" -DUWSGI_VERSION_MAJOR="0" -DUWSGI_VERSION_MINOR="18" -DUWSGI_VERSION_REVISION="0" -DUWSGI_VERSION_CUSTOM="\"\"" -DUWSGI_YAML -DUWSGI_PLUGIN_DIR="\".\"" -DUWSGI_DECLARE_EMBEDDED_PLUGINS="UDEP(python);UDEP(gevent);UDEP(ping);UDEP(cache);UDEP(nagios);UDEP(rrdtool);UDEP(carbon);UDEP(rpc);UDEP(corerouter);UDEP(fastrouter);UDEP(http);UDEP(ugreen);UDEP(signal);UDEP(syslog);UDEP(rsyslog);UDEP(logsocket);UDEP(router_uwsgi);UDEP(router_redirect);UDEP(router_basicauth);UDEP(zergpool);UDEP(redislog);UDEP(mongodblog);UDEP(router_rewrite);UDEP(router_http);UDEP(logfile);UDEP(router_cache);UDEP(rawrouter);UDEP(router_static);UDEP(sslrouter);UDEP(spooler);UDEP(cheaper_busyness);UDEP(symcall);UDEP(transformation_tofile);UDEP(transformation_gzip);UDEP(transformation_chunked);UDEP(transformation_offload);UDEP(router_memcached);UDEP(router_redis);UDEP(router_hash);UDEP(router_expires);UDEP(router_metrics);UDEP(transformation_template);UDEP(stats_pusher_socket);" -DUWSGI_LOAD_EMBEDDED_PLUGINS="ULEP(python);ULEP(gevent);ULEP(ping);ULEP(cache);ULEP(nagios);ULEP(rrdtool);ULEP(carbon);ULEP(rpc);ULEP(corerouter);ULEP(fastrouter);ULEP(http);ULEP(ugreen);ULEP(signal);ULEP(syslog);ULEP(rsyslog);ULEP(logsocket);ULEP(router_uwsgi);ULEP(router_redirect);ULEP(router_basicauth);ULEP(zergpool);ULEP(redislog);ULEP(mongodblog);ULEP(router_rewrite);ULEP(router_http);ULEP(logfile);ULEP(router_cache);ULEP(rawrouter);ULEP(router_static);ULEP(sslrouter);ULEP(spooler);ULEP(cheaper_busyness);ULEP(symcall);ULEP(transformation_tofile);ULEP(transformation_gzip);ULEP(transformation_chunked);ULEP(transformation_offload);ULEP(router_memcached);ULEP(router_redis);ULEP(router_hash);ULEP(router_expires);ULEP(router_metrics);ULEP(transformation_template);ULEP(stats_pusher_socket);"
+  *** uWSGI compiling server core ***
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/utils.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/protocol.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/socket.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/logging.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/master.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/master_utils.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/emperor.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/notify.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/mule.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/subscription.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/stats.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/sendfile.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/async.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/master_checks.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/fifo.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/offload.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/io.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/static.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/websockets.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/spooler.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/snmp.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/exceptions.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/config.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/setup_utils.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/clock.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/init.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/buffer.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/reader.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/writer.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/alarm.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/cron.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/hooks.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/plugins.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/lock.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/cache.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/daemons.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/errors.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/hash.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/master_events.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/chunked.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/queue.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/event.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/signal.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/strings.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/progress.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/timebomb.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/ini.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/fsmon.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/mount.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/metrics.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/plugins_builder.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/sharedarea.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/rpc.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/gateway.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/loop.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/cookie.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/querystring.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/rb_timers.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/transformations.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/uwsgi.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] proto/base.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] proto/uwsgi.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] proto/http.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] proto/fastcgi.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] proto/scgi.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] proto/puwsgi.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] lib/linux_ns.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] core/yaml.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/dot_h.o
+  [thread 1][x86_64-linux-gnu-gcc -pthread] core/config_py.o
+  *** uWSGI compiling embedded plugins ***
+  [thread 1][x86_64-linux-gnu-gcc -pthread] plugins/python/python_plugin.o
+  [thread 0][x86_64-linux-gnu-gcc -pthread] plugins/python/pyutils.o
+  In file included from plugins/python/python_plugin.c:1:
+  plugins/python/uwsgi_python.h:2:10: fatal error: Python.h: No such file or directory
+   #include <Python.h>
+            ^~~~~~~~~~
+  compilation terminated.
+  In file included from plugins/python/pyutils.c:1:
+  plugins/python/uwsgi_python.h:2:10: fatal error: Python.h: No such file or directory
+   #include <Python.h>
+            ^~~~~~~~~~
+  compilation terminated.
+  
+  ----------------------------------------
+  Running setup.py clean for uwsgi
+Failed to build uwsgi
+Installing collected packages: uwsgi
+  Running setup.py install for uwsgi: started
+    Running setup.py install for uwsgi: finished with status 'error'
+    Complete output from command /usr/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-ae983wv1/uwsgi/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /tmp/pip-ltbtewaz-record/install-record.txt --single-version-externally-managed --compile:
+    /usr/lib/python3.6/distutils/dist.py:261: UserWarning: Unknown distribution option: 'descriptions'
+      warnings.warn(msg)
+    running install
+    using profile: buildconf/default.ini
+    detected include path: ['/usr/lib/gcc/x86_64-linux-gnu/8/include', '/usr/local/include', '/usr/lib/gcc/x86_64-linux-gnu/8/include-fixed', '/usr/include/x86_64-linux-gnu', '/usr/include']
+    Patching "bin_name" to properly install_scripts dir
+    detected CPU cores: 2
+    configured CFLAGS: -O2 -I. -Wall -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -DUWSGI_HAS_IFADDRS -DUWSGI_LOCK_USE_MUTEX -DUWSGI_EVENT_USE_EPOLL -DUWSGI_EVENT_TIMER_USE_TIMERFD -DUWSGI_EVENT_FILEMONITOR_USE_INOTIFY -DUWSGI_VERSION="\"2.0.18\"" -DUWSGI_VERSION_BASE="2" -DUWSGI_VERSION_MAJOR="0" -DUWSGI_VERSION_MINOR="18" -DUWSGI_VERSION_REVISION="0" -DUWSGI_VERSION_CUSTOM="\"\"" -DUWSGI_YAML -DUWSGI_PLUGIN_DIR="\".\"" -DUWSGI_DECLARE_EMBEDDED_PLUGINS="UDEP(python);UDEP(gevent);UDEP(ping);UDEP(cache);UDEP(nagios);UDEP(rrdtool);UDEP(carbon);UDEP(rpc);UDEP(corerouter);UDEP(fastrouter);UDEP(http);UDEP(ugreen);UDEP(signal);UDEP(syslog);UDEP(rsyslog);UDEP(logsocket);UDEP(router_uwsgi);UDEP(router_redirect);UDEP(router_basicauth);UDEP(zergpool);UDEP(redislog);UDEP(mongodblog);UDEP(router_rewrite);UDEP(router_http);UDEP(logfile);UDEP(router_cache);UDEP(rawrouter);UDEP(router_static);UDEP(sslrouter);UDEP(spooler);UDEP(cheaper_busyness);UDEP(symcall);UDEP(transformation_tofile);UDEP(transformation_gzip);UDEP(transformation_chunked);UDEP(transformation_offload);UDEP(router_memcached);UDEP(router_redis);UDEP(router_hash);UDEP(router_expires);UDEP(router_metrics);UDEP(transformation_template);UDEP(stats_pusher_socket);" -DUWSGI_LOAD_EMBEDDED_PLUGINS="ULEP(python);ULEP(gevent);ULEP(ping);ULEP(cache);ULEP(nagios);ULEP(rrdtool);ULEP(carbon);ULEP(rpc);ULEP(corerouter);ULEP(fastrouter);ULEP(http);ULEP(ugreen);ULEP(signal);ULEP(syslog);ULEP(rsyslog);ULEP(logsocket);ULEP(router_uwsgi);ULEP(router_redirect);ULEP(router_basicauth);ULEP(zergpool);ULEP(redislog);ULEP(mongodblog);ULEP(router_rewrite);ULEP(router_http);ULEP(logfile);ULEP(router_cache);ULEP(rawrouter);ULEP(router_static);ULEP(sslrouter);ULEP(spooler);ULEP(cheaper_busyness);ULEP(symcall);ULEP(transformation_tofile);ULEP(transformation_gzip);ULEP(transformation_chunked);ULEP(transformation_offload);ULEP(router_memcached);ULEP(router_redis);ULEP(router_hash);ULEP(router_expires);ULEP(router_metrics);ULEP(transformation_template);ULEP(stats_pusher_socket);"
+    *** uWSGI compiling server core ***
+    core/utils.o is up to date
+    core/protocol.o is up to date
+    core/socket.o is up to date
+    core/logging.o is up to date
+    core/master.o is up to date
+    core/master_utils.o is up to date
+    core/emperor.o is up to date
+    core/notify.o is up to date
+    core/mule.o is up to date
+    core/subscription.o is up to date
+    core/stats.o is up to date
+    core/sendfile.o is up to date
+    core/async.o is up to date
+    core/master_checks.o is up to date
+    core/fifo.o is up to date
+    core/offload.o is up to date
+    core/io.o is up to date
+    core/static.o is up to date
+    core/websockets.o is up to date
+    core/spooler.o is up to date
+    core/snmp.o is up to date
+    core/exceptions.o is up to date
+    core/config.o is up to date
+    core/setup_utils.o is up to date
+    core/clock.o is up to date
+    core/init.o is up to date
+    core/buffer.o is up to date
+    core/reader.o is up to date
+    core/writer.o is up to date
+    core/alarm.o is up to date
+    core/cron.o is up to date
+    core/hooks.o is up to date
+    core/plugins.o is up to date
+    core/lock.o is up to date
+    core/cache.o is up to date
+    core/daemons.o is up to date
+    core/errors.o is up to date
+    core/hash.o is up to date
+    core/master_events.o is up to date
+    core/chunked.o is up to date
+    core/queue.o is up to date
+    core/event.o is up to date
+    core/signal.o is up to date
+    core/strings.o is up to date
+    core/progress.o is up to date
+    core/timebomb.o is up to date
+    core/ini.o is up to date
+    core/fsmon.o is up to date
+    core/mount.o is up to date
+    core/metrics.o is up to date
+    core/plugins_builder.o is up to date
+    core/sharedarea.o is up to date
+    core/rpc.o is up to date
+    core/gateway.o is up to date
+    core/loop.o is up to date
+    core/cookie.o is up to date
+    core/querystring.o is up to date
+    core/rb_timers.o is up to date
+    core/transformations.o is up to date
+    core/uwsgi.o is up to date
+    proto/base.o is up to date
+    proto/uwsgi.o is up to date
+    proto/http.o is up to date
+    proto/fastcgi.o is up to date
+    proto/scgi.o is up to date
+    proto/puwsgi.o is up to date
+    lib/linux_ns.o is up to date
+    core/yaml.o is up to date
+    [thread 1][x86_64-linux-gnu-gcc -pthread] core/dot_h.o
+    [thread 0][x86_64-linux-gnu-gcc -pthread] core/config_py.o
+    *** uWSGI compiling embedded plugins ***
+    [thread 0][x86_64-linux-gnu-gcc -pthread] plugins/python/python_plugin.o
+    [thread 1][x86_64-linux-gnu-gcc -pthread] plugins/python/pyutils.o
+    In file included from plugins/python/python_plugin.c:1:
+    plugins/python/uwsgi_python.h:2:10: fatal error: Python.h: No such file or directory
+     #include <Python.h>
+              ^~~~~~~~~~
+    compilation terminated.
+    In file included from plugins/python/pyutils.c:1:
+    plugins/python/uwsgi_python.h:2:10: fatal error: Python.h: No such file or directory
+     #include <Python.h>
+              ^~~~~~~~~~
+    compilation terminated.
+    
+    ----------------------------------------

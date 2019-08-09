@@ -1,0 +1,306 @@
+(2c86b8b) 2019-05-13 12:11:32 +0800 all plot is working without major issues, details remains to be perfected.
+(e48cb89) 2019-05-13 01:56:37 +0800 add search with gene name
+(d130dff) 2019-05-12 11:54:10 +0800 fix exon overflow, prevent exon duplicate
+(1123d7d) 2019-05-08 16:01:19 +0800 reconstructed the rendering process - support responsive infobox - support intron on both chromosome and circRNA - extensible modifications types and icons - much beautiful legend and draggable
+(e7056d8) 2019-04-25 09:50:02 +0800 move pictures to /src
+(aa2c555) 2019-04-25 09:37:48 +0800 transfer python script of circDraw visualization to another repo
+(d140e68) 2019-04-09 10:48:22 +0800 merge success
+(9991c18) 2019-04-09 10:44:58 +0800 updata readme, for thesis
+(149c541) 2019-03-25 03:58:55 +0800 fix add species
+(0e72be0) 2019-03-25 03:54:10 +0800 adding species to tools_annotation
+(c4d8b02) 2019-03-25 03:10:39 +0800 add update_snp
+(acd826b) 2019-03-25 00:17:43 +0800 amend readme.md
+(0ab674c) 2019-03-25 00:16:31 +0800 amend readme.md
+(3fab681) 2019-03-25 00:14:36 +0800 amend readme.md
+(8f90ce1) 2019-03-25 00:08:56 +0800 amend readme.md
+(a26c88b) 2019-03-24 23:49:05 +0800 amend for gene_annotation and oneline command
+(853fb02) 2019-03-24 21:44:19 +0800 change for process gene
+(5570bcb) 2019-03-24 13:47:17 +0800 freeze local requirement before go hot
+(44469a5) 2019-03-23 12:39:29 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge
+(0b77998) 2019-03-23 12:39:12 +0800 allow multi links in epi click event
+(e4b0ef9) 2019-03-23 12:14:35 +0800 invalid commit
+(6f964d4) 2019-03-23 12:13:21 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(11e3eb8) 2019-03-23 12:13:10 +0800 toplist is functionable
+(54ed1a0) 2019-03-23 12:11:05 +0800 change addid for automation in oneline.py
+(b519367) 2019-03-23 11:31:25 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge after finishing toplist and mod
+(dc0281a) 2019-03-23 11:31:16 +0800 fix toplist(still need test); fix modquery
+(c6150f4) 2019-03-23 11:25:40 +0800 add toplist chart
+(1c2a359) 2019-03-23 11:10:14 +0800 upload fixed
+(3e02331) 2019-03-23 11:06:06 +0800 add example result
+(d4a9ec3) 2019-03-23 10:51:06 +0800 change upload status code
+(7c87f40) 2019-03-23 09:44:20 +0800 amend data process; add Running to save_status
+(2be6d4b) 2019-03-22 23:41:28 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(46fe75f) 2019-03-22 23:40:26 +0800 night before go online
+(33eb3d1) 2019-03-22 23:40:15 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge
+(fdcd954) 2019-03-22 23:40:03 +0800 oneline.py to update database with modifications
+(75d110f) 2019-03-22 23:16:13 +0800 add meta discription for SEO
+(2b31fb9) 2019-03-22 20:34:58 +0800 modify operating logic of raw data; add oneline.py for simply reproduction of database manipulate
+(8e69ac2) 2019-03-22 16:55:14 +0800 add upload-text url
+(96f6131) 2019-03-22 16:52:50 +0800 upload shall not be an issue
+(fb97cb3) 2019-03-22 16:13:15 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(2c642e2) 2019-03-22 16:13:06 +0800 beautify result page, add table
+(25dd7ea) 2019-03-22 16:11:36 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge
+(a0491a1) 2019-03-22 16:10:55 +0800 fix bugs when re-upload same file
+(1b5b141) 2019-03-21 16:45:48 +0800 fix stupid bootstrap issue, replacing 4.1.3 with 4.0.0
+(5e4fd42) 2019-03-21 15:01:51 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front Merge after big change
+(a4622b2) 2019-03-21 14:57:24 +0800 1. In upload page: Add uploading animation, merge "view result" button with copy-clipboard button, change process time calculation 2. In result page: change density plot gradient colors to [orange --> green | 0 --> 100], add slider to scale isoform plot.
+(707ce6a) 2019-03-20 14:06:31 +0800 refine annotation.py and tested in m1a
+(dbc9ef8) 2019-03-19 17:59:08 +0800 change data modify method
+(ddebd87) 2019-03-19 16:52:18 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(1a161d4) 2019-03-19 16:52:07 +0800 test drawcirc
+(a9bdf85) 2019-03-19 16:44:59 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge
+(10efdb4) 2019-03-19 16:44:35 +0800 add gene_type to handle_file2, get idea of how to insert data scalably
+(2d78a43) 2019-03-19 16:07:57 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge hahaha
+(c700e43) 2019-03-19 16:07:37 +0800 add copy to clipboard in upload
+(a24486d) 2019-03-19 16:03:52 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge after amend tools.views.run
+(dda084d) 2019-03-19 16:03:43 +0800 clean up run function in view
+(25ed200) 2019-03-19 14:16:36 +0800 change key[density] to [value]
+(e0cbd21) 2019-03-19 14:15:53 +0800 change 'density' to 'value' for biocircos
+(242966a) 2019-03-19 14:09:23 +0800 amend gitignore
+(71ecbbe) 2019-03-19 14:07:09 +0800 fix merge
+(013c768) 2019-03-19 14:01:41 +0800 not very ok views, chr_lens not define
+(c133cbc) 2019-03-19 13:20:39 +0800 publish circDraw.js
+(0b1f974) 2019-03-19 01:02:26 +0800 amend .gitignore
+(7a12d30) 2019-03-19 01:00:30 +0800 working on process_package
+(bcc9d5d) 2019-03-19 00:59:05 +0800 add test.bed
+(c336b0b) 2019-03-19 00:58:36 +0800 add test.bed
+(ec3d8dc) 2019-03-18 21:54:37 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front fake handle 1
+(1ccb3c3) 2019-03-18 21:54:27 +0800 add fake handle_file1
+(4ffade3) 2019-03-18 21:18:04 +0800 wait for fake data
+(fb8d961) 2019-03-18 16:40:03 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge file
+(4606849) 2019-03-18 16:39:55 +0800 changing data
+(66eee13) 2019-03-18 16:38:47 +0800 fix conflixs
+(016c72d) 2019-03-18 16:37:38 +0800 add density filter for density plot
+(9e6f399) 2019-03-18 15:23:03 +0800 Update README.md
+(c17f489) 2019-03-18 15:22:26 +0800 Update README.md
+(4c17615) 2019-03-18 15:21:52 +0800 Update README.md
+(9a45940) 2019-03-18 15:11:15 +0800 change pictures
+(f5b71c5) 2019-03-18 15:06:58 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge
+(44b5374) 2019-03-18 15:06:48 +0800 add two pictures
+(49abe65) 2019-03-18 15:03:59 +0800 Update README.md
+(4324769) 2019-03-18 14:44:06 +0800 add readme.md for process_watchdog
+(1345a9a) 2019-03-18 14:42:26 +0800 write automate migration and dbcleaning script
+(7f18339) 2019-03-18 11:32:21 +0800 fix confict
+(53cadc6) 2019-03-18 11:30:34 +0800 snapshot
+(b445326) 2019-03-18 11:28:00 +0800 issue: genlist return empty
+(50db217) 2019-03-18 10:00:51 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(8c4f315) 2019-03-18 03:43:03 +0800 try merge
+(60d1402) 2019-03-18 03:38:40 +0800 merge
+(85c7a16) 2019-03-18 03:35:31 +0800 Add genList
+(2106581) 2019-03-18 03:16:53 +0800 merge done
+(b6a2b66) 2019-03-18 03:14:51 +0800 add SNP disease animate
+(e978ffb) 2019-03-18 02:58:58 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge
+(c30e2b0) 2019-03-18 02:57:58 +0800 change status code
+(41df67e) 2019-03-18 01:00:08 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(e5c71b8) 2019-03-18 00:59:54 +0800 before connect drawCirc
+(4337b1d) 2019-03-18 00:56:35 +0800 worked on tops_result chart, left problems for keep_tops algorithms
+(cd306e1) 2019-03-18 00:50:47 +0800 fix many bugs
+(c99e708) 2019-03-17 21:07:29 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(84eb8be) 2019-03-17 21:07:10 +0800 download fixed
+(aad1e0c) 2019-03-17 21:05:40 +0800 change the process handling logic, adapt to multiple data format
+(4250fa2) 2019-03-17 16:31:08 +0800 amend mysqlconnect operator, finish clean-up automation
+(4b1b47f) 2019-03-17 14:51:40 +0800 amend gitignore for circDraw data file
+(ad669b0) 2019-03-17 14:48:01 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front change color of density
+(9fa4274) 2019-03-17 14:47:55 +0800 reorganize mysqlconnect; fix bugs in upload.view
+(c462a66) 2019-03-17 14:46:14 +0800 modify mysqlconnect class
+(469a3e8) 2019-03-17 14:42:23 +0800 before front-end comm
+(7c7b0fc) 2019-03-17 06:27:34 +0800  go change parameters and fix upload
+(6a3009f) 2019-03-16 22:55:32 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front add run url and fix data type of motor ajax
+(68047fb) 2019-03-16 22:55:22 +0800 add run in tools.url
+(2205d01) 2019-03-16 22:53:30 +0800 md5 parameters upload
+(02e9fc9) 2019-03-16 22:47:59 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front merge front for add getJSON motor to call handle_file5
+(533b566) 2019-03-16 22:47:46 +0800 change logic of calling handing file
+(5db8374) 2019-03-16 22:45:59 +0800 upload modified
+(319a7fb) 2019-03-16 20:47:05 +0800 stringfy text input
+(8438866) 2019-03-16 20:33:28 +0800 update upload status
+(27ed87d) 2019-03-16 19:51:37 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(2190b68) 2019-03-16 19:51:28 +0800 add file size limit and delete icon in upload
+(7b4b832) 2019-03-16 19:45:04 +0800 fix get status url request, wait for add md5 value into getJSON
+(01e324c) 2019-03-16 19:13:18 +0800 solve conflict
+(c36c95d) 2019-03-16 19:10:28 +0800 change the logic of upload system and save the file with parameters safely, suspend the idea of seperate the processing system and django for now
+(7afe399) 2019-03-16 14:20:24 +0800 more accurate process time in upload
+(d285a66) 2019-03-15 23:46:29 +0800 allow text upload, add input limit
+(ecaabc7) 2019-03-15 22:03:17 +0800 change the logic of backend to process the file and insert to database
+(5cffbfb) 2019-03-15 16:29:57 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front change the misfunction in "submmit" button
+(d2c50c2) 2019-03-15 16:29:47 +0800 change views
+(d5cd7fc) 2019-03-15 16:29:20 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(2441def) 2019-03-15 16:28:56 +0800 fix diy and change font
+(ed7dad7) 2019-03-15 14:52:46 +0800 fix upload md5, but detect some bugs in upload interface
+(9b7bae8) 2019-03-15 02:21:38 +0800 add diy app and runs ok
+(3631f56) 2019-03-15 00:14:30 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(9ded064) 2019-03-15 00:02:31 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(ac68d89) 2019-03-15 00:02:03 +0800 before merge
+(4619e4a) 2019-03-14 23:58:42 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(948f3e2) 2019-03-14 23:58:29 +0800 save before merge
+(abd74bc) 2019-03-13 16:35:34 +0800 add diy tools for user to generate their own plot
+(bc1132b) 2019-03-13 00:50:58 +0800 figure out the way formData works and write functions in insert package
+(d256288) 2019-03-09 23:03:37 +0800 add function
+(8bfe745) 2019-03-09 12:03:53 +0800 fix name display issue
+(99da555) 2019-03-08 16:01:34 +0800 Update README.md
+(f13610b) 2019-03-08 15:59:06 +0800 clean part of class-based database insertation package, add data inserting requirements, try to change the submit but having problem with correct url in views.py
+(04d4a48) 2019-03-06 20:59:48 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(4c98fda) 2019-03-06 20:44:13 +0800 README.md
+(2934063) 2019-03-05 15:15:47 +0800 add more animation and tips on index page
+(0b420d8) 2019-03-04 20:22:34 +0800 solve conflicts while merge
+(44dc9fb) 2019-03-04 12:18:22 +0800 try upload using formdata, upload URL blank.
+(89578c4) 2019-02-28 23:26:46 +0800 recover commentted csrf
+(2e2592d) 2019-02-26 11:17:57 +0800 upload
+(fbc95d6) 2019-02-26 10:58:41 +0800 change upload.js reading path
+(b52e90d) 2019-02-24 20:46:32 +0800 fix dead loop in upload.js
+(5b110e8) 2019-02-16 19:23:15 +0800 add animation while interact with circ svg
+(1683731) 2019-02-16 15:55:28 +0800 add selector frame to allow precise selection of density block in density plot
+(aaae144) 2019-02-16 15:20:08 +0800 allow clean up old circRNA after generating a new one
+(0ae41b7) 2019-02-02 23:26:52 +0800 add vscode ignore and change the name to related_genome_info
+(8eacae8) 2019-02-02 23:19:05 +0800 move raw data into raw_data folder
+(058dd3e) 2019-02-02 23:06:23 +0800 new scable structure for database autoinsertion
+(3ce9643) 2019-01-19 22:10:12 +0800 2019-01-19
+(1df6da7) 2019-01-17 20:12:26 +0800 change head logo
+(9da7637) 2019-01-17 10:58:55 +0800 upload
+(e6ae65f) 2019-01-17 10:18:16 +0800 upload using ajax
+(619f910) 2019-01-15 12:03:01 +0800 add png download and change color
+(2a0c6c1) 2019-01-15 11:27:16 +0800 change table style to material
+(c9aea8d) 2019-01-15 11:12:07 +0800 support svg/png/pdf in download
+(58f5aca) 2019-01-14 22:36:34 +0800 add foldable table and include hyperlink
+(98bbca6) 2019-01-13 21:46:27 +0800 add circos
+(4b24d1e) 2019-01-12 16:37:48 +0800 add download
+(7aae5cb) 2019-01-11 22:35:15 +0800 add bottons to change density block
+(e9de828) 2019-01-11 20:02:20 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(8f290ed) 2019-01-11 20:01:53 +0800 fix drawCirc
+(5b78692) 2019-01-11 19:54:00 +0800 turn debug=True for adding a new feature
+(ece67d8) 2019-01-11 12:47:10 +0800 add loading animation for density plot
+(d4b0fd9) 2019-01-11 12:39:37 +0800 Important updata, add more functions, imporve user experience
+(37b7543) 2019-01-11 10:58:18 +0800 Merge branch 'master' of https://github.com/Mr-Milk/circDraw into front
+(4fba5ad) 2019-01-10 14:48:22 +0000 change domain name and work perfectly
+(6e497a9) 2019-01-10 22:45:52 +0800 Update README.md
+(2db4e0d) 2019-01-10 21:50:06 +0800 Add front end library
+(b96b182) 2019-01-10 21:42:33 +0800 Merge branch 'master' of https://github.com/Mr-Milk/circDraw into front
+(9018a9c) 2019-01-10 17:33:45 +0800 Update README.md
+(1d2aecc) 2019-01-10 17:30:10 +0800 Update README.md
+(3a49e0b) 2019-01-10 17:29:19 +0800 Update README.md
+(21d9935) 2019-01-10 17:25:51 +0800 Update README.md
+(8db22bd) 2019-01-10 17:23:17 +0800 Merge branch 'master' of https://github.com/Mr-Milk/circDraw
+(3a91537) 2019-01-10 17:23:01 +0800 amend upload.png
+(d2c7888) 2019-01-10 17:15:34 +0800 Update README.md
+(492e0b8) 2019-01-10 17:10:55 +0800 Update README.md
+(627210c) 2019-01-10 17:03:47 +0800 clear vscode file
+(89fb848) 2019-01-10 17:03:21 +0800 add sreen shot to repo
+(ca52251) 2019-01-10 08:59:33 +0000 Merge branch 'master' of https://github.com/Mr-Milk/circDraw
+(92c2fae) 2019-01-10 08:58:51 +0000 configure for server
+(7eb7d7d) 2019-01-10 16:53:11 +0800 Update README.md
+(0f66c91) 2019-01-10 16:16:24 +0800 Update README.md
+(8ffb25d) 2019-01-10 16:16:06 +0800 Update README.md
+(54d354d) 2019-01-10 07:06:11 +0000 ok for deployment test
+(36acb21) 2019-01-10 05:23:58 +0000 add allow host and worked fine
+(3c9de31) 2019-01-09 00:17:41 +0800 delete display.html
+(06ac9b0) 2019-01-09 00:15:55 +0800 finished modifying static/tools
+(c4c2de9) 2019-01-08 23:58:34 +0800 change home name to base in static
+(fbc8821) 2019-01-08 23:53:23 +0800 change sucessfully for static/home folder
+(0c1486a) 2019-01-08 22:50:58 +0800 safe version before mess up with static file when debug is True
+(5be9a2f) 2019-01-08 16:44:12 +0800 modify static_dir in setting.py
+(644a7a3) 2019-01-05 12:32:29 +0800 loading
+(16398a7) 2019-01-05 12:29:19 +0800 loading gif
+(1448798) 2019-01-05 12:28:04 +0800 add loading for den
+(eeb5934) 2019-01-05 11:32:31 +0800 update front end
+(f3bbd6d) 2019-01-05 11:30:14 +0800 trun on switches in database insertation
+(e41ff5c) 2019-01-05 11:24:08 +0800 clear pyc
+(70277e2) 2019-01-05 11:21:15 +0800 Merge pull request #3 from Mr-Milk/front
+(479e21e) 2019-01-05 11:18:48 +0800 solve conflicts
+(db1f4d6) 2019-01-05 10:58:39 +0800 Merge pull request #2 from Mr-Milk/front
+(e131ba6) 2019-01-05 10:55:48 +0800 Merge branch 'front' of https://github.com/Mr-Milk/circDraw into front
+(4cc9e3f) 2019-01-05 10:55:39 +0800 Delete views.cpython-36.pyc
+(3f99dfd) 2019-01-05 10:55:33 +0800 Delete urls.cpython-36.pyc
+(3aa391a) 2019-01-05 10:53:14 +0800 interactive logic changes
+(d737e52) 2019-01-05 10:50:50 +0800 Delete settings.json
+(407f542) 2019-01-05 10:50:37 +0800 Delete connect.cpython-36.pyc
+(241b336) 2019-01-05 10:50:30 +0800 Delete annotation.cpython-36.pyc
+(652cd7f) 2019-01-05 10:46:30 +0800 Interaction logic modified
+(7aed5e2) 2019-01-05 02:20:45 +0000 add versionn29 human genome annotation into database
+(49c90e9) 2019-01-05 00:15:45 +0800 Delete settings.json
+(2464604) 2019-01-04 22:19:46 +0800 solve conflict in cirDraw/static/js/linechart.js
+(1ad6290) 2019-01-04 22:05:52 +0800 rm __pycache__ from git origin
+(44a779d) 2019-01-04 22:05:02 +0800 rm __pycache__ from git
+(58ee7ab) 2019-01-03 19:37:01 +0800 delete all __pycha__
+(b1429aa) 2019-01-03 19:21:53 +0800 modify .gitignore
+(b7b7308) 2019-01-03 19:18:31 +0800 add .gitignore
+(45693a2) 2019-01-03 18:20:00 +0800 .gitignore for django project
+(ba2ba75) 2019-01-01 00:30:35 +0800 bug in os many loops
+(1eea61f) 2018-12-31 22:55:23 +0800 LenChart is ok; fix the upload page; density ok; fixing the slider in isoform
+(d369449) 2018-12-31 21:19:26 +0800 finished upload and density
+(a19ee5b) 2018-12-31 19:38:27 +0800 add requirement
+(ad6ceb5) 2018-12-31 19:32:50 +0800 latest
+(d327e1c) 2018-12-31 18:56:13 +0800 junk
+(7d7b052) 2018-12-31 18:51:51 +0800 add wiki data into chromosome
+(7327418) 2018-12-31 16:01:51 +0800 Merge branch 'master' of https://github.com/Mr-Milk/circDraw into front
+(85e4ac1) 2018-12-31 15:51:38 +0800 junk
+(210b171) 2018-12-31 15:47:44 +0800 junk
+(0991406) 2018-12-31 15:40:41 +0800 writing lenCHart
+(cd36113) 2018-12-31 15:11:58 +0800 modify some var name
+(6617c6f) 2018-12-31 14:53:05 +0800 junk
+(022eb08) 2018-12-31 14:46:14 +0800 junk
+(30f31e5) 2018-12-31 14:43:13 +0800 change var name in denchrplot
+(98b24b0) 2018-12-31 14:37:23 +0800 change variable name
+(06427fe) 2018-12-31 14:34:11 +0800 Ready to fire
+(8868a5d) 2018-12-31 14:31:23 +0800 rewrite in svg
+(ae7bf1d) 2018-12-31 13:10:59 +0800 add search margin to the file5 view loop, fix a import bug
+(edfd532) 2018-12-31 12:48:26 +0800 merge human_genome_data from back
+(eb5f7de) 2018-12-31 12:26:25 +0800 clean up useless app
+(06fd218) 2018-12-31 12:11:00 +0800 junks
+(74a4554) 2018-12-31 12:07:54 +0800 merge back to master
+(9604915) 2018-12-31 11:33:33 +0800 front-integrate to master
+(e6972eb) 2018-12-31 03:56:17 +0800 clean front branch junk
+(ac57b94) 2018-12-31 03:52:32 +0800 Delete settings.json
+(7ec5ca0) 2018-12-31 02:41:14 +0800 junk
+(e4864aa) 2018-12-31 02:31:26 +0800 front junk
+(8a83657) 2018-12-31 02:16:52 +0800 migrations junk
+(f861902) 2018-12-31 01:36:08 +0800 Rewrite front end in svg
+(8952fa3) 2018-12-28 11:15:43 +0800 disable database
+(3942d03) 2018-12-28 06:01:02 +0800 freeze requirments for front end
+(0420f8e) 2018-12-28 05:56:46 +0800 amend file4 view to certain data feeding
+(a904e6a) 2018-12-28 05:27:08 +0800 fake data for front debug
+(c2c4fce) 2018-12-20 03:34:04 +0000 Merge branch 'master' of https://github.com/Mr-Milk/circDraw
+(0e2c247) 2018-12-20 03:33:20 +0000 update the datatable part of view, but have an issue of drawbackground function in circDraw.js
+(e02cfaa) 2018-12-17 17:01:43 +0800 Update README.md
+(d3a63cb) 2018-12-04 17:29:33 -0800 Update README.md
+(a97b63c) 2018-12-03 07:12:36 +0000 merge
+(0ffa607) 2018-12-03 07:05:54 +0000 fix a small bug
+(857e280) 2018-11-25 09:23:53 -0800 Update circDraw.js
+(a2b85f4) 2018-11-18 06:03:31 +0000 change the way of returning data in handle file5 to pixel based
+(7a340bf) 2018-11-15 02:08:02 +0000 fix the density picture without 400, on to fixing 400
+(bae79ae) 2018-11-12 15:48:51 +0000 get the image of density but not color
+(ed182f9) 2018-11-12 06:23:59 +0000 fixed the handle_file5 in view but itering to much
+(4527d44) 2018-11-12 02:43:44 +0000 Merge branch 'master' of https://github.com/Mr-Milk/circDraw when Yimin fix the onload issue
+(bea8ac8) 2018-11-12 02:43:13 +0000 fixing the judge function in handle file5
+(1c747ad) 2018-11-11 10:44:50 -0800 Update base.html
+(66e03bb) 2018-11-11 10:42:59 -0800 Create circCirc.css
+(a0d5586) 2018-11-11 10:41:20 -0800 Update tools.html
+(126ac8b) 2018-11-11 10:40:39 -0800 Update circDraw.js
+(89bdb7f) 2018-11-11 13:49:32 +0000 fix get_chr_num in handle_file5 in tools/view.py
+(c3dac6c) 2018-11-10 21:22:02 +0000 identify the issue of nan value of slider input initially
+(b54991a) 2018-11-10 20:33:07 +0000 add width define for circWidth in circDraw.js
+(86beda2) 2018-11-06 10:56:25 -0800 Simplify code logic
+(ad59bfd) 2018-11-06 09:43:57 -0800 Add: Download function
+(d92d6e3) 2018-11-06 09:27:43 +0000 Merge branch 'master' of https://github.com/Mr-Milk/circDraw
+(5528fee) 2018-11-06 09:27:23 +0000 fix geturl and getJSON data in circDraw
+(f026223) 2018-11-05 19:53:26 -0800 Add: Displaying circRNA in circle form
+(841e698) 2018-11-05 05:26:41 +0000 change the jquery version to 3x.
+(dc5a6d5) 2018-11-01 00:11:48 -0700 Adding python script
+(f7edd10) 2018-10-22 17:23:08 -0700 Update circDraw.js
+(c0f74e1) 2018-10-21 13:41:36 +0000 add fake display view for testing
+(6d1b3da) 2018-10-21 11:11:28 +0000 abandon previous repo
+(12f7281) 2018-10-21 11:05:09 +0000 :clear up brach
+(1bdc7b2) 2018-10-04 17:08:28 +0800 change for big data reading
+(fef33df) 2018-10-01 20:45:16 +0800 integrate
+(59e6971) 2018-09-22 01:49:17 +0800 wo due
+(bd45a12) 2018-09-21 16:05:51 +0800 connect view to ajax partially
+(bd81eb1) 2018-09-13 10:00:01 +0800 change to mysql and set up database storage
+(b0933b4) 2018-09-09 15:31:32 +0800 update frontend
+(2579552) 2018-09-07 09:56:55 +0800 write part of the database and ajax logic
+(0642fa4) 2018-09-06 00:56:13 +0800 stuck in jquery min problem
+(828c620) 2018-08-30 10:02:09 +0800 add form to tools.index.html
+(8dbaa15) 2018-08-29 22:32:24 +0800 integret front-end to django framework
+(767aa1f) 2018-08-28 01:01:31 -0700 Basic Framework of Front-end
+(27e077c) 2018-08-21 08:20:55 +0800 finish the frame of backend
+(2d4cf81) 2018-05-18 19:02:31 +0800 Update README.md
+(c720f5e) 2018-05-18 18:57:09 +0800 Add files via upload
+(2ad0d13) 2018-05-18 18:44:36 +0800 Add files via upload
+(196f539) 2018-05-18 18:07:50 +0800 Initial commit

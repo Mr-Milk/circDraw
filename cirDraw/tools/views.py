@@ -1,14 +1,20 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.http import Http404, HttpResponse, JsonResponse
-from .forms import UploadFileForm
-from .models import ToolsUploadcase, ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome
-from .process_file import handle_uploaded_file, detect_filetype, detect_species
+from annoying.functions import get_object_or_None
+from .forms import UploadFileForm, JsonTestFile
+#from .models import ToolsEachobservation, ToolsAnnotation, ToolsChromosome, ToolsScalegenome, UploadParametersMD5, ToolsModM6A, ToolsModM1A, ToolsModM5C
+# from .process_file import handle_uploaded_file
+from .models import *
+from .handle_file import handle
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
-from sklearn.neighbors import KernelDensity
-import numpy as np
-from math import floor
-import sys
+import sys, datetime, time
+import ujson, json
+import hashlib
+import csv
 
 # ========================= RENDER PAGES ==============================
 def render_index_page(request):
@@ -20,40 +26,146 @@ def render_upload_page(request):
     context = {}
     return render(request, 'tools/upload.html', context)
 
-def render_display_page(request, caseid):
-    context = {"caseid":caseid}
-    return render(request, 'tools/tools.html', context)
+def render_display_page(request, md5):
+    context = {"md5": md5}
+    print('Render display1:',md5)
+    case = UploadParametersMD5.objects.filter(md5 = md5).values('status')
+    if case.exists():
+        #print(case)
+        code = case[0]['status']
+        #print('Render display2:',case[0]['status'])
+        if code != 200:
+            return render(request, 'tools/HTTP404.html', context)
+        elif code == 202:
+            return render(request, 'tools/wait.html', context)
+        else:
+            return render(request, 'tools/tools.html', context)
+    else:
+        print('This md5 not exist.')
+        return render(request, 'tools/HTTP404.html', context)
+        #raise Http404
+
 # ======================== UPLOAD & SAVE ==============================
 
-def process_upload(request, filename):
-    """handle upload file and return [{}..]
-    >>> c = Client()
-    """
+@csrf_exempt
+def save_to_files(request):
     if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadFileForm(data=request.POST, files=request.FILES)
         if form.is_valid():
-            data_raw_file = request.FILES[filename]
-            header, result = handle_uploaded_file(data_raw_file)
-            file_type = detect_filetype(data_raw_file)
-            species = detect_species(data_raw_file)
-            return header, result, file_type, species
-        else:
-            print('upload file form is not valid')
-            raise Http404
+            # get md5 value. Note: consider (file + parameters) as a whole md5
+            form_file = form.cleaned_data['file']
 
-    else:
-        print('request of upload is not POST')
-        raise Http404
+            str_parameters = form.cleaned_data['parameters']
+
+            parameters = json.loads(str_parameters)
+
+            b_file = form_file.read()
+            file_parameters = str_parameters.encode('utf-8') + b_file
+            md5 = hashlib.md5(file_parameters).hexdigest()
+
+
+            sub_base = "md5_data/"
+            path = sub_base + md5
+
+            # check if the file exists
+            md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
+            print("Md5 existed in DB?: ", md5ob)
+
+            if md5ob:
+                status_old = md5ob.status
+                print("existed in databse, code: ", status_old)
+                time_ = md5ob.time
+                if status_old == 200:
+                    return_json = [{'md5': md5, 'time': time_, 'save_status': 'Finished'}]
+                    return JsonResponse(return_json, safe=False)
+                ##elif status_old == 201:
+                ##    return_json = [{'md5': md5, 'time': time_, 'save_status': True}]
+                ##    return JsonResponse(return_json, safe=False)
+                elif status_old == 202:
+                    return_json = [{'md5': md5, 'time': time_, 'save_status': "Running"}]
+                    return JsonResponse(return_json, safe=False)
+
+
+            # check if the file existed in filesystem
+            if md5ob:
+                print("Previous saving failed, Re-saving now...")
+            if default_storage.exists(path):
+                default_storage.delete(path)
+
+            time_ = time.time()
+            return_json = [{'md5': md5, 'time': time_}]
+
+            # store md5 value and parameters into database, store file
+            print("saving upload file...")
+            path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+            file_path = settings.MEDIA_ROOT + '/' + path
+            # distribute parameters details
+            file_type = parameters['filetype']
+            species = parameters['species']
+
+
+            # insert to data base the info of file, paramerter and time
+            # initial code 202
+            print("create model instance")
+            a = UploadParametersMD5(md5 = md5, status = 202, file_type = file_type, species = species, time = time_, path = path)
+            a.save()
+
+
+            # calling for process
+            save_status = call_process(file_path, md5, parameters)
+            if save_status:
+                ss_status = True
+                a.status = 200
+                a.save()
+
+            else:
+                ss_status = False
+                a.status = 404
+                print("MD5 {} status 404! Call process return False...".format(md5))
+                print("Save data into database failed, deleting uploaded file now...")
+                default_storage.delete(path)
+                a.save()
+
+            return_json = [{'md5': md5, 'time': time_, 'save_status': ss_status}]
+
+
+            return JsonResponse(return_json, safe=False)
+
+
+def call_process(file_path, md5, parameters):
+    """Function to control the file process precedure"""
+
+    # info_needed = ['circRNA_ID', 'chr', 'circRNA_start', 'circRNA_end']
+    # save_status = handle_uploaded_file(form_file, info_needed, md5ob, parameters, toCHR, get_chr_num, circ_isin)
+
+
+
+    configuration = {
+        'FILE_NAME': file_path,
+        'CORE_NUM': 4,
+        'FILE_TYPE': parameters['filetype'],
+        'NEW_FILE': f'{md5}_circDraw_generate',
+        'ASSEMBLY': parameters['species'],
+        'TASK_ID': md5,
+    }
+
+    save_status,circRNA_length_distribution,circRNA_isoform = handle(configuration)
+    print('In View:', circRNA_length_distribution, circRNA_isoform)
+    st = StatisticTable(md5=md5, lenChart=circRNA_length_distribution, toplist=circRNA_isoform)
+    st.save()
+    print("Saved?: {} {}".format(save_status, md5))
+    return save_status
+
+
+
+
 
 def save(header, results, file_type, species):
-    """
-    >>> header = ['circRNA_ID', 'chr_ci', 'circRNA_start', 'circRNA_end']
-    >>> results = [{'chr_ci': 'KI270792.1', 'circRNA_ID': 'KI270792.1:75980|83617','circRNA_end': '83617', 'circRNA_start': '75980'}, {'chr_ci': 'KI270850.1','circRNA_ID': 'KI270850.1:171308|171975','circRNA_end': '171975','circRNA_start': '171308'}]
-    """
+    """Save file"""
     case = ToolsUploadcase()
     caseid = case.whichcase
     case.save()
-    chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(25)] 
+    chromosome_info = [[[sys.maxsize, 0], [sys.maxsize, 0]] for _ in range(25)]
     max_length = 0
 
     def get_start_point(lst):
@@ -96,7 +208,7 @@ def save(header, results, file_type, species):
                 update_chromosome_end(chromosome_info[chr_num-1], now_end)
         else:
             print("one of Your input of chr from the handle file is crap")
-        
+
         # update max length of circle RNA
         length = now_end - now_start
         now_max = get_max_len(chromosome_info[chr_num - 1])
@@ -106,13 +218,14 @@ def save(header, results, file_type, species):
                 update_circlen_max(chromosome_info[chr_num - 1], length)
             if now_min > length:
                 update_circlen_min(chromosome_info[chr_num - 1], length)
-        
+
     for i,each_chr in enumerate(chromosome_info):
         if get_start_point(each_chr) < get_end_point(each_chr):
             ob_chr = ToolsChromosome(caseid = case, chr_ci = toCHR(i+1),chr_start = get_start_point(each_chr), chr_end = get_end_point(each_chr), max_length_circ = get_max_len(each_chr), min_length_circ = get_min_len(each_chr))
             ob_chr.save()
     return caseid
 
+@csrf_exempt
 def upload_and_save(request):
     """
     main function in this section. handle data-save_to_database-getid-jump_to_display_page
@@ -127,44 +240,272 @@ def upload_and_save(request):
     caseid = save(header, results, file_type, species)
     return redirect('render_display', caseid=caseid)
 
-# ===================== HANDLE AJAX CALL =================================
-# ---------------------handle_file1---------------------------------------
-@csrf_exempt
-def handle_file1(request):
-    # database needed: ToolsChromosome, ToolsEachobservation 
+
+# ======================== UPLOAD & SAVE ==============================
+
+def check_status(request):
     if request.method == 'GET':
-        case_id = request.GET['caseid']
-        chr_ci = toCHR(int(request.GET['chr']))
-        start = int(request.GET['start'])
-        end = int(request.GET['end'])
-        obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gt=start).filter(circRNA_end__lt=end)
-        print("!!!1:",len(obs))
-        results = []
-        for ob in obs:
-            result_draw = {
-                'start': ob.circRNA_start,
-                'end': ob.circRNA_end
-            }
-            results.append(result_draw)
-        print(results)
-        return JsonResponse(results, safe=False)
+        md5 = request.GET['caseid']
+        try:
+            md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
+            process_status = md5ob.status
+            print("STATUS CODE: ", process_status)
+            return JsonResponse([{'status': process_status}], safe=False)
+        except:
+            print("check status error: No object returned or attribute is not correct")
+            return JsonResponse([{'status': 404}], safe=False)
     else:
-        print("your request for file1 is not get")
         raise Http404
 
-# ------------------------handle_flie2---------------------------------
-def handle_file2(request):
+# ===================== HANDLE AJAX CALL =================================
+
+# ---------------------handle_file1---------------------------------------
+@csrf_exempt
+def handle_chrLen(request):
+    # database needed: chromosome_length
+    if request.method == 'GET':
+        case_id = request.GET['case_id']
+        print("chrLen caseid: ", case_id)
+        case_species = UploadParametersMD5.objects.get(md5 = case_id)
+        try:
+            ob_distinct_chr = UserDensity.objects.filter(md5 = case_id).values('chr_num').distinct()
+            distinct_chr = [ob['chr_num'] for ob in ob_distinct_chr]
+            obs = chromosome_length.objects.filter(assembly = case_species.species).values('chr_num', 'chr_length')
+        except Exception as e:
+            print(e)
+        results = []
+        for ob in obs:
+            if ob['chr_num'] in distinct_chr:
+                results.append({
+                'chr': ob['chr_num'],
+                'chrLen': ob['chr_length']
+            })
+        print("GET /tools/display/chrLen:", len(results))
+        return JsonResponse(results, safe=False)
+    else:
+        print("GET /tools/display/chrLen: Failed")
+        raise Http404
+
+def handle_density(request):
+    # database needed: UserDensity
+    if request.method == 'GET':
+        case_id = request.GET['case_id']
+        print("density case_id: ", case_id)
+        try:
+            obs = UserDensity.objects.filter(md5 = case_id)
+        except Exception as e:
+            print(e)
+        print("GET /tools/display/density:", len(obs))
+        results = [{
+                    "chr": ob.chr_num,
+                    "start": ob.start,
+                    "end": ob.end,
+                    "name": ob.name,
+                    "geneID": ob.gene_id,
+                    "type": ob.gene_type,
+                    "count": ob.circ_num
+                } for ob in obs]
+        return JsonResponse(results, safe=False)
+    else:
+        print("GET /tools/display/density: Failed")
+        raise Http404
+
+def handle_circrnas(request):
+    # database needed:
     if request.method == 'GET':
         case_id = request.GET['caseid']
-        chr_ci = toCHR(int(request.GET['chr']))
+        gene_id = request.GET['geneid']
+        chr_num = request.GET['chr']
+        start = request.GET['start']
+        end = request.GET['end']
+        """ print("circrnas parameters: ", case_id)
+        print(gene_id)
+        print(chr_num)
+        print(start)
+        print(end) """
+        obs = UserTable.objects.filter(md5 = case_id).filter(gene_id = gene_id)
+        print("GET /tools/display/circrnas:", len(obs))
+        results = []
+        for ob in obs:
+            for i in ujson.loads(ob.circ_on_gene_all):
+                results.append(i)
+        return JsonResponse(results, safe=False)
+    else:
+        print("GET /tools/display/circrnas: Failed")
+        raise Http404
+
+def handle_genes(request):
+
+    if request.method == 'GET':
+        case_id = request.GET['caseid']
+        chr_num = request.GET['chr']
+        start = request.GET['start']
+        end = request.GET['end']
+        print("gene caseid: ", case_id)
+        case_species = UploadParametersMD5.objects.get(md5 = case_id)
+        obs = exec(f"""{case_species.species}_speceis_genome_genes.objects.filter(chr_num = chr_num).filter(start >= start).filter(end <= end)""")
+        print("GET /result/genes:", len(obs))
+        results = [{
+                    "name": ob.name,
+                    "start": ob.start,
+                    "end": ob.end,
+                    "type": ob.type,
+                    "id": ob.id
+                    } for ob in obs]
+        print("GET /result/circrnas:", results)
+        return JsonResponse(results, safe=False)
+    else:
+        print("GET /result/circrnas: Failed")
+        raise Http404
+
+def lenChart(request):
+    if request.method == 'GET':
+        case_id = request.GET['caseid']
+        data = StatisticTable.objects.filter(md5__exact=case_id)
+        print(data)
+        result = ujson.loads(data[0].lenChart)
+        return JsonResponse(result, safe=False)
+    else:
+        raise Http404
+
+def toplist(request):
+    if request.method == 'GET':
+        case_id = request.GET['case_id']
+        data = StatisticTable.objects.filter(md5__exact=case_id)
+        result = ujson.loads(data[0].toplist)
+        return JsonResponse(result, safe=False)
+    else:
+        raise Http404
+
+def download_UserFile(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    if request.method == 'GET':
+        case_id = request.GET['case_id']
+        print(f'Generating result file for {case_id}')
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="circDraw_results_{case_id}.csv"'
+        print('Finished writing http head-content')
+        writer = csv.writer(response,delimiter='\t')
+        print('Create csv writer')
+        all_results = UserTable.objects.filter(md5=case_id)
+        print('Get from database')
+        for r in all_results:
+            writer.writerow([r.gene_id,r.chr_num, r.start, r.end, r.name, r.gene_type, r.circ_on_gene_all, r.circ_on_num])
+
+    return response
+
+
+# """ def handle_file1(request):
+#     # database needed: ToolsChromosome, ToolsEachobservation
+#     if request.method == 'GET':
+#         case_id = request.GET['caseid']
+#         print("File1 caseid: ", case_id)
+#         chr_ci = toCHR(int(request.GET['chr']))
+#         start = int(request.GET['start'])
+#         end = int(request.GET['end'])
+#         obs = ToolsEachobservation.objects.filter(caseid__exact=case_id).filter(chr_ci__exact=chr_ci).filter(circRNA_start__gte=start).filter(circRNA_end__lte=end)
+#         print("!!!1:",len(obs))
+#         print("parameters: ", chr_ci, start, end)
+#         results = []
+#         for ob in obs:
+#             result_draw = {
+#                 'start': ob.circRNA_start,
+#                 'end': ob.circRNA_end
+#             }
+#             results.append(result_draw)
+
+#         print("Handle_file1 results: ", results)
+
+
+
+#         return JsonResponse(results, safe=False)
+#     else:
+#         print("your request for file1 is not get")
+#         raise Http404 """
+
+# # ------------------------handle_flie2---------------------------------
+# def handle_file2(request):
+#     if request.method == 'GET':
+#         case_id = request.GET['caseid']
+#         chr_ci = toCHR(int(request.GET['chr']))
+#         start = int(request.GET['start'])
+#         end = int(request.GET['end'])
+#         print(start)
+#         print(end)
+#         print(chr_ci)
+#         obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end)
+#         print("Gene/exons file2", obs)
+#         results = []
+#         for ob in obs:
+#             my_start = ob.gene_start
+#             my_end = ob.gene_end
+#             mod_lst = ['m1a', 'm5c', 'm6a']
+#             mod = get_mod(mod_lst, my_start, my_end, chr_ci)
+#             print("Results of mod:", mod)
+#             result = {
+#                     'name': ob.gene_name,
+#                     'start': ob.gene_start,
+#                     'end': ob.gene_end,
+#                     'type': ob.gene_type,
+#                     'mod': mod,
+#                     }
+#             results.append(result)
+#         #print("file2222", results)
+#         return JsonResponse(results,safe=False)
+#     else:
+#         print("your request for file2 is not get")
+#         raise Http404
+
+
+# def get_mod(mod_list, start, end, chromosome):
+#     # get mod by start, end
+#     mods = []
+#     for i in mod_list:
+#         if i == 'm1a':
+#             obs = ToolsModM1A.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+#             type_ob = 'm1A'
+#         elif i == 'm5c':
+#             obs = ToolsModM5C.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+#             type_ob = 'm5C'
+#         elif i == 'm6a':
+#             obs = ToolsModM6A.objects.filter(chromosome__exact=chromosome).filter(modStart__gte=start).filter(modStart__lt = end)
+#             type_ob = 'm6A'
+#         else:
+#             print("modType {} is not supported for now".format(i))
+#             obs = None
+
+#         if obs:
+#             for oo in obs:
+#                 strand = oo.strand
+#                 link = oo.link.split(",")
+#                 SNP_id = oo.SNPid
+#                 disease_content = oo.disease
+#                 disease = {'SNP': SNP_id, 'disease': disease_content, 'link': link}
+#                 mod_object = {'type': type_ob, 'start': start, 'end': end, 'strand': strand, 'info': disease}
+#                 mods.append(mod_object)
+#     return mods
+
+
+
+
+
+
+
+
+
+
+"""
+# ------------------------genList---------------------------------
+@csrf_exempt
+def genList(request):
+    if request.method == "GET":
+        md5 = request.GET['caseid']
         start = int(request.GET['start'])
         end = int(request.GET['end'])
-        print(start)
-        print(end)
-        print(chr_ci)
-        gene_type = "exon"
-        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact=gene_type).filter(gene_start__gt=start).filter(gene_end__lt=end)
-        print("file2", obs)
+        chr_ci = toCHR(int(request.GET['chr']))
+        print("genList parameters: ", md5, start, end, chr_ci)
+        obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_type__exact="gene").filter(gene_start__gte=start).filter(gene_end__lte=end)
+        print("genList: ", obs)
         results = []
         for ob in obs:
             result = {
@@ -173,10 +514,10 @@ def handle_file2(request):
                     'end': ob.gene_end
                     }
             results.append(result)
-        #print("file2222", results)
-        return JsonResponse(results,safe=False)
+        return JsonResponse(results, safe=False)
+
     else:
-        print("your request for file2 is not get")
+        print("genList method is not GET")
         raise Http404
 
 # -------------------handle_file_4 (no file3 required) ------------------------------
@@ -191,7 +532,7 @@ def handle_file4(request):
         for i in chr_inv:
             gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=i)[0]
             lens = gene_ob.genelens_wiki
-            result = {'chr':get_chr_num(i), 'chrLen': lens}
+            result = {'chr': i, 'chrLen': lens}
             print(lens)
             gene_lens.append(result)
 
@@ -214,8 +555,53 @@ def chr_lengths(queryset):
 
 # -------------handle_file5----------------------------------
 
+def handle_file5(request):
+    if request.method == "GET":
+        md5 = request.GET['case_id']
+        sub_path = "density_result/"
+        read_path = sub_path + md5
+        if default_storage.exists(read_path):
+            results = default_storage.open(read_path).read()
+            results_ob = json.loads(results)
+            print("This is the head of results: ", results_ob[:2])
+            return JsonResponse(results_ob, safe=False)
+        else:
+            print("No file for path: ", read_path)
+            raise Http404
+
+
+    else:
+        print("Handle file5's method is not GET")
+        raise Http404
+
+
+# -------------handle_DENSITY----------------------------------
+
+def handle_biocircos_density(request):
+    if request.method == "GET":
+        md5 = request.GET['case_id']
+        sub_path = "density_result/"
+        read_path = sub_path + md5
+        if default_storage.exists(read_path):
+            results = default_storage.open(read_path).read()
+            results_ob = json.loads(results)[1:]
+            print("Hanle_biocircos_density: This is the head of results: ", results_ob[:2])
+            return JsonResponse(results_ob, safe=False)
+        else:
+            print("No file for path: ", read_path)
+            raise Http404
+
+
+    else:
+        print("Handle file5's method is not GET")
+        raise Http404
+
+
+
+# -------------Density computation----------------------------------
+
 def toCHR(num):
-    """convert a number to a chr string"""
+    '''convert a number to a chr string'''
     assert type(num) == int, "Wrong input in toCHR"
     if num == 23:
         c_num = "X"
@@ -240,10 +626,11 @@ def get_chr_num(chr_ci):
             elif c.lower() == 'y':
                 return 24
             else:
+                print("Failed: get_chr_num error. chr_ci:", chr_ci)
                 raise ValueError
 
 def circ_isin(geneob, circob, overlap_rate=0.5):
-    """define how to be counted as in the gene"""
+    '''define how to be counted as in the gene'''
     gene_len = geneob.gene_end - geneob.gene_start
     circ_len = circob.circRNA_end - circob.circRNA_start
     if circob.circRNA_start > geneob.gene_end or circob.circRNA_end < geneob.gene_start:
@@ -255,153 +642,459 @@ def circ_isin(geneob, circob, overlap_rate=0.5):
         over = sort_lst[2] - sort_lst[1]
         #print(sort_lst, over, gene_len, over/gene_len)
         #print(over >= (gene_len * overlap_rate))
-        if over >= (gene_len * overlap_rate):
+        if over >= (gene_len * overlap_rate) or over == circ_len or over == gene_len:
             return True
         else:
             return False
 
+def keep_tops(last_lst, now):
+    '''A funtion that takes a fix length list, decide whether to keep the now'''
 
-def handle_file5(request):
-    # Databse used: ToolsChromosome, ToolsScalegenome
-    # results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
-    if request.method == "GET":
-        caseid = request.GET['case_id']
+    lst = [now] + last_lst
+    slst = sorted(lst, key=lambda x: x['density'])
+    return slst[:-1]
 
-        # =========================================================================================================
-        # Get basic information 
-        # =========================================================================================================
+def aggregate(dic, chr_ci):
+    '''calculate values in dic and return list of blocks with their calibrated density
+    >>> a = {1: 0, 2:0, 3:0, 4:4, 5:5,6:0,7:2}
+    >>> r = aggregate(a, "hi")
+    >>> r
+    [{'chr': 'hi', 'start':4, 'end':5, 'density':82}, {'chr':'hi', 'start':7, 'end': 7, 'density': 18}]
 
-        # create circRNA and gene group based on chr
-        data_groups = [[] for _ in range(2)]
-        results = []
-        # chr exist in the uploaded file
-        chr_exist = ToolsChromosome.objects.filter(caseid_id__exact=caseid)
-        chrs = [get_chr_num(r.chr_ci)-1 for r in chr_exist]
-        results = [{'chrnum': len(chrs)}]
-        # max in gene:
-        max_gene_len = 0
-        for gg in chr_exist:
-            gene_ob = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=gg.chr_ci)[0]
-            lens = gene_ob.gene_max_end - gene_ob.gene_min_start
-            if lens > max_gene_len:
-                max_gene_len = lens
-        # pixels
-        pixels = 800
-        max_chr_lens, chr_lens = chr_lengths(chr_exist)
-        # create pixels
-        pixel_num = 1000
-        x_d = np.linspace(0, 400, pixel_num)
+    '''
+    total = 0
+    last = 0
+    sep = 0
+    start, end = 0, 0
+    blocks = []
+    length = len(dic)
+    for i in dic:
+        now = dic[i]
+        if now == 0 and last == 0:
+            pass
+        elif now != 0 and last == 0:
+            sep += now
+            if rs_den > 100:
+                rs_den = 100
+            elif rs_den < 1:
+                rs_den = 1
+            start = i
+            last = now
+            if i == length:
+                b = {'chr': chr_ci, 'start': start, 'end': start, 'density': sep}
+                blocks.append(b)
+                total += sep
+                sep = 0
+        elif now != 0 and last != 0:
+            sep += now
+            last = now
+            if i == length:
+                b = {'chr': chr_ci, 'start': start, 'end': i, 'density': sep}
+                blocks.append(b)
+                total += sep
+                sep = 0
+        elif now == 0 and last != 0:
+            end = i - 1
+            total += sep
+            b = {'chr': chr_ci, 'start': start, 'end': end, 'density': sep}
+            blocks.append(b)
+            sep = 0
+            last = now
 
-        # create gene_box
-        gene_box = []
-        ##########################
-        ########## loop ##########
-        ##########################
-        for i in chr_lens:
-            # get current chr length
-            chr_num_now = get_chr_num(i['chr']) - 1
-            chr_len_now = i['chrLen']
-            # static info
+
+    for ob in blocks:
+        ob['density'] = round(ob['density'] / total * 100)
+    return blocks
+
+
+@csrf_exempt
+def run_density(request):
+    try:
+        if request.method == "GET":
+            caseid = request.GET['md5']
+            # Change status in database to running
+            md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
+
+            result_sub_path = 'density_result/'
+            result_path = result_sub_path + caseid
+            if md5ob.status == 200 and default_storage.exists(result_path):
+                return JsonResponse([], safe=False)
+            md5ob.status = 101
+            species = md5ob.species
+            print("Species: ", species)
+            md5ob.save()
+
+            # Get basic information
+            # create circRNA and gene group based on chr
+            data_groups = [[] for _ in range(2)]
+            results = []
+            # chr exist in the uploaded file
+            chr_exist = ToolsChromosome.objects.filter(caseid__exact=caseid)
+            print("chr_exist: ", chr_exist)
+            results = [{'chrnum': chr_exist.count(), 'species': species}]
+
+            # max density count, min count
+            max_count = 0
+            min_count = sys.maxsize
             densitys = 0
-            chr_results = []
-            density_box = [] # list to contain the pixels appeared
-            chr_ccc = toCHR(chr_num_now + 1)
-            data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ccc)
-            data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ccc)
-            gene_se = ToolsScalegenome.objects.filter(species__exact="human").filter(chr_ci__exact=chr_ccc)
-            min_gene_start, max_gene_end = gene_se[0].gene_min_start, gene_se[0].gene_max_end
-            gene_chr_lens = max_gene_end - min_gene_start
-            
-            # max circle len in this chr
-            # overlap = 0.5
-            # circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid).filter(chr_ci__exact = chr_ccc)[0]
-            # max_circ_len = circ_info.max_length_circ
-            
 
-            # we want to divide the group so that the loop's runtime will be reduced.
+            ########## loop ##########
+            for i in chr_exist:
+                # get current chr length
+                chr_ci = i.chr_ci
+                print("Chr: ", chr_ci)
+                chr_num_now = get_chr_num(chr_ci)
+                # static info
+                data_groups[0] = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ci)
+                print("circ: ", len(data_groups[0]))
+                data_groups[1] = ToolsAnnotation.objects.filter(gene_type__exact="gene").filter(chr_ci__exact=chr_ci)
+                print("gene: ", len(data_groups[1]))
 
-            # start the loop
-            for each in data_groups[1]:
-                start, end = each.gene_start, each.gene_end
-                #gene_len = end - start
-                #search_margin = max_circ_len - gene_len * overlap 
-                #circ_start = start - search_margin
-                #circ_end = end + search_margin
-                # THE ACTUAL loop
-                count = 0
-                #for r in data_groups[0].filter(circRNA_start__gt = circ_start).filter(circRNA_end__lt = circ_end):
-                for r in data_groups[0]:
-                    if circ_isin(each, r):
-                        count += 1
-                if count != 0:
-                    ret = {'chr': chr_num_now + 1, 'start': start, 'end': end, 'density': count}
-                    # record total density
-                    densitys += count
-                    results.append(ret)
-            print("---------------------------")
+                # start the loop
+                for each in data_groups[1]:
+                    start, end = each.gene_start, each.gene_end
+                    name = each.gene_name
+                    # THE ACTUAL loop
+                    count = 0
+                    #for r in data_groups[0].filter(circRNA_start__gt = circ_start).filter(circRNA_end__lt = circ_end):
+                    for r in data_groups[0]:
+                        if circ_isin(each, r):
+                            count += 1
+                    if count != 0:
+                        ret = {'name': name, 'chr': toCHR(chr_num_now) , 'start': start, 'end': end, 'value': count}
 
+                        # record total density
+                        densitys += count
+                        results.append(ret)
+                        if count > max_count:
+                            max_count = count
+                        elif count < min_count:
+                            min_count = count
 
-        """
-        # fake data:
-        results = [{'chr': 22, 'start': 1, 'end': 4, 'density': 20}, {'chr': 1, 'start': 30, 'end': 56, 'density': 61}]
-        """
-        print("THIS ++++++++++++++ IS FILE5")
-        
-        for res in results[1:]:
-            res['density'] = (res['density'] / densitys) * 1000
-            #print(res)
-        print("file5 has been handled with lens of returning list: ",len(results))
-
-        ######################################
-        ########## convert to pixel block ####
-        #####################################
+                print("---------------------------")
 
 
-        #final_out = [results, gene_box]
-        return JsonResponse(results, safe=False)
+            print("THIS ++++++++++++++ IS FILE5")
+
+            count_range = max_count - min_count
+            print("Max count, Min count, Count_range: ", max_count, min_count, count_range)
+
+            # sort by counts
+            values = results[1:]
+            counts_sort = sorted(values, key=lambda x: x['value'])
+
+
+            # top chart list
+            top_num = 50
+            tops = counts_sort[-top_num:]
+            tops = tops[::-1]
+            # Write tops to a file
+            tops_sub_path = 'tops_result/'
+            tops_path = tops_sub_path + caseid
+            save_tops = write_to_path(tops_path, tops)
+
+            # scale to 1 - 100
+            results_first = results[:1]
+            results_get = operate_scale(results[1:], (1,100), 'value')
+            results = results_first + results_get
+
+            # Write result to a file
+            result_sub_path = 'density_result/'
+            result_path = result_sub_path + caseid
+            save_results = write_to_path(result_path, results)
+
+            print("file5 has been handled with lens of returning list: ",len(results))
+
+
+            # Change status in database
+            if save_results and save_tops:
+                md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
+                md5ob.status = 200
+                md5ob.save()
+            else:
+                print("Failed: save results or save tops failed ...")
+            return JsonResponse([], safe=False)
+
+        else:
+            raise Http404
+    except Exception as e:
+        print("Running failed: ", e)
+        caseid = request.GET['md5']
+        md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
+        md5ob.status = 404
+        md5ob.save()
+        return JsonResponse([], safe=False)
+
+
+def operate_scale(lst, scale, attribute):
+    try:
+        max_ob = max(lst, key=lambda x: x[attribute])
+        min_ob = min(lst, key=lambda x: x[attribute])
+        ob_range = max_ob[attribute] - min_ob[attribute]
+        scale_range = scale[1] - scale[0]
+        lst_copy = lst[:]
+        for rs in lst_copy:
+            new_value = scale[0] + ((rs[attribute] - min_ob[attribute]) / ob_range) * scale_range
+            rs[attribute] = round(new_value)
+        return lst_copy
+    except ZeroDivisionError:
+        print("Warning: Max and min is identical in the list, scale to max_scale_value")
+        for i in range(len(lst)):
+            lst[i][attribute] = scale[1]
+        return lst
+    except TypeError as e:
+        print("Failed: in operate_scale check types in input list: ", e)
+    except Exception as e:
+        print("Error :", e)
 
 
 
-def lenChart(request):
-    if request.method == 'GET':
-        caseid = request.GET['caseid']
-        partitions = 20
-        circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid)
-        max_circ_len = max([i.max_length_circ for i in circ_info])
-        min_circ_len = min([i.min_length_circ for i in circ_info])
-        step = (max_circ_len - min_circ_len) // partitions
-        points = [i * step for i in range(1, partitions+1)]
-        results = [0]*partitions
-        now_start, now_end = 0, 0
-        
-        circs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
-        for i in circs:
-            circ_len = i.circRNA_end - i.circRNA_start
-            group = circ_len // step 
-            if group == partitions:
-                group -= 1
-            results[group] += 1
-        re = {'x': points, 'y': results}
-        print(re)
-        return JsonResponse(re, safe=False)
-    else:
-        raise Http404
+
+
+
+
+def write_to_path(result_path, data):
+    try:
+        if default_storage.exists(result_path):
+            default_storage.delete(result_path)
+        json_result = json.dumps(data)
+        r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+        print("Success: Write to path success!", r_path)
+        return True
+    except Exception as e:
+        print("Failed: write to path failed:", e)
+
+
+
+def scale_den(f, scale):
+    print("start loop")
+    while f >= scale[1] or f <= scale[0]:
+        if f >= scale[1]:
+            f = f / 10
+        elif f <= scale[0]:
+            f = f * 10
+        else:
+            break
+    print("break loop")
+    return f
+
+
+@csrf_exempt
+def pixel_run_density(request):
+    try:
+        if request.method == "GET":
+            caseid = request.GET['md5']
+
+            # change status in db
+            md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
+            md5ob.status = 101
+            species = md5ob.species
+            print("Species: ", species)
+            md5ob.save()
+
+            # chrnum
+            chrnumos = ToolsChromosome.objects.filter(caseid_id__exact=caseid)
+            chrnum = chrnumos.count()
+            print("Chr_num: ", chrnum)
+
+
+
+            # get chromosome info
+            chr_exist = ToolsScalegenome.objects.filter(species__exact=species)
+            print("Chr_exist length: ", chr_exist.count())
+            results = [{'chrnum': chrnum, 'species': species}]
+            for chro in chr_exist:
+                length = chro.genelens_wiki
+                chr_ci = chro.chr_ci
+                print("chr_ci: ", chr_ci)
+                print("length: ", length)
+                chr_pixels = {a:0 for a in range(1, length + 1)}
+                circos = ToolsEachobservation.objects.filter(caseid_id__exact=caseid).filter(chr_ci__exact=chr_ci)
+
+                print("hihihih")
+                print("Circos: ", circos)
+                circos_num = circos.count()
+                print("chr: ", chr_ci)
+                print("Circles: ", circos_num)
+                print("Chr_base_length: ", length)
+                for circ in circos:
+                    start = circ.circRNA_start
+                    end = circ.circRNA_end
+                    assert start <= length, "Gene start is larger than record chr length"
+                    assert end <= length, "Gene end is larger than record chr length"
+                    for p in range(start, end+1):
+                        chr_pixels[p] += 1
+                agg = aggregate(chr_pixels)
+                results += agg
+                print("Result of {} is calculated".format(chr_ci))
+                print("-------------------------------")
+
+            # Write results to a file
+            result_sub_path = 'density_result/'
+            result_path = result_sub_path + caseid
+
+            if default_storage.exists(result_path):
+                default_storage.delete(result_path)
+            json_result = json.dumps(results)
+            r_path = default_storage.save(result_path, ContentFile(json_result)) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+            print("density_result save path: ", r_path)
+
+
+            # Change status in database
+            md5ob = get_object_or_None(UploadParametersMD5, md5=caseid)
+            md5ob.status = 200
+            md5ob.save()
+        else:
+            print("request method not GET")
+            raise Http404
+    except Exception as e:
+        print("Failed: Pixels_run failed...")
+        print("Error: ", e)
+ """
+
+
+
+
+# def lenChart(request):
+#     if request.method == 'GET':
+#         caseid = request.GET['caseid']
+#         partitions = 20
+#         circ_info = ToolsChromosome.objects.filter(caseid__exact=caseid)
+#         max_circ_len = max([i.max_length_circ for i in circ_info])
+#         min_circ_len = min([i.min_length_circ for i in circ_info])
+#         step = (max_circ_len - min_circ_len) // partitions
+#         points = [i * step for i in range(1, partitions+1)]
+#         results = [0]*partitions
+#         now_start, now_end = 0, 0
+
+#         circs = ToolsEachobservation.objects.filter(caseid__exact=caseid)
+#         for i in circs:
+#             circ_len = i.circRNA_end - i.circRNA_start
+#             group = circ_len // step
+#             if group == partitions:
+#                 group -= 1
+#             results[group] += 1
+#         re = {'x': points, 'y': results}
+#         print("result of lenChart", re)
+
+#         return JsonResponse(re, safe=False)
+#     else:
+#         raise Http404
+
+
+# def toplist(request):
+#     if request.method == "GET":
+#         md5 = request.GET['case_id']
+#         sub_path = "tops_result/"
+#         read_path = sub_path + md5
+#         if default_storage.exists(read_path):
+#             results = default_storage.open(read_path).read()
+#             results_ob = json.loads(results)
+#             x = []
+#             y = []
+#             for i in results_ob:
+#                 x.append(i['name'])
+#                 y.append(i['value'])
+#             return_ob = {'x': x, 'y': y}
+#             print("Toplist: ", return_ob)
+
+#             return JsonResponse(return_ob, safe=False)
+#         else:
+#             print("No file for path when reading toplist: ", read_path)
+#             raise Http404
+
+
+#     else:
+#         print("Handle file5's method is not GET")
+#         raise Http404
+
+# def exon_extr(chr_ci, start, end):
+#     obs = ToolsAnnotation.objects.filter(chr_ci__exact=chr_ci).filter(gene_start__gt=start).filter(gene_end__lt=end).filter(gene_type__exact="exon")
+#     #print("Gene/exons", obs)
+#     if obs.count() == 0:
+#         return []
+#     filtered_obs = remove_replicate(start, end, obs)
+
+#     results = []
+#     for ob in filtered_obs:
+#         my_start = ob.gene_start
+#         my_end = ob.gene_end
+#         mod_lst = ['m1a', 'm5c', 'm6a']
+#         mod = get_mod(mod_lst, my_start, my_end, chr_ci)
+#         #if mod != []:
+#             #print("Results of mod:", mod)
+#         result = {
+#                 'name': ob.gene_name,
+#                 'start': ob.gene_start,
+#                 'end': ob.gene_end,
+#                 'type': ob.gene_type,
+#                 'mods': mod,
+#                 }
+#         results.append(result)
+
+#     return results
+
+# def remove_replicate(circStart, circEnd, exonList):
+#     exons = sorted(exonList, key=lambda x: x.gene_start)
+#     possible_comb = {}
+
+#     while len(exons) >= 1:
+#         new_comb = [exons[0]]
+#         cover_len = 0
+#         for i in range(1, len(exons)):
+#             if exons[i].gene_start > new_comb[-1].gene_end:
+#                 new_comb.append(exons[i])
+#                 cover_len += exons[i].gene_end - exons[i].gene_start
+#         possible_comb[cover_len] = new_comb
+#         del exons[0]
+
+#     exons_len = list(possible_comb.keys())
+#     exons_len.sort()
+#     return possible_comb[exons_len[-1]]
+
+
+
+
+# def store_example(request):
+#     all_genes_re = {}
+#     case_id = request.GET['caseid']
+#     circ_obs = ToolsEachobservation.objects.filter(caseid__exact=case_id)
+#     all_length = circ_obs.count()
+#     index = 0
+#     inital_time = time.time()
+#     for circ_ob in circ_obs:
+#         print("IN: ", index)
+#         print("progress: ", index/all_length)
+#         start_time = time.time()
+#         chr_ci_cir = circ_ob.chr_ci
+#         start_cir = circ_ob.circRNA_start
+#         end_cir = circ_ob.circRNA_end
+#         exons = exon_extr(chr_ci_cir, start_cir, end_cir)
+#         #if exons != []:
+#         result_cir = {"start": start_cir, "end": end_cir, "exons": exons}
+#         c_gene = ToolsAnnotation.objects.filter(gene_type__exact='gene').filter(gene_start__lte = start_cir).filter(gene_end__gte=end_cir)
+#         if c_gene.count() != 0:
+#             gene_name = c_gene[0].gene_name
+#             if gene_name not in all_genes_re.keys():
+#                 all_genes_re[gene_name] = [result_cir]
+#             else:
+#                 all_genes_re[gene_name].append(result_cir)
+#         index += 1
+#         end_time = time.time()
+#         print("Interval (s): ", round(end_time - start_time))
+#         print("Used time : ", str(datetime.timedelta(seconds=(end_time - inital_time))))
+
+
+
+
+#     print("ALL DONE")
+#     all_genes_re = json.dumps(all_genes_re)
+#     default_storage.save("example/hi", ContentFile(all_genes_re))
+#     return JsonResponse([], safe=False)
 
 
 
 
 
-        
+#     # exon
 
-def exonChart(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
-
-def isoChart(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404

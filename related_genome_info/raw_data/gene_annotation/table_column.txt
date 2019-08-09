@@ -1,0 +1,6 @@
+gene_type VARCHAR(50) NOT NULL
+gene_name VARCHAR(200) NOT NULL
+chr_ci VARCHAR(50) NOT NULL
+gene_start INT NOT NULL
+gene_end INT NOT NULL
+gene_id VARCHAR(200)

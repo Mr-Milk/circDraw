@@ -1,8 +1,5 @@
 # Byte-compiled / optimized / DLL files
-<<<<<<< HEAD
-=======
 cirDraw/cirDraw/__pycache__
->>>>>>> front
 __pycache__/
 *.py[cod]
 *$py.class
@@ -99,6 +96,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+django-env/
+d-env/
 
 # Spyder project settings
 .spyderproject
@@ -116,4 +115,29 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
+
+
+# vscode
+.vscode/
+
+# circDraw storage file
+density_result/
+md5_data/
+tops_result/
+
+# ignore genome decompress data
+RMBase_hg19_all_mod_snp_disease*
+RMBase_hg19_all_m1A_site*
+RMBase_hg19_all_m6A_site*
+gencode*
+gencode*
+RMBase_hg19_all_m5C_site*
+PMC-ids.csv
+
+# Django migration
+migrations/
+
+# Macos
+.DS_Store
+
 

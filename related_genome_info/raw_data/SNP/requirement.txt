@@ -1,0 +1,14 @@
+SNPstrand [19]
+SNPchr [14]
+SNPstart [15]
+SNPend [16]
+SNPid [17]
+
+modType [8]
+chromosome [1]
+modStart [2]
+modEnd [3]
+GWAS_disease/trait [23]
+
+id links:
+https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=rs10797432

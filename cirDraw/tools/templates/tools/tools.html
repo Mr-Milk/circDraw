@@ -1,163 +1,224 @@
 {% extends "base.html" %}
 
 {% load static %}
- 
-{% block content %}
-    
-    <!-- No container -->
 
-     <section id="Tools" style="margin-top: 30px;">
-            <div class="container">
-                <div class="col-lg-12 text-center">
-                    <div id='denCanvas' class="text-center" style="display: inline-block;">
-                      <h5>circRNA density distribution on chromosome</h5>
-                        <svg id="svg2" width="800" height="500" class="svg" style="border:3px solid #fed136;"></svg>
-                        <div class="download text-center">
-                            <button class="btn btn-primary btn-sm text-center" id="denDownload">Download</button>
+{% block content %}
+
+<!-- No container -->
+<section id="tools">
+    <div class="container-fluid">
+        <div class="row ">
+            <div class="col-sm-2">
+                <nav id="toc" class="sticky-top" style="padding-top: 105px;">
+
+                </nav>
+            </div>
+            <div class="col-sm-10 text-center">
+
+                
+                <a id='start-tutorial' style='font-size: 7pt; color: #fed136; cursor: pointer;'><u>How to use?</u></a>
+                <a id='origin-data' style='font-size: 7pt; color: #fed136; cursor: pointer;'><u>Result data</u></a>
+                <h2 id="report">Basic Report</h2>
+                <div class="row justify-content-center mt-3">
+                    <div class="col-12">
+                    <h3 id="len">circRNA length distribution</h3>
+                <div data-intro="Statistic of circRNA length in the file." data-step="1" id="lenChart" style="width: 100%; min-height: 400px"></div>
+                <h3 id="top">Top 20 genes with most circRNA isoforms</h3>
+                <div id="topChart" style="width: 100%; min-height: 400px"></div>
+                    </div>
+                    </div>
+                <!--<h3 id="exon">Top 20: circRNA isoforms</h3>
+                <div id="exonChart" style="width:500px;height:500px"></div>
+                <h3 id="iso">circRNA length</h3>
+                <div id="isoChart" style="width:500px;height:500px"></div>
+                <div id="biocircos"></div>-->
+                <h2 id="density" data-toc-text="Density plot">circRNA density distribution on chromosome
+                </h2>
+                
+                <svg id="svg2" width="800" height="500" class="svg" data-intro="Interactive plot of circRNA density on chromosome. Try to click on the color block."
+                data-step="2">
+                    <image id="load" x="360" y="220" width="80" height="80" xlink:href="../../../media/dna.gif"/>
+                </svg>
+                <div class="row justify-content-center mt-3">
+                    <div class="col-2">
+                        <p class="mt-3">Set count limit: </p>
+                    </div>
+                    <div data-step="3" data-intro="Use this range selector to filter block. Any block has value lower than the selected value will be hidden." class="col-6 range-slider">
+                        <input id="den-selector" type="text" class="js-range-slider" value="" />
+                    </div>
+                </div>
+                <div class="row justify-content-center pt-3 pb-5">
+                    <div class="col-2" data-step="4" data-intro="You can download the plot in your prefered format.">
+                        <div class="input-group">
+                            <select class="custom-select" id="fileType_2">
+                                <option selected>File</option>
+                                <option value="SVG">SVG</option>
+                                <option value="PNG">PNG</option>
+                                <option value="PDF">PDF</option>
+                            </select>
+                            <div class="input-group-append">
+                                <a id="dendownload" class="btn btn-primary" style="color: white;"><i
+                                        class="fas fa-download"></i></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!--
+                <div class="download text-center">
+                    <select id='fileType_2'>
+                        <option>SVG</option>
+                        <option>PNG</option>
+                        <option>PDF</option>
+                    </select>
+                    <a class="btn btn-primary btn-sm text-center" id="denDownload" download="circDraw.svg">Download</a>
+                </div>-->
+
+                <h2 id="isoform" data-toc-text="Isoform plot">circRNA isoforms on chromosome region</h2>
+                <svg id="svg" width="800" height="500" class="svg" data-intro="Interactive plot of circRNAs back-splicing events on gene, Select a block from above plot, the detail of that block will be displayed here. Click the curve to view the predicted internal structure of circRNAs." data-step="5">
+                    <foreignObject width="800" height="500" id="svg-tip">
+                        <p style="padding-top: 240px; font-size: 20px; color: grey;"><strong>Please select a region from
+                                density plot</strong></p>
+                    </foreignObject>
+                </svg>
+
+
+                <!--<div class="download text-center">
+                        <select id='fileType_1'>
+                            <option>SVG</option>
+                            <option>PNG</option>
+                            <option>PDF</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm text-center" id="drawDownload" download="circDraw.svg">Download</button>
+                    </div>-->
+                <!-- Choose to view which chromosome -->
+                <!-- End of the chromosome option -->
+                <div class="row justify-content-center pt-3">
+                    <div class="col-8">
+                        <input type="text" id="scale-selector" class="mb-3" name="my_range" value="" />
+                        <span class="help-block" style="color:grey;" id="circ-num"></span>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center pt-3">
+                    <div class="col-8">
+                        <div class="extra-controls den-select-info">
+                            <button id="previous" class="btn btn-light btn-sm"><i
+                                    class="fas fa-angle-double-left"></i><strong> Last Gene</strong></button>
+                            <p class="ml-1 mr-1 mb-1 d-inline-block">Name:</p>
+                            <!--<p id="geneNameSelect" class="ml-1 mr-1 mb-1 d-inline-block">Unknown</p>-->
+                            <input data-step="6" data-intro="type in gene name to search for interested gene." list="genename-list" id="geneNameSelect" style="width: 5em" />
+                            <datalist id="genename-list">
+                            </datalist>
+                            <geneid style="display: none;"></geneid>
+                            <p class="ml-1 mr-1 mb-1 d-inline-block">Chr:</p>
+                            <p id="chrSelector" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
+                            <p class="ml-1 mr-1 mb-1 d-inline-block">Start:</p>
+                            <p id="js-input-from" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
+                            <p class="ml-1 mr-1 mb-1 d-inline-block">End:</p>
+                            <p id="js-input-to" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
+                            <button id="next" class="btn btn-light btn-sm"><strong>Next Gene </strong><i
+                                    class="fas fa-angle-double-right"></i></button>
                         </div>
                     </div>
-                    <div id='circCanvas' style="display: inline-block;">
-                    <h5>circRNA isoforms on chromosome region</h5>
-                    <div class="Ids-ring"></div>
-                    <svg id="svg" width="800" height="500" class="svg" style="border:3px solid #fed136;"></svg>
+                </div>
 
-                    <div class="download text-center">
-                        <button class="btn btn-primary btn-sm text-center" id="drawDownload">Download</button>
+                {% comment %} <div class="row justify-content-center pt-1">
+                    <div class="col-6">
+                        <div class="positionBotton">
+                            <button class="btn btn-primary btn-sm text-center" id="previous">&laquo; Last</button>
+                            <button class="btn btn-primary btn-sm text-center" id="next">Next &raquo;</button>
+                        </div>
                     </div>
-                <!-- Choose to view which chromosome -->
-                    <p> Chromosome
-                        <select id='chrSelector'>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>23</option>
-                        </select>
-                    </p>
-                    <!-- End of the chromosome option -->
-                    <div class="range-slider">
-                        <input id="gene-selector" type="text" class="js-range-slider" value="" />
-                    </div>
-                    <div class="extra-controls">
-                        <p class="inlineText">Start:</p>
-                        <p id="js-input-from" class="inlineText">0</p>
-                        <p class="inlineText">End:</p>
-                        <p id="js-input-to" class="inlineText">0</p>
+                </div> {% endcomment %}
+
+
+                <div class="row justify-content-center pt-3 mb-5">
+                    <div class="col-2">
+                        <div class="input-group">
+                            <select class="custom-select" id="fileType_1">
+                                <option selected>File</option>
+                                <option value="SVG">SVG</option>
+                                <option value="PNG">PNG</option>
+                                <option value="PDF">PDF</option>
+                            </select>
+                            <div class="input-group-append">
+                                <a class="btn btn-primary" id="drawdownload" style="color: white;"><i
+                                        class="fas fa-download"></i></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="container">
-              <div class="col-lg-8 text-center">
-              </div>
-            </div>
+                <div class="row justify-content-center">
 
-            <br><br>
-
-            <div class="densityTable">
-                    <table id="table_id" class="display compact">
-                        <thead>
-                            <tr>
-                                <th>Chromosome</th>
-                                <th>Species</th>
-                                <th>Gene Name</th>
-                                <th>Gene ID</th>
-                                <th>Gene Type</th>
-                                <th>Density</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                            {% for circRNA in RNAinfos %}
-                            <tr>
-                                <td id='tableChr'>{{ circRNA.chr }}</td>
-                                <td>{{ circRNA.species }}</td>
-                                <td>{{ circRNA.name }}</td>
-                                <td>{{ circRNA.id }}</td>
-                                <td>{{ circRNA.type }}</td>
-                                <td>{{ circRNA.density }}</td>
-                                <td id='tableStart'>{{ circRNA.start }}</td>
-                                <td id='tableEnd'>{{ circRNA.end }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning view" href='#Tools'>View</button>
-                                    <div class="circWindow">
-                                    <label class="x" style="position: absolute;top:2px;left: 95%;font-size: 25px;">x</label>
-                                    <canvas class="circCirc"></canvas>
-                                    <label class="btn btn-primary btn-sm text-center" for="circDownload">
-                                    <input class="ccDownload" style="display:none">
-                                    Download
-                                    </label>
-                                    </div>
-                                    <div class="shedlayer"></div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            <tr>
-                                <td id='tableChr'>chr1</td>
-                                <td>Human</td>
-                                <td>CDSN</td>
-                                <td>ENSG00000237114</td>
-                                <td>Protein coding</td>
-                                <td>98.9</td>
-                                <td id='tableStart'>98567</td>
-                                <td id='tableEnd'>106789</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning view" href='#Tools'>View</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td id='tableChr'>chr1</td>
-                                <td>Human</td>
-                                <td>LINC01556</td>
-                                <td>ENSG00000237313</td>
-                                <td>Protein coding</td>
-                                <td>54.6</td>
-                                <td id='tableStart'>6598006</td>
-                                <td id='tableEnd'>6834540</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning view" href='#Tools'>View</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="col-6">
+                        <h2 id="BaTable" class="d-inline-block mr-3">Possible modifications on circRNA</h2>
+                        
+                        <button id="download-csv"
+                            class="btn btn-primary btn-sm mb-3"><i class="fas fa-download"></i></button>
+                    </div>
+                    
                 </div>
-            <div id="lenChart" style="width:1000px;height:500px"></div>
-            <div id="exonChart" style="width:500px;height:500px"></div>
-            <div id="isoChart" style="width:500px;height:500px"></div>
-            
-        </section>
+                <span class="help-block" style="color:grey;" id="circ-name"></span>
+                <div class="row justify-content-center" id="BaTable2" data-step="7" data-intro="When you select a circRNA, related modification info will be displayed here.">
+                    <div class="col-9">
+                        <div id="table" class="table-sm bd-bottom"></div>
+                    </div>
+                </div>
 
-        <br><br><br><br>
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock %}
- 
+
 
 {% block otherJS %}
-        {% load staticfiles %}
-        {% csrf_token %}
-        <!-- Outside js -->
+{% load staticfiles %}
+{% csrf_token %}
+<!-- Outside js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/intro.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.2.3/js/tabulator.js"></script>
+<script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts-en.common.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
+    integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvg/1.4/rgbcolor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvg@2.0.0-beta.0/dist/browser/canvg.min.js"></script>
+<script src="https://cdn.bootcss.com/fuse.js/3.4.4/fuse.js"></script>
 
-        <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" type="text/javascript"></script>
-        <script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts-en.common.js" type="text/javascript"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" type="text/javascript"></script>
+<!-- Enbed varibles -->
 
-        <!-- Enbed varibles -->
-      
-        <!-- Custom js for this template -->
-        <script src="{% static 'tools/js/ion.rangeSlider.min.js' %}" type="text/javascript"></script>
-        <script src="{% static 'tools/js/denChrPlot.js' %}" type="text/javascript"></script>
-        <script src="{% static 'tools/js/drawCirc.js' %}" type="text/javascript"></script>
-        <script src="{% static 'tools/js/agency.min.js' %}" type="text/javascript"></script>
-        <script src="{% static 'tools/js/linechart.js' %}" type="text/javascript"></script>
-        <script src="{% static 'tools/js/upload.js' %}" type="text/javascript"></script>
+<!-- Custom js for this template -->
+<script src="{% static 'tools/js/ion.rangeSlider.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'tools/js/denChrPlot.js' %}" type="text/javascript"></script>
+<script src="{% static 'tools/js/drawCirc.js' %}" type="text/javascript"></script>
+<script src="{% static 'tools/js/agency.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'tools/js/linechart.js' %}" type="text/javascript"></script>
+<script src="{% static 'tools/js/download.js' %}" type="text/javascript"></script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/introjs.css" />
+<link rel="stylesheet" href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css" />
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.2.3/css/bootstrap/tabulator_bootstrap4.min.css" />
+<link href="{% static 'base/css/ion.rangeSlider.css' %}" rel="stylesheet">
+<!-- add after bootstrap.min.js -->
+<script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
+<script>
+    $('#start-tutorial').click(function () {
+        introJs().start();
+    })
+    $(function () {
+        var navSelector = "#toc";
+        var $myNav = $(navSelector);
+        Toc.init($myNav);
+        $("body").scrollspy({
+            target: navSelector
+        });
+    });
+</script>
 
-        <script>
-            $(document).ready( function () {
-                $('#table_id').DataTable();
-            })
-        </script>
 {% endblock %}
-
-
-
-

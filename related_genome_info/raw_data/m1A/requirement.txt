@@ -1,0 +1,12 @@
+chromosome  0
+modStart  1
+modEnd  2
+strand  5
+pubmedIds 10
+link
+disease(blank=True)
+SNPid(blank=True)
+
+pubmedIds=26863196
+
+https://www.ncbi.nlm.nih.gov/pubmed/26863196

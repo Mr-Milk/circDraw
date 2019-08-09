@@ -1,0 +1,258 @@
+*** Starting uWSGI 2.0.17.1-debian (64bit) on [Sat Jul 20 10:28:29 2019] ***
+compiled with version: 8.2.0 on 02 October 2018 08:22:00
+os: Linux-4.18.0-20-generic #21-Ubuntu SMP Mon May 6 18:45:52 UTC 2019
+nodename: vultr.guest
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/circ/circDraw/cirDraw
+detected binary path: /usr/bin/uwsgi-core
+chdir() to /home/circ/circDraw/cirDraw
+your processes number limit is 31654
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address :8001 fd 6
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 802120 bytes (783 KB) for 10 cores
+*** Operational MODE: preforking ***
+*** no app loaded. going in full dynamic mode ***
+*** uWSGI is running in multiple interpreter mode ***
+!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!
+no request plugin is loaded, you will not be able to manage requests.
+you may need to install the package for your language of choice, or simply load it with --plugin.
+!!!!!!!!!!! END OF WARNING !!!!!!!!!!
+spawned uWSGI master process (pid: 7615)
+spawned uWSGI worker 1 (pid: 7616, cores: 1)
+spawned uWSGI worker 2 (pid: 7617, cores: 1)
+spawned uWSGI worker 3 (pid: 7618, cores: 1)
+spawned uWSGI worker 4 (pid: 7619, cores: 1)
+spawned uWSGI worker 5 (pid: 7620, cores: 1)
+spawned uWSGI worker 6 (pid: 7621, cores: 1)
+spawned uWSGI worker 7 (pid: 7622, cores: 1)
+spawned uWSGI worker 8 (pid: 7623, cores: 1)
+spawned uWSGI worker 9 (pid: 7624, cores: 1)
+spawned uWSGI worker 10 (pid: 7625, cores: 1)
+SIGINT/SIGQUIT received...killing workers...
+worker 5 buried after 0 seconds
+worker 8 buried after 0 seconds
+worker 9 buried after 0 seconds
+worker 10 buried after 0 seconds
+worker 1 buried after 1 seconds
+worker 2 buried after 1 seconds
+worker 3 buried after 1 seconds
+worker 4 buried after 1 seconds
+worker 6 buried after 1 seconds
+worker 7 buried after 1 seconds
+goodbye to uWSGI.
+*** Starting uWSGI 2.0.17.1-debian (64bit) on [Sat Jul 20 10:35:53 2019] ***
+compiled with version: 8.2.0 on 02 October 2018 08:22:00
+os: Linux-4.18.0-20-generic #21-Ubuntu SMP Mon May 6 18:45:52 UTC 2019
+nodename: vultr.guest
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/circ/circDraw/cirDraw
+detected binary path: /usr/bin/uwsgi-core
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+chdir() to /home/circ/circDraw/cirDraw
+your processes number limit is 31654
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address :8001 fd 6
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 802120 bytes (783 KB) for 10 cores
+*** Operational MODE: preforking ***
+*** no app loaded. going in full dynamic mode ***
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!
+no request plugin is loaded, you will not be able to manage requests.
+you may need to install the package for your language of choice, or simply load it with --plugin.
+!!!!!!!!!!! END OF WARNING !!!!!!!!!!
+spawned uWSGI master process (pid: 8271)
+spawned uWSGI worker 1 (pid: 8272, cores: 1)
+spawned uWSGI worker 2 (pid: 8273, cores: 1)
+spawned uWSGI worker 3 (pid: 8274, cores: 1)
+spawned uWSGI worker 4 (pid: 8275, cores: 1)
+spawned uWSGI worker 5 (pid: 8276, cores: 1)
+spawned uWSGI worker 6 (pid: 8277, cores: 1)
+spawned uWSGI worker 7 (pid: 8278, cores: 1)
+spawned uWSGI worker 8 (pid: 8279, cores: 1)
+spawned uWSGI worker 9 (pid: 8280, cores: 1)
+spawned uWSGI worker 10 (pid: 8281, cores: 1)
+SIGINT/SIGQUIT received...killing workers...
+worker 1 buried after 1 seconds
+worker 2 buried after 1 seconds
+worker 3 buried after 1 seconds
+worker 4 buried after 1 seconds
+worker 5 buried after 1 seconds
+worker 6 buried after 1 seconds
+worker 7 buried after 1 seconds
+worker 8 buried after 1 seconds
+worker 9 buried after 1 seconds
+worker 10 buried after 1 seconds
+goodbye to uWSGI.
+*** Starting uWSGI 2.0.17.1-debian (64bit) on [Sat Jul 20 10:53:34 2019] ***
+compiled with version: 8.2.0 on 02 October 2018 08:22:00
+os: Linux-4.18.0-20-generic #21-Ubuntu SMP Mon May 6 18:45:52 UTC 2019
+nodename: vultr.guest
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/circ/circDraw/cirDraw
+detected binary path: /usr/bin/uwsgi-core
+chdir() to /home/circ/circDraw/cirDraw
+your processes number limit is 31654
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address :8001 fd 6
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 802120 bytes (783 KB) for 10 cores
+*** Operational MODE: preforking ***
+*** no app loaded. going in full dynamic mode ***
+*** uWSGI is running in multiple interpreter mode ***
+!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!
+no request plugin is loaded, you will not be able to manage requests.
+you may need to install the package for your language of choice, or simply load it with --plugin.
+!!!!!!!!!!! END OF WARNING !!!!!!!!!!
+spawned uWSGI master process (pid: 9371)
+spawned uWSGI worker 1 (pid: 9372, cores: 1)
+spawned uWSGI worker 2 (pid: 9373, cores: 1)
+spawned uWSGI worker 3 (pid: 9374, cores: 1)
+spawned uWSGI worker 4 (pid: 9375, cores: 1)
+spawned uWSGI worker 5 (pid: 9376, cores: 1)
+spawned uWSGI worker 6 (pid: 9377, cores: 1)
+spawned uWSGI worker 7 (pid: 9378, cores: 1)
+spawned uWSGI worker 8 (pid: 9379, cores: 1)
+spawned uWSGI worker 9 (pid: 9380, cores: 1)
+spawned uWSGI worker 10 (pid: 9381, cores: 1)
+SIGINT/SIGQUIT received...killing workers...
+worker 1 buried after 1 seconds
+worker 2 buried after 1 seconds
+worker 3 buried after 1 seconds
+worker 4 buried after 1 seconds
+worker 5 buried after 1 seconds
+worker 6 buried after 1 seconds
+worker 7 buried after 1 seconds
+worker 8 buried after 1 seconds
+worker 9 buried after 1 seconds
+worker 10 buried after 1 seconds
+goodbye to uWSGI.
+*** Starting uWSGI 2.0.17.1-debian (64bit) on [Sat Jul 20 10:56:54 2019] ***
+compiled with version: 8.2.0 on 02 October 2018 08:22:00
+os: Linux-4.18.0-20-generic #21-Ubuntu SMP Mon May 6 18:45:52 UTC 2019
+nodename: vultr.guest
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/circ/circDraw/cirDraw
+detected binary path: /usr/bin/uwsgi-core
+chdir() to /home/circ/circDraw/cirDraw
+your processes number limit is 31654
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:8001 fd 6
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 802120 bytes (783 KB) for 10 cores
+*** Operational MODE: preforking ***
+*** no app loaded. going in full dynamic mode ***
+*** uWSGI is running in multiple interpreter mode ***
+!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!
+no request plugin is loaded, you will not be able to manage requests.
+you may need to install the package for your language of choice, or simply load it with --plugin.
+!!!!!!!!!!! END OF WARNING !!!!!!!!!!
+spawned uWSGI master process (pid: 9458)
+spawned uWSGI worker 1 (pid: 9459, cores: 1)
+spawned uWSGI worker 2 (pid: 9460, cores: 1)
+spawned uWSGI worker 3 (pid: 9461, cores: 1)
+spawned uWSGI worker 4 (pid: 9462, cores: 1)
+spawned uWSGI worker 5 (pid: 9463, cores: 1)
+spawned uWSGI worker 6 (pid: 9464, cores: 1)
+spawned uWSGI worker 7 (pid: 9465, cores: 1)
+spawned uWSGI worker 8 (pid: 9466, cores: 1)
+spawned uWSGI worker 9 (pid: 9467, cores: 1)
+spawned uWSGI worker 10 (pid: 9468, cores: 1)
+SIGINT/SIGQUIT received...killing workers...
+worker 3 buried after 0 seconds
+worker 5 buried after 0 seconds
+worker 7 buried after 0 seconds
+worker 8 buried after 0 seconds
+worker 9 buried after 0 seconds
+worker 1 buried after 1 seconds
+worker 2 buried after 1 seconds
+worker 4 buried after 1 seconds
+worker 6 buried after 1 seconds
+worker 10 buried after 1 seconds
+goodbye to uWSGI.
+*** Starting uWSGI 2.0.17.1-debian (64bit) on [Sat Jul 20 11:06:48 2019] ***
+compiled with version: 8.2.0 on 02 October 2018 08:22:00
+os: Linux-4.18.0-20-generic #21-Ubuntu SMP Mon May 6 18:45:52 UTC 2019
+nodename: vultr.guest
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/circ/circDraw/cirDraw
+detected binary path: /usr/bin/uwsgi-core
+chdir() to /home/circ/circDraw/cirDraw
+your processes number limit is 31654
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:8001 fd 6
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 802120 bytes (783 KB) for 10 cores
+*** Operational MODE: preforking ***
+*** no app loaded. going in full dynamic mode ***
+*** uWSGI is running in multiple interpreter mode ***
+!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!
+no request plugin is loaded, you will not be able to manage requests.
+you may need to install the package for your language of choice, or simply load it with --plugin.
+!!!!!!!!!!! END OF WARNING !!!!!!!!!!
+spawned uWSGI master process (pid: 9717)
+spawned uWSGI worker 1 (pid: 9718, cores: 1)
+spawned uWSGI worker 2 (pid: 9719, cores: 1)
+spawned uWSGI worker 3 (pid: 9720, cores: 1)
+spawned uWSGI worker 4 (pid: 9721, cores: 1)
+spawned uWSGI worker 5 (pid: 9722, cores: 1)
+spawned uWSGI worker 6 (pid: 9723, cores: 1)
+spawned uWSGI worker 7 (pid: 9724, cores: 1)
+spawned uWSGI worker 8 (pid: 9725, cores: 1)
+spawned uWSGI worker 9 (pid: 9726, cores: 1)
+spawned uWSGI worker 10 (pid: 9727, cores: 1)
+SIGINT/SIGQUIT received...killing workers...
+worker 5 buried after 0 seconds
+worker 8 buried after 0 seconds
+worker 9 buried after 0 seconds
+worker 10 buried after 0 seconds
+worker 1 buried after 1 seconds
+worker 2 buried after 1 seconds
+worker 3 buried after 1 seconds
+worker 4 buried after 1 seconds
+worker 6 buried after 1 seconds
+worker 7 buried after 1 seconds
+goodbye to uWSGI.
