@@ -194,13 +194,13 @@ function gradientLegend(x, y) {
             stroke: 'none'
         });
     }
-    den.paper.text(x - 10, y + 5, '1').attr({
+    den.paper.text(x - 10, y + 5, denBlockMIN).attr({
         fill: palette[0],
         stroke: 'none',
         'font-size': 8,
         //'font-family': 'arial'
     });
-    den.paper.text(x + 203, y + 5, '100').attr({
+    den.paper.text(x + 203, y + 5, denBlockMAX).attr({
         fill: palette[99],
         stroke: 'none',
         'font-size': 8,

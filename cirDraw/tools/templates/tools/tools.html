@@ -20,9 +20,9 @@
                 <a id='origin-data' style='font-size: 7pt; color: #fed136; cursor: pointer;'><u>Result data</u></a>
                 <h2 id="report">Basic Report</h2>
                 <div class="row justify-content-center mt-3">
-                    <div class="col-12">
-                    <h3 id="len">circRNA length distribution</h3>
-                <div data-intro="Statistic of circRNA length in the file." data-step="1" id="lenChart" style="width: 100%; min-height: 400px"></div>
+                    <div class="col-10">
+                    <h3 id="len">Distrubution of circRNA splicing sites span</h3>
+                <div data-intro="Statistic of the span of all circRNA backsplicing sites in the file." data-step="1" id="lenChart" style="width: 100%; min-height: 400px"></div>
                 <h3 id="top">Top 20 genes with most circRNA isoforms</h3>
                 <div id="topChart" style="width: 100%; min-height: 400px"></div>
                     </div>
@@ -35,7 +35,7 @@
                 <h2 id="density" data-toc-text="Density plot">circRNA density distribution on chromosome
                 </h2>
                 
-                <svg id="svg2" width="800" height="500" class="svg" data-intro="Interactive plot of circRNA density on chromosome. Try to click on the color block."
+                <svg id="svg2" width="800" height="500" class="svg" data-intro="Interactive plot of circRNA counts on chromosome. Try to click on the color block. Darker block means the gene has more circRNAs. The block surrounded by red squre is the gene currently displaying below."
                 data-step="2">
                     <image id="load" x="360" y="220" width="80" height="80" xlink:href="../../../media/dna.gif"/>
                 </svg>
@@ -74,7 +74,7 @@
                     <a class="btn btn-primary btn-sm text-center" id="denDownload" download="circDraw.svg">Download</a>
                 </div>-->
 
-                <h2 id="isoform" data-toc-text="Isoform plot">circRNA isoforms on chromosome region</h2>
+                <h2 id="isoform" data-toc-text="Isoform plot">circRNA isoforms on gene</h2>
                 <svg id="svg" width="800" height="500" class="svg" data-intro="Interactive plot of circRNAs back-splicing events on gene, Select a block from above plot, the detail of that block will be displayed here. Click the curve to view the predicted internal structure of circRNAs." data-step="5">
                     <foreignObject width="800" height="500" id="svg-tip">
                         <p style="padding-top: 240px; font-size: 20px; color: grey;"><strong>Please select a region from
@@ -101,10 +101,10 @@
                 </div>
 
                 <div class="row justify-content-center pt-3">
-                    <div class="col-8">
+                    <div class="col-10">
                         <div class="extra-controls den-select-info">
                             <button id="previous" class="btn btn-light btn-sm"><i
-                                    class="fas fa-angle-double-left"></i><strong> Last Gene</strong></button>
+                                    class="fas fa-angle-double-left"></i><strong> Last</strong></button>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">Name:</p>
                             <!--<p id="geneNameSelect" class="ml-1 mr-1 mb-1 d-inline-block">Unknown</p>-->
                             <input data-step="6" data-intro="type in gene name to search for interested gene." list="genename-list" id="geneNameSelect" style="width: 5em" />
@@ -117,7 +117,7 @@
                             <p id="js-input-from" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
                             <p class="ml-1 mr-1 mb-1 d-inline-block">End:</p>
                             <p id="js-input-to" class="ml-1 mr-1 mb-1 d-inline-block">0</p>
-                            <button id="next" class="btn btn-light btn-sm"><strong>Next Gene </strong><i
+                            <button id="next" class="btn btn-light btn-sm"><strong>Next </strong><i
                                     class="fas fa-angle-double-right"></i></button>
                         </div>
                     </div>
@@ -161,7 +161,7 @@
                     
                 </div>
                 <span class="help-block" style="color:grey;" id="circ-name"></span>
-                <div class="row justify-content-center" id="BaTable2" data-step="7" data-intro="When you select a circRNA, related modification info will be displayed here.">
+                <div class="row justify-content-center" id="BaTable2" data-step="7" data-intro="When you select a circRNA, related modification info will be displayed here. If the table content is not displayed, please enlarge your windows.">
                     <div class="col-9">
                         <div id="table" class="table-sm bd-bottom"></div>
                     </div>

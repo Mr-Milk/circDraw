@@ -110,7 +110,7 @@ $scale.ionRangeSlider({
 });
 
 var table = new Tabulator("#table", {
-    layout:"fitDataFill",
+    layout:"fitColumns",
     height:"350px",
     headerFilterPlaceholder:"Search",
     placeholder:"No Data Available",
@@ -814,6 +814,7 @@ function drawArc(data) {
             //console.log(tableData)
             
             table.replaceData(tableData);
+            table.redraw();
 
             $("#download-csv").click(function(){
                 table.download("csv", name + ".csv");

@@ -99,7 +99,7 @@ class Operator:
     def clean_table(self, table_name, conditions=None):
         """empty an existed table
         >>> conditions = None
-        >>> conditions = {'colname1': 'colvalue'}
+        >>> conditions = {'colname1': ['=', 'colvalue']}
         """
         try:
             delete_sql_base = """delete from """ + str(table_name)
@@ -114,12 +114,13 @@ class Operator:
                     colname = i
                     value = conditions[colname]
                     if num == 0:
-                        adds = """ """ + str(colname) + """ = """ + value.__repr__()
+                        adds = """ """ + str(colname) + """ """ + value[0] + """ """ + value[1].__repr__()
                     else:
-                        adds = """ AND """ + str(colname) + """ = """ + value.__repr__()
+                        adds = """ AND """ + str(colname) + """ """ + value[0] + """ """ + value[1].__repr__()
                     delete_sql_base += adds
                     num += 1
                 delete_sql = delete_sql_base + """;"""
+                print("This is deletesql: ", delete_sql)
             # execute
             if self.connector.checkpoint.is_exist_table(table_name):
                 cursor_ob = Cursor(self.connector)
@@ -146,7 +147,10 @@ class Operator:
 
         except Exception as e:
             print("Failed: Empty table {} failed, raise Expections:")
+
             print("Error: ", e)
+
+
 
 
 
