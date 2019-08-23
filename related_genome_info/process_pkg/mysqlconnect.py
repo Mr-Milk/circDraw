@@ -1,5 +1,3 @@
-# Distributor is intended to read and check the validation of a file, keep yielding one line data to eloop.py, which contains processor and Insertor for each line.
-
 import mysql.connector
 import ijson
 import json
@@ -210,6 +208,11 @@ class Operator:
             else:
                 print('Aborted.')
         cursor_ob.terminate()
+
+
+    # auto-clean
+    def autoclean(self, timenow):
+
 
 
 
