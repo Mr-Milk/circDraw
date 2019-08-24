@@ -211,7 +211,7 @@ class Operator:
 
 
     # auto-clean
-    def autoclean(self, timenow):
+    #def autoclean(self, timenow):
 
 
 

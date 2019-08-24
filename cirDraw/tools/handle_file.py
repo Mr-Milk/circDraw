@@ -216,11 +216,20 @@ def process_file(file, assembly: str, file_type, task_id, bias=2):
                             print('demjson decode ERROR:', e)
                         for i in components:
                             i['mods'] = ujson.loads(i['mods'])
+                        with connection.cursor() as cur:
+                            cur.execute(f'select disease from circ_disease where assembly="{assembly}" and chr_num="{chr_num}" and start>={start-bias} and start<={start+bias} and end<={end+bias} and end>={end-bias};')
+                            disease = cur.fetchall()
+                        print(disease)
+                        if len(disease) == 0:
+                            disease = 'Unknown'
+                        else:
+                            disease = disease[0]
                         circ_json = {"start": int(circ[3]),
                                 "end": int(circ[4]),
                                 "source": "CIRCpedia V2",
                                 "gene": circ[0],
                                 "transcript": circ[1],
+                                "disease": disease,
                                 "components": components}
                         #print('This is gene of circ', circ[0])
 
@@ -268,12 +277,21 @@ def process_file(file, assembly: str, file_type, task_id, bias=2):
                 for i in components:
                     i['mods'] = ujson.loads(i['mods'])
                 #print('alter components')
+                with connection.cursor() as cur:
+                    cur.execute(f'select disease from circ_disease where assembly="{assembly}" and chr_num="{chr_num}" and start>={start-bias} and start<={start+bias} and end<={end+bias} and end>={end-bias};')
+                    disease = cur.fetchall()
+                if len(disease) == 0:
+                    disease = 'Unknown'
+                else:
+                    disease = disease[0]
+
                 try:
                     circ_on_gene[gene][1].append({"start": int(circ[1]),
                                                         "end": int(circ[2]),
                                                         "source": "circDraw_annotated",
                                                         "gene": gene,
                                                         "transcript": transcript,
+                                                        "disease": disease,
                                                         "components": components})
                 except:
                         # get gene info
@@ -288,6 +306,7 @@ def process_file(file, assembly: str, file_type, task_id, bias=2):
                                                             "source": "circDraw_annotated",
                                                             "gene": gene,
                                                             "transcript": transcript,
+                                                            "disease": disease,
                                                             "components": components}]]
                     except Exception as e:
                         print("Add circ error:", e)

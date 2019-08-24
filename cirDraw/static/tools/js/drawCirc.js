@@ -507,6 +507,7 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
     for (i = 0, up = exons.length; i < up; i++) {
         var start = exons[i].start,
             end = exons[i].end,
+            disease = exons[i].disease,
             exStartAngle = startAngle,
             exEndAngle = startAngle + ((end - start) / len) * 360,
             type = exons[i].type,
@@ -831,7 +832,8 @@ function drawArc(data) {
         infobox = infoBox(x, y, {
             name: $chr.text() + ' : ' + data.start + ' - ' + data.end,
             position: data.start + "-" + data.end,
-            source: data.source
+            source: data.source,
+            disease: data.disease,
         });
     }).mouseout(function () {
         Snap.animate(5, 1, function (val) {

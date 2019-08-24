@@ -187,6 +187,8 @@ $(document).ready(function () {
                             status = reportID[0].save_status;
                         //console.log(reportID, status);
                         if (status === false) {
+                            $('.lds-roller').remove();
+                            $('#upload-text').remove();
                             $('#processtip').html('<p>Processing Failed! Wrong file type or server failed. Please <a id="refresher" onclick="location.reload()"><i>refresh</i><i class="fas fa-redo-alt ml-1"></i></a></p>');
                             $('#refresher').hover(function(){
                                 $('#refresher').css({'cursor':'pointer', 'color': '#fed136'});

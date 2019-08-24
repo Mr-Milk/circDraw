@@ -20,6 +20,20 @@ class chromosome_length(models.Model):
         db_table = 'chromosome_length'
         managed = False
 
+class circ_disease(models.Model):
+    """Store known chromosome length, fixed by existed knowledge."""
+    id = models.AutoField(primary_key=True)
+    assembly = models.CharField(max_length=100)
+    chr_num = models.CharField(max_length=50)
+    start = models.IntegerField()
+    end = models.IntegerField()
+    name = models.CharField(max_length=255)
+    disease = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'circ_disease'
+        managed = False
+
 # Species genome
 _assembly = ['hg19', 'hg38', 'rn6', 'danRer11', 'sacCer3', 'mm10']
 
