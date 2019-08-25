@@ -72,16 +72,29 @@ class Operator:
     def terminate(self):
         self.connector.cnx.commit()
 
-    def get_objects(self, table_name, query_map):
+    def get_objects(self, table_name, query_map=[]):
         """Use the connection to get objects out of a table of database
-        >>> query_map = {'column_name': "some value", "column2": "values"}
+        >>> query_map = [['column_name', "=", "some value"], ["column2", "=!", "values"]]
         """
 
         if self.connector.checkpoint.is_exist_table(table_name):
             cursor_ob = Cursor(self.connector)
             cursor = cursor_ob.cursor
-            select = """SELECT * from """ + str(table_name) + """ WHERE """
-            """*** YOUR CODE HERE ***"""
+            if query_map == []:
+                select  = """SELECT * from """ + str(table_name)
+            else:
+                select = """SELECT * from """ + str(table_name) + """ WHERE """
+                index = 0
+                for i in query_map:
+                    select += str(i[0]) + str(i[1]) + i[2].__repr__()
+                    index += 1
+                    if index != len(query_map) - 1:
+                        select += """ AND """
+            select += """;"""
+            cursor.execute(select)
+            cursor_ob.terminate()
+            #return
+
 
     def drop_table(self, table_name):
         """Drop table by its name"""
@@ -211,7 +224,10 @@ class Operator:
 
 
     # auto-clean
-    #def autoclean(self, timenow):
+    def autoclean(self, timenow):
+        """Upon called, this function look into database for time, compare the one who is 72 hrs before created and delete it, and return a list of md5 that should be deleted."""
+        #
+
 
 
 
