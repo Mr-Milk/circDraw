@@ -145,7 +145,7 @@ def main(login_file_name, inp):
 
     elif inp == "clean":
         clean_box = ['tools_species_circrnas', 'tools_species_genome_exons_introns', 'tools_species_genome_genes', 'tools_species_genome_transcripts']
-        example_md5 = ''#'8bd10a77cbda74ed2513d2643a39b0bb'
+        example_md5 = '4672896d383d34c10a4561dddece79aa'#'8bd10a77cbda74ed2513d2643a39b0bb'
         path_box = ["../cirDraw/media/md5_data/"]
         empty_db(connector, clean_box)
         empty_dir(path_box)

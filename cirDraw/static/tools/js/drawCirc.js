@@ -973,8 +973,8 @@ function ring(opt) {
         }).click(function () {
             if (links !== undefined & links !== null) {
                 elink = links.split(',')
-                for (var i = 0, up = links.length; i < up; i++) {
-                    openNewTab(links[i]);
+                for (var i = 0, up = elink.length; i < up; i++) {
+                    openNewTab(elink[i]);
                 }
             }
         });
@@ -1004,8 +1004,9 @@ function ring(opt) {
             }
         }).click(function () {
             if (links !== undefined & links !== null) {
-                for (var i = 0, up = links.length; i < up; i++) {
-                    openNewTab(links[i]);
+                elink = links.split(',')
+                for (var i = 0, up = elink.length; i < up; i++) {
+                    openNewTab(elink[i]);
                 }
             }
         });

@@ -118,11 +118,16 @@ def find_exon_combo(chr_num: str, circStart: int, circEnd: int, assembly: str, b
     engine.dispose()
     connection = engine.raw_connection()
     try:
-        get_gene_script = f'select id from {assembly}_genome_genes where chr_num="{chr_num}" and start<={circStart+bias} and end>={circEnd-bias};'
+        get_gene_script_1 = f'select id from {assembly}_genome_genes where chr_num="{chr_num}" and start<={circStart+bias} and end>={circStart-bias};'
+        get_gene_script_2 = f'select id from {assembly}_genome_genes where chr_num="{chr_num}" and start<={circEnd+bias} and end>={circEnd-bias};'
         with connection.cursor() as cur:
-            cur.execute(get_gene_script)
-            get_gene = cur.fetchall()
-    except:
+            cur.execute(get_gene_script_1)
+            get_gene_1 = cur.fetchall()
+            cur.execute(get_gene_script_2)
+            get_gene_2 = cur.fetchall()
+        get_gene = get_gene_1 + get_gene_2
+    except Exception as e:
+        print('When get gene', e)
         return None, None, None
 
     transcripts_pool = []
@@ -130,12 +135,19 @@ def find_exon_combo(chr_num: str, circStart: int, circEnd: int, assembly: str, b
             #print(f'circRNA: {chr_num}|{circStart}-{circEnd}: \033[33mGene Not Found\033[0m')
         return None, None, None
     elif len(get_gene) > 0:
-
         for i in get_gene:
-            get_transcripts_script = f'select id from {assembly}_genome_transcripts where gene="{i[0]}" and start<={circStart+bias} and end>={circEnd-bias};'
-            with connection.cursor() as cur:
-                cur.execute(get_transcripts_script)
-                get_transcripts = cur.fetchall()
+            get_transcripts_script_1 = f'select id from {assembly}_genome_transcripts where gene="{i[0]}" and start<={circStart+bias} and end>={circStart-bias};'
+            get_transcripts_script_2 = f'select id from {assembly}_genome_transcripts where gene="{i[0]}" and start<={circEnd+bias} and end>={circEnd-bias};'
+            try:
+                with connection.cursor() as cur:
+                    cur.execute(get_transcripts_script_1)
+                    get_transcripts_1 = cur.fetchall()
+                    cur.execute(get_transcripts_script_2)
+                    get_transcripts_2 = cur.fetchall()
+                get_transcripts = get_transcripts_1 + get_transcripts_2
+                #print(get_transcripts)
+            except Exception as e:
+                print('When get transcripts', e)
             if len(get_transcripts) == 0:
                 pass
             else:
@@ -219,7 +231,7 @@ def process_file(file, assembly: str, file_type, task_id, bias=2):
                         with connection.cursor() as cur:
                             cur.execute(f'select disease from circ_disease where assembly="{assembly}" and chr_num="{chr_num}" and start>={start-bias} and start<={start+bias} and end<={end+bias} and end>={end-bias};')
                             disease = cur.fetchall()
-                        print(disease)
+                        #print(disease)
                         if len(disease) == 0:
                             disease = 'Unknown'
                         else:
@@ -261,8 +273,11 @@ def process_file(file, assembly: str, file_type, task_id, bias=2):
 
     for circ in unmap_circ:
         try:
-            combo, gene, transcript = find_exon_combo(circ[0], int(circ[1]), int(circ[2]), assembly)
-            #print(gene, transcript)
+            try:
+                combo, gene, transcript = find_exon_combo(circ[0], int(circ[1]), int(circ[2]), assembly)
+                #print(gene, transcript)
+            except Exception as e:
+                print('When calculating exon combo', e)
             if combo != None:
                 #print('before components')
                 try:
@@ -274,16 +289,20 @@ def process_file(file, assembly: str, file_type, task_id, bias=2):
                 except Exception as e:
                     print(e)
                 #print('After components')
-                for i in components:
-                    i['mods'] = ujson.loads(i['mods'])
-                #print('alter components')
-                with connection.cursor() as cur:
-                    cur.execute(f'select disease from circ_disease where assembly="{assembly}" and chr_num="{chr_num}" and start>={start-bias} and start<={start+bias} and end<={end+bias} and end>={end-bias};')
-                    disease = cur.fetchall()
-                if len(disease) == 0:
+                try:
                     disease = 'Unknown'
-                else:
-                    disease = disease[0]
+                    for i in components:
+                        if type(i['mods']) == str:
+                            i['mods'] = ujson.loads(i['mods'])
+                    #print('alter components')
+                    with connection.cursor() as cur:
+                        cur.execute(f'select disease from circ_disease where assembly="{assembly}" and chr_num="{chr_num}" and start>={start-bias} and start<={start+bias} and end<={end+bias} and end>={end-bias};')
+                        find_disease = cur.fetchall()
+                        #print(find_disease)
+                    if len(find_disease) > 0:
+                        disease = find_disease[0]
+                except Exception as e:
+                    print('When mapping disease',e)
 
                 try:
                     circ_on_gene[gene][1].append({"start": int(circ[1]),
@@ -311,7 +330,7 @@ def process_file(file, assembly: str, file_type, task_id, bias=2):
                     except Exception as e:
                         print("Add circ error:", e)
         except Exception as e:                
-            print(mp.current_process().name, "Failed to process one unmapped circ:", e)
+            print(mp.current_process().name, "Failed to process one unmapped circ:", circ[0], int(circ[1]), int(circ[2]), e)
     
     print('Mapped circ:', len(circ_on_gene))
     return circ_on_gene
@@ -363,7 +382,7 @@ def handle(config):
                     result[k][1] += v[1]
                 except:
                     result[k] = v
-        
+        #print('raw result:', circ_on_gene_all)
         print('Create result file:', path + config['NEW_FILE'])
         with open(path + config['NEW_FILE'], 'w+') as f:
             for _,v in result.items():
@@ -432,6 +451,7 @@ def handle(config):
                     cord[s[i]] += 1
             return cord
         try:
+            tmp_circ_len = {}
             if len(circRNA_length) > 16:
                 tmp_circ_len = count_dist(np.array(circRNA_length,dtype=np.float64),16)
             else:

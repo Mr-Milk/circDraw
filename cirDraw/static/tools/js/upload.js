@@ -31,7 +31,7 @@ $(document).ready(function () {
         $('#uploadlabel').hide();
         document.querySelector('.textarea').innerText = example_content;
         $('#submit').prop('disabled', true);
-        finishProcess('8bd10a77cbda74ed2513d2643a39b0bb');
+        finishProcess('4672896d383d34c10a4561dddece79aa');
     });
 
     function finishProcess(md5, display_time) {
@@ -144,6 +144,7 @@ $(document).ready(function () {
                 data: formdata,
                 processData: false,
                 contentType: false,
+                timeout: 5000000000,
             };
 
              /* else {
@@ -248,7 +249,7 @@ $(document).ready(function () {
                     function () {
                         $('.lds-roller').remove();
                         $('#upload-text').remove();
-                        $('#processtip').html('<p>Failed to upload, please check your connection and <a id="refresher" onclick="location.reload()"><i>refresh</i><i class="fas fa-redo-alt ml-1"></i></a></p>');
+                        $('#processtip').html('<p>Server timeout, please <a id="refresher" onclick="location.reload()"><i>refresh</i><i class="fas fa-redo-alt ml-1"></i></a></p>');
                         $('#refresher').hover(function(){
                             $('#refresher').css({'cursor':'pointer', 'color': '#fed136'});
                         },

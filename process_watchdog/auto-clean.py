@@ -1,21 +1,4 @@
 #!/usr/bin/python3
-#import datetime
-#import time
-#
-#path = "/home/circ/circDraw/process_watchdog/auto-clean.log"
-## reset
-#with open(path, 'w') as f:
-#    f.write(str(datetime.datetime.now()) + ": Restart")
-#    f.write('\n')
-#
-#while True:
-#    time.sleep(2)
-#    a = datetime.datetime.now()
-#    with open(path, 'a') as f:
-#        f.write(str(a))
-#        print(a)
-#        f.write('\n')
-#
 
 import mysqlconnect as mc
 import datetime, time
@@ -53,8 +36,6 @@ def cleanup_once(login_file_name, logfile):
     for i in md5s:
         path = '/home/circ/circDraw/cirDraw/media/md5_data/' + str(i)
         delete_file_outputlog(path, logfile)
-
-
 
 
 

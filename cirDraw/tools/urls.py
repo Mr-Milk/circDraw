@@ -6,7 +6,7 @@ from django.conf import settings
 urlpatterns = [
 
     # Render pages
-	url(r'^$', views.render_upload_page, name='tools'),
+    url(r'^$', views.render_upload_page, name='tools'),
     url(r'^display/(?P<md5>[0-9a-f-]+)$', views.render_display_page, name="render_display"),
 
     # Upload

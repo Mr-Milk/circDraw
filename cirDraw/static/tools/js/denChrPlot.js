@@ -433,6 +433,7 @@ $("#previous").click(function () {
     index = getIndex();
     if (index > 0) {
         blockRecord[densityFilter[index - 1].chr+densityFilter[index - 1].start].click();
+        currentClickBlock = $chr.text() + $('#js-input-from').text();
         /* preDen = densityFilter[index - 1];
         $('#geneNameSelect').val(preDen.name);
         $("#js-input-from").text(preDen.start);
@@ -450,6 +451,7 @@ $("#next").click(function () {
     // console.log('Next index:', index);
     if (index < densityFilter.length - 1) {
         blockRecord[densityFilter[index + 1].chr+densityFilter[index + 1].start].click();
+        currentClickBlock = $chr.text() + $('#js-input-from').text();
         /*
         $('#geneNameSelect').val(nextDen.name);
         $("#js-input-from").text(nextDen.start);
