@@ -117,6 +117,8 @@ $(document).ready(function () {
         }
     });
 
+    $("div#drop-select-file").dropzone({ url: "/tools/upload/" });
+
     $('#submit').click(function (e) {
         e.preventDefault();
         //e.stopPropagation();

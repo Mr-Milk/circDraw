@@ -60,7 +60,10 @@ $('#origin-data').click(function(){
     })
 })
 
-$geneid.on('DOMSubtreeModified', function(){
+var targetNode = document.querySelector('geneid');
+var config = { attributes: false, childList: true, subtree: true };
+
+function refreshCircPlot() {
     if ($geneid.html() === "") {
     }
     else {
@@ -85,8 +88,15 @@ $geneid.on('DOMSubtreeModified', function(){
             });
             //console.log("running callback");
             redraw(circRNAs, geneList);}, $name.val());
-    }
-});
+    }};
+// Create an observer instance linked to the callback function
+var observer = new MutationObserver(refreshCircPlot);
+// Start observing the target node for configured mutations
+observer.observe(targetNode, config);
+
+/*
+$geneid.on('DOMSubtreeModified', 
+});*/
 
 $scale.ionRangeSlider({
     type: "double",
@@ -151,14 +161,14 @@ var table = new Tabulator("#table", {
             }
         }
     },
-        {title:"SNP", field:"info.snp_id", formatter: function(cell){
+        /*{title:"SNP", field:"info.snp_id", formatter: function(cell){
             if (cell.getValue() === undefined || cell.getValue() === "") {
                 return '----';
             }
             else {
                 return cell.getValue();
             }
-        }, width: 140, headerFilter: true},
+        }, width: 140, headerFilter: true},*/
         {title:"Disease", field:"info.disease", /* width: 180,  */headerFilter: true, formatter: function(cell){
             if (cell.getValue() === undefined || cell.getValue() === "") {
                 return '----';
@@ -973,7 +983,9 @@ function ring(opt) {
         }).click(function () {
             if (links !== undefined & links !== null) {
                 elink = links.split(',')
+                console.log(elink)
                 for (var i = 0, up = elink.length; i < up; i++) {
+                    //openNewTab('https://www.ncbi.nlm.nih.gov/pubmed/'+ elink[i]);
                     openNewTab(elink[i]);
                 }
             }
@@ -1003,10 +1015,11 @@ function ring(opt) {
                 infobox.remove();
             }
         }).click(function () {
-            if (links !== undefined & links !== null) {
+            if (links !== undefined & links !== null & links.length != 0) {
+                console.log("RING:", links)
                 elink = links.split(',')
                 for (var i = 0, up = elink.length; i < up; i++) {
-                    openNewTab(elink[i]);
+                    openNewTab('https://www.ncbi.nlm.nih.gov/pubmed/' +elink[i]);
                 }
             }
         });
@@ -1019,7 +1032,7 @@ function addAnimation(obj, info) {
         infobox, links;
 
     if (info !== undefined && info.pubmed_id !== undefined) {
-        links = info.pubmed_id;
+        links = info.pubmed_id.split(',');
     }
 
     delete info['link'];
@@ -1040,9 +1053,10 @@ function addAnimation(obj, info) {
             infobox.remove();
         }
     }).click(function () {
-        if (links !== undefined & links !== null) {
+        console.log(links)
+        if (links !== undefined & links !== null & links.length != 0) {
             for (var i = 0, up = links.length; i < up; i++) {
-                openNewTab(links[i]);
+                openNewTab('https://www.ncbi.nlm.nih.gov/pubmed/' +links[i]);
             }
         }
     });

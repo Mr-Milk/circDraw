@@ -26,10 +26,18 @@
   </div>
   <div class="center">
     <div class="textarea" contenteditable="true">
-    <p style="color: grey">For Example Used Only</p>
+    <p style="color: grey">Only for displaying example data</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" id="example">Example</button>
   </div>
+
+  <!--
+  <div id="drop-select-file"></div>
+  <form action="/tools/upload/" class="dropzone">
+    <div class="fallback">
+      <input name="file" type="file" multiple />
+    </div>
+  </form>-->
 
   <div id="uploadarea" class="center">
 
@@ -69,6 +77,9 @@
 {% endblock %}
 
 {% block otherJS %}
+<!--
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css" integrity="sha256-e47xOkXs1JXFbjjpoRr1/LhVcqSzRmGmPqsrUQeVs+g=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js" integrity="sha256-cs4thShDfjkqFGk5s2Lxj35sgSRr4MRcyccmi0WKqCM=" crossorigin="anonymous"></script>
+-->
 <script src="{% static 'tools/js/upload.js' %}"></script>
-
 {% endblock %}

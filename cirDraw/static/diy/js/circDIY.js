@@ -1224,4 +1224,11 @@ $("#download-diy").click(function () {
         "href": window.URL.createObjectURL(blob),
         "download": "circ.svg"
     })
-})
+});
+
+$("#example-draw").click(function() {
+    circRNAs = {}
+    geneList = {}
+    exonList = {}
+    
+});

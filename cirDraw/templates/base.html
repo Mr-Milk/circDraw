@@ -29,6 +29,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css" rel="stylesheet">
   <link href="{% static 'base/css/agency.css' %}" rel="stylesheet">
   <link href="{% static 'base/css/circCirc.css' %}" rel="stylesheet">
+  <link href="{% static 'base/css/manual.css' %}" rel="stylesheet">
 
 </head>
 
@@ -46,7 +47,7 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav text-uppercase ml-auto">
         <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="/tools/display/4672896d383d34c10a4561dddece79aa">Example</a>
+            <a class="nav-link js-scroll-trigger" href="{% url 'example' %}">Example</a>
           </li>
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="{% url 'tools' %}">Upload</a>

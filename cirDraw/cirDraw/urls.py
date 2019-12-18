@@ -26,6 +26,7 @@ from tools import views as toolviews
 urlpatterns = [
 	#url(r'^$', current_datetime),
     url(r'^$', toolviews.render_index_page, name = 'home'),
+    url(r'^example/$', toolviews.view_example, name="example"),
     url(r'^admin/', admin.site.urls),
     url(r'^tools/', include('tools.urls')),
     url(r'^diy/', include('diy.urls')),
