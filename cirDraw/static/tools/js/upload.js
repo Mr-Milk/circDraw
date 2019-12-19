@@ -35,8 +35,8 @@ $(document).ready(function () {
     });
 
     function finishProcess(md5, display_time) {
-        $('#timer').remove();
-        $('#processtip').append('<p>Processing Completed (Used ' + display_time + ')! Please remember your result URL (Accessible for next 72h) ' + '<div class="input-group input-group-sm col-5 pl-1" id="reportURL">' +
+        //$('#timer').remove();
+        $('#processtip').append('<p>Uploading Completed! Please remember your result URL (Accessible for next 72h) ' + '<div class="input-group input-group-sm col-5 pl-1" id="reportURL">' +
             '<input type="text" class="form-control" value="https://www.circdraw.com/tools/display/' + md5 + '" id="copy-input">' +
             '<div class="input-group-append">' +
             '<button class="btn btn-primary btn-sm" id="copy-button" data-toggle="tooltip" data-placement="bottom" title="Copied!">' +
@@ -117,7 +117,7 @@ $(document).ready(function () {
         }
     });
 
-    $("div#drop-select-file").dropzone({ url: "/tools/upload/" });
+    //$("div#drop-select-file").dropzone({ url: "/tools/upload/" });
 
     $('#submit').click(function (e) {
         e.preventDefault();
@@ -168,8 +168,9 @@ $(document).ready(function () {
 
             $('#submit').text('✓ Submitted').prop('disabled', true);
             $('#cancel').hide();
-            $('#processtip').after('<div class="lds-roller d-inline-block"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><p class="d-inine-block" id="upload-text">Processing...</p>');
-            var sec = 0;
+            
+            $('#processtip').after('<div class="lds-roller d-inline-block"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><p class="d-inine-block" id="upload-text">Uploading...</p>');
+            /*var sec = 0;
             var timer = setInterval(function(){
                 if (sec < 60) {
                     $('#upload-text').text('Processing... '+ sec +' s');
@@ -181,18 +182,19 @@ $(document).ready(function () {
                     $('#upload-text').text('Processing... '+ display_min + 'm'+ display_sec +'s');
                     sec++;
                 }
-            }, 1000);
+            }, 1000);*/
 
             $.ajax(ajaxParameters)
                 .done(
                     function (reportID) {
                         var md5 = reportID[0].md5,
                             status = reportID[0].save_status;
-                        //console.log(reportID, status);
+
+                        console.log(reportID, md5, status);
                         if (status === false) {
                             $('.lds-roller').remove();
                             $('#upload-text').remove();
-                            $('#processtip').html('<p>Processing Failed! Wrong file type or server failed. Please <a id="refresher" onclick="location.reload()"><i>refresh</i><i class="fas fa-redo-alt ml-1"></i></a></p>');
+                            $('#processtip').html('<p>Processing Failed! Please <a id="refresher" onclick="location.reload()"><i>refresh</i><i class="fas fa-redo-alt ml-1"></i></a></p>');
                             $('#refresher').hover(function(){
                                 $('#refresher').css({'cursor':'pointer', 'color': '#fed136'});
                             },
@@ -200,19 +202,27 @@ $(document).ready(function () {
                                 $('#refresher').css('color', 'black');
                             });
                         }
-                        else if (status == 'Finished') {
+                        else if (status == "Finished" || status === "Running") {
                             $('.lds-roller').remove();
                             $('#upload-text').remove();
-                            clearInterval(timer);
-                            if (sec < 60) {
-                                var display_time = sec + 's';
-                            }
-                            if (sec >= 60) {
-                                var display_time = Math.floor(sec/60) + 'm' + sec % 60 + 's';
-                            }
-                            finishProcess(md5, display_time);
+                            finishProcess(md5);
                         }
-                        else if (status === true || status === "Running") {
+                        else if (status === true) {
+                            $('.lds-roller').remove();
+                            $('#upload-text').remove();
+                            finishProcess(md5);
+                            $.getJSON("/tools/run/", {
+                                'caseid': md5
+                            }).done(function(processResult){
+                                if (processResult[0].call_process === true) {
+                                    pass
+                                } else if (processResult[0].call_process === false) {
+                                    $('#processtip').text(processResult[0].error + 'Please <a id="refresher" onclick="location.reload()"><i>refresh</i><i class="fas fa-redo-alt ml-1"></i></a>');
+                                }
+                            });
+                            
+                        }
+                        /*else if (status === true || status === "Running") {
                             get_status = setInterval(function () {
                                 $.getJSON("statusfile", {
                                     'caseid': md5
@@ -246,7 +256,7 @@ $(document).ready(function () {
                                     }
                                 });
                             }, 1000);
-                        }
+                        }*/
                     }).fail(
                     function () {
                         $('.lds-roller').remove();

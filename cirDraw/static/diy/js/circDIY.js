@@ -494,10 +494,11 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
         else {
             exonID = type + ':' + exons[i].realStart + '-' + exons[i].realEnd;
         }
-        console.log(exonList, exonID);
+        //console.log(exonList, exonID);
 
         color = exonList[exonID];
 
+        if (mods!= undefined & mods!= null) {
         for (j = 0, up_j = mods.length; j < up_j; j++) {
             draw_modifications = mods[j].start >= start && mods[j].end <= end
             if (draw_modifications) {
@@ -562,6 +563,7 @@ function drawCircRNA(exonComponents, circStart, circEnd) {
                 }));
             }
         }
+    };
 
         if (type === 'exon') {
             circRNA.add(ring({
@@ -1227,8 +1229,24 @@ $("#download-diy").click(function () {
 });
 
 $("#example-draw").click(function() {
-    circRNAs = {}
+    circRNAs = {/*"SLF1:93954374-94075141":{
+        name:"SLF1",
+        start:93954374,
+        end:94075141,
+        exons:[
+        {"type":"exon","start":93998003,"end":93998056,"strand":"+","id":"ENSE00003461409.1"},{"type":"exon","start":93999455,"end":93999613,"strand":"+","id":"ENSE00003576048.1"},{"type":"exon","start":93988977,"end":93989126,"strand":"+","id":"ENSE00003572971.1"},{"type":"exon","start":93990335,"end":93990457,"strand":"+","id":"ENSE00002203241.1"},{"type":"exon","start":93985159,"end":93985302,"strand":"+","id":"ENSE00003585622.1"},{"type":"exon","start":93987407,"end":93987550,"strand":"+","id":"ENSE00003489970.1"},{"type":"exon","start":93978978,"end":93979140,"strand":"+","id":"ENSE00002286007.1"}
+       ]
+       },*/
+       "CPLANE1:37106330-37249530":{
+           "start":37122531,
+         "end":37164429,
+         "name":"CPLANE1",
+         "exons":[
+           {"type":"exon","start":37125346,"end":37125542,"strand":"-","id":"ENSE00002079764.1"},{"type":"exon","start":37138822,"end":37138950,"strand":"-","id":"ENSE00003464387.1"},{"type":"exon","start":37153842,"end":37154095,"strand":"-","id":"ENSE00003787048.1"},{"type":"exon","start":37162567,"end":37162668,"strand":"-","id":"ENSE00003292210.1"},{"type":"exon","start":37148283,"end":37148370,"strand":"-","id":"ENSE00003631438.1"},{"type":"exon","start":37158326,"end":37158447,"strand":"-","id":"ENSE00003656390.1"},{"type":"exon","start":37157415,"end":37157522,"strand":"-","id":"ENSE00003676906.1"},{"type":"exon","start":37122532,"end":37122590,"strand":"-","id":"ENSE00003626698.1"},{"type":"exon","start":37157772,"end":37157970,"strand":"-","id":"ENSE00003680446.1"},{"type":"exon","start":37164375,"end":37164429,"strand":"-","id":"ENSE00003354710.1"},{"type":"exon","start":37142412,"end":37142582,"strand":"-","id":"ENSE00003475868.1"}]
+       }
+       };
     geneList = {}
-    exonList = {}
+
+    redraw()
     
 });

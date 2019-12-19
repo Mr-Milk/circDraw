@@ -11,11 +11,11 @@ urlpatterns = [
 
     # Upload
     url(r'^upload/$', views.save_to_files, name='upload&save'),
+    url(r'^run/$', views.run_call, name='run'),
 
 
     # Check Status
     url(r'^statusfile/$', views.check_status),
-
     # Ajax call functions For Displays
     url(r'^display/chrLen/$', views.handle_chrLen, name="tools_chrLen"),
     url(r'^display/density/$', views.handle_density, name="tools_density"),

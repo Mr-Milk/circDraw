@@ -1467,3 +1467,10 @@ Traceback (most recent call last):
   File "/home/circ/circDraw/cirDraw/tools/handle_file.py", line 261, in process_file
     info = v[0].append(v[1])
 TypeError: can only join an iterable
+usage: manage.py runserver [-h] [--ipv6] [--nothreading] [--noreload]
+                           [--nostatic] [--insecure] [--version]
+                           [-v {0,1,2,3}] [--settings SETTINGS]
+                           [--pythonpath PYTHONPATH] [--traceback]
+                           [--no-color] [--force-color]
+                           [addrport]
+manage.py runserver: error: unrecognized arguments: dev-log.out

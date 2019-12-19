@@ -34,13 +34,13 @@ def render_display_page(request, md5):
     if case.exists():
         #print("check:",case)
         code = case[0]['status']
-        #print('Render display2:',case[0]['status'])
-        if code != 200:
-            return render(request, 'tools/HTTP404.html', context)
+        print('Render display2:', code, type(code))
+        if code == 200:
+            return render(request, 'tools/tools.html', context)
         elif code == 202:
             return render(request, 'tools/wait.html', context)
         else:
-            return render(request, 'tools/tools.html', context)
+            return render(request, 'tools/HTTP404.html', context)
     else:
         print('This md5 not exist.')
         return render(request, 'tools/HTTP404.html', context)
@@ -51,86 +51,76 @@ def render_display_page(request, md5):
 @csrf_exempt
 def save_to_files(request):
     if request.method == "POST":
-        form = UploadFileForm(data=request.POST, files=request.FILES)
-        if form.is_valid():
-            # get md5 value. Note: consider (file + parameters) as a whole md5
-            form_file = form.cleaned_data['file']
+        try:
+            form = UploadFileForm(data=request.POST, files=request.FILES)
+            if form.is_valid():
+                # get md5 value. Note: consider (file + parameters) as a whole md5
+                form_file = form.cleaned_data['file']
 
-            str_parameters = form.cleaned_data['parameters']
+                str_parameters = form.cleaned_data['parameters']
 
-            parameters = json.loads(str_parameters)
+                parameters = json.loads(str_parameters)
 
-            b_file = form_file.read()
-            file_parameters = str_parameters.encode('utf-8') + b_file
-            md5 = hashlib.md5(file_parameters).hexdigest()
-
-
-            sub_base = "md5_data/"
-            path = sub_base + md5
-
-            # check if the file exists
-            md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
-            print("Md5 existed in DB?: ", md5ob)
-
-            if md5ob:
-                status_old = md5ob.status
-                print("existed in databse, code: ", status_old)
-                time_ = md5ob.time
-                if status_old == 200:
-                    return_json = [{'md5': md5, 'time': time_, 'save_status': 'Finished'}]
-                    return JsonResponse(return_json, safe=False)
-                ##elif status_old == 201:
-                ##    return_json = [{'md5': md5, 'time': time_, 'save_status': True}]
-                ##    return JsonResponse(return_json, safe=False)
-                elif status_old == 202:
-                    return_json = [{'md5': md5, 'time': time_, 'save_status': "Running"}]
-                    return JsonResponse(return_json, safe=False)
+                b_file = form_file.read()
+                file_parameters = str_parameters.encode('utf-8') + b_file
+                md5 = hashlib.md5(file_parameters).hexdigest()
 
 
-            # check if the file existed in filesystem
-            if md5ob:
-                print("Previous saving failed, Re-saving now...")
-            if default_storage.exists(path):
-                default_storage.delete(path)
+                sub_base = "md5_data/"
+                path = sub_base + md5
 
-            time_ = time.time()
-            return_json = [{'md5': md5, 'time': time_}]
+                # check if the file exists
+                md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
+                print("Md5 existed in DB?: ", md5ob)
 
-            # store md5 value and parameters into database, store file
-            print("saving upload file...")
-            path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
-            file_path = settings.MEDIA_ROOT + '/' + path
-            # distribute parameters details
-            file_type = parameters['filetype']
-            species = parameters['species']
-
-
-            # insert to data base the info of file, paramerter and time
-            # initial code 202
-            print("create model instance")
-            a = UploadParametersMD5(md5 = md5, status = 202, file_type = file_type, species = species, time = time_, path = path)
-            a.save()
+                if md5ob:
+                    status_old = md5ob.status
+                    print("existed in databse, code: ", status_old)
+                    time_ = md5ob.time
+                    if status_old == 200:
+                        return_json = [{'md5': md5, 'time': time_, 'save_status': 'Finished'}]
+                        return JsonResponse(return_json, safe=False)
+                    ##elif status_old == 201:
+                    ##    return_json = [{'md5': md5, 'time': time_, 'save_status': True}]
+                    ##    return JsonResponse(return_json, safe=False)
+                    elif status_old == 202:
+                        return_json = [{'md5': md5, 'time': time_, 'save_status': "Running"}]
+                        return JsonResponse(return_json, safe=False)
 
 
-            # calling for process
-            save_status = call_process(file_path, md5, parameters)
-            if save_status:
-                ss_status = True
-                a.status = 200
+                # check if the file existed in filesystem
+                if md5ob:
+                    print("Previous saving failed, Re-saving now...")
+                if default_storage.exists(path):
+                    default_storage.delete(path)
+
+                time_ = time.time()
+                return_json = [{'md5': md5, 'time': time_}]
+
+                # store md5 value and parameters into database, store file
+                print("saving upload file...")
+                path = default_storage.save(sub_base + md5, form_file) # note this path doesnot include the media root, e.g. it is actually stored in "media/data/xxxxxx"
+                file_path = settings.MEDIA_ROOT + '/' + path
+                # distribute parameters details
+                file_type = parameters['filetype']
+                species = parameters['species']
+
+            
+
+                # insert to data base the info of file, paramerter and time
+                # initial code 202
+                print("create model instance")
+                a = UploadParametersMD5(md5 = md5, status = 202, file_type = file_type, species = species, time = time_, path = file_path)
                 a.save()
 
-            else:
-                ss_status = False
-                a.status = 404
-                print("MD5 {} status 404! Call process return False...".format(md5))
-                print("Save data into database failed, deleting uploaded file now...")
-                default_storage.delete(path)
-                a.save()
+                return_json = [{'md5': md5, 'time': time_, 'save_status': True}]
 
-            return_json = [{'md5': md5, 'time': time_, 'save_status': ss_status}]
-
-
+                return JsonResponse(return_json, safe=False)
+        except Exception as e:
+            print("Save to file Failed: ", e)
+            return_json = [{'md5':"", 'time': 0.0, 'save_status': False}]
             return JsonResponse(return_json, safe=False)
+        
 
 
 def call_process(file_path, md5, parameters):
@@ -159,6 +149,42 @@ def call_process(file_path, md5, parameters):
 
 ######### END of save_to_files #########
 
+# ======================== RUN ==============================
+@csrf_exempt
+def run_call(request):
+    # run save fille for 
+    if request.method == 'GET':
+        md5 = request.GET['caseid']
+        try:
+            md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
+            parameters = {}
+            # md5 = md5, status = 202, file_type = file_type, species = species, time = time_, path = path 
+            parameters['filetype'] = md5ob.file_type
+            parameters['species'] = md5ob.species
+            filepath = md5ob.path
+            # call process
+            save_status = call_process(filepath, md5, parameters)
+            if save_status:
+                ss_status = True
+                md5ob.status = 200
+                md5ob.save()
+                return JsonResponse([{"call_process": True, "error": ""}], safe=False)
+
+            else:
+                ss_status = False
+                print("MD5 {} status 404! Call process return False...".format(md5))
+                print("Save data into database failed, deleting uploaded file now...")
+                default_storage.delete(filepath)
+                md5ob.delete()
+                return JsonResponse([{"call_process": False, "error": "Wrong File Input..."}], safe=False)
+        except Exception as e:
+            print("Run call failed: ", e)
+            return JsonResponse([{"call_process": False, "error": "Server Error..."}], safe=False)
+            
+
+
+
+
 
 
 
@@ -171,8 +197,9 @@ def check_status(request):
         try:
             md5ob = get_object_or_None(UploadParametersMD5, md5=md5)
             process_status = md5ob.status
+            time_ = md5ob.time
             print("STATUS CODE: ", process_status)
-            return JsonResponse([{'status': process_status}], safe=False)
+            return JsonResponse([{'status': process_status,'time': time_}], safe=False)
         except:
             print("check status error: No object returned or attribute is not correct")
             return JsonResponse([{'status': 404}], safe=False)
@@ -313,8 +340,7 @@ def download_UserFile(request):
         print('Get from database')
         for r in all_results:
             writer.writerow([r.gene_id,r.chr_num, r.start, r.end, r.name, r.gene_type, r.circ_on_gene_all, r.circ_on_num])
-
-    return response
+        return response
 
 # ===================== View Example =================================
 
@@ -322,3 +348,6 @@ def view_example(request):
     # redirect to the example page:
     example_md5 = "4672896d383d34c10a4561dddece79aa"
     return redirect("/tools/display/" + example_md5)
+
+
+
