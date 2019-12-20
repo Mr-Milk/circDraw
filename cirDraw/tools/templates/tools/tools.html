@@ -16,6 +16,7 @@
             <div class="col-sm-10 text-center">
 
                 <h1>circDraw analysis report</h1>
+                <p class="section-subheading text-muted" id="created-time"></p>
                 <a id='start-tutorial' style='font-size: 10pt; color: #fed136; cursor: pointer;'><i class="far fa-question-circle"></i><u>How to use </u></a>
                 <br>
                 <a id='origin-data' style='font-size: 10pt; color: #fed136; cursor: pointer;'><i class="fas fa-download"></i><u>Result data </u></a>
@@ -223,6 +224,15 @@
             target: navSelector
         });
     });
+    var url = $(location).attr('href').split("/"),
+    caseID = url[url.length - 1].split("#")[0];
+    $.getJSON("/tools/statusfile/", {'caseid': caseID}).done(
+        function(status){
+            //console.log(status[0].time)
+            var created_time = new Date(Math.round(status[0].time * 1000)).toGMTString();
+            $("#created-time").text(created_time);
+        });
+    
 </script>
 
 {% endblock %}

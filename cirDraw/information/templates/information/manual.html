@@ -34,19 +34,42 @@
         </br>
             <div align="middle"><img class="manual-img" src="{% static 'base/img/example.png' %}" width="70%"></div> 
         </br>
-                <li>You can also click <a class="btn btn-primary" href="{% url 'example' %}">Example</a> button to load preloaded data to fast view on what circDraw can provided.</li>
+                <li>You can also click <a class="btn btn-primary" href="{% url 'example' %}">Example</a> button to load preloaded data to fast view on what circDraw can provide.</li>
             </ul>
         </br>
-            
+            <h3 class="manual">Report analysis</h3>
+            <hr>
+            <p>By searching and comparing the database of existed epigenomic and genomic database, we are able to provide a thorough analysis about the circle RNA you are interested in.</p>
             <h4 class="manual">CircRNA density distribution analysis</h4> </br>
             <p>By processing the uploaded file in backend, we provide genome wide circle RNA density distribution inspection. Choose your interesting region and then click on it to display it in detailed map. <p>
             <p><b>Be Careful: </b>Most of the region contain only one circRNA, so it will be a bit messy if you don't set the limit properly.</p>
             <div align="middle"><img class="manual-img" src="{% static 'base/img/density_nofilter.png' %}" width="70%"></div> 
 
-            <hr> 
+            <br> 
 
-        
-
+            <p>When we set the limit to 15, the plot become much clear, it's easily for you to identify the hub gene with most isoforms.</p>
+            <div align="middle"><img class="manual-img" src="{% static 'base/img/density_filter_15.png' %}" width="70%"></div> 
+            </br></br>
+            <h4 class="manual">Detailed map of circRNA region.</h4> </br>
+            <p>When the user choose no region from the density map, detailed map will display the first density region. Using the selector to select which gene or genes that you are interesting in. CircDraw provided epigenetic annotation for human circRNA. The data is from <a href="http://rna.sysu.edu.cn/rmbase/">RMBase</a>.</p>
+            <br>
+            <div align="middle"><img class="manual-img" src="{% static 'base/img/isoformplot_ttn_m6A.png' %}" width="70%"></div> 
+            <br>
+            <br>
+            <ul>
+                <li><strong>Black curve line</strong>: The back-splicing of circRNA, link to the start and end.</li><br>
+                <li><strong>Gene Block</strong> and <strong>Exon Block</strong>: Click to display the name, if the name tags are overlapped, you can drag the name tags.</li><br>
+                <li><strong>circRNA</strong>: Display when clicking on the black curve line. 
+                    <ul>
+                        <br>
+                        <li>Epigenetic Information: <a class="manual" href="https://en.wikipedia.org/wiki/N6-Methyladenosine" target="_blank">m6A</a>, <a href="">m1C</a>m1C, m5C</li>
+                        <br>
+                        <li>Genomic Informatic: SNP, ORF, MRE</li>
+                    </ul>
+                </li></br>
+                <li><strong>Epigenomic/genomic Information</strong>: Possible epigenetic marker and disease related SNP are processed and displayed on the circle. Click on modification sites to check out NCBI documentation.</li>
+            </ul>
+            <hr>
 
         </div>
         </div>

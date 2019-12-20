@@ -119,18 +119,6 @@ Yes, we will add more species gradually. But for epigenetic annotation, it depen
 
 ### Used library
 
-#### Backend
-- Python 3: https://www.python.org/
-- Django: https://www.djangoproject.com/
-- MySQL: https://www.mysql.com/cn/
-- mysqlclient-python: https://github.com/PyMySQL/mysqlclient-python
-- PyMySQL: https://pypi.python.org/pypi/PyMySQL
-- ijson: https://pypi.org/project/ijson/
-
-#### Algorithm
-- NumPy: http://www.numpy.org/
-- scikit-learn: http://scikit-learn.org/stable/
-
 #### Frontend
 - jQuery: https://jquery.com/
 - Snap.svg: http://snapsvg.io/
@@ -138,6 +126,18 @@ Yes, we will add more species gradually. But for epigenetic annotation, it depen
 - DataTables: https://datatables.net/
 - BioCircos: http://bioinfo.ibp.ac.cn/biocircos/
 - ECharts: https://www.echartsjs.com/
+
+#### Backend
+- Python: https://www.python.org/
+- Django: https://www.djangoproject.com/
+- MySQL: https://www.mysql.com/cn/
+- mysqlclient-python: https://github.com/PyMySQL/mysqlclient-python
+- PyMySQL: https://pypi.python.org/pypi/PyMySQL
+- NumPy: https://www.numpy.org/
+- Interval tree: https://pypi.org/project/intervaltree/
+
+#### Data Processing
+- ijson: https://pypi.org/project/ijson/
 
 #### Deployment 
 - Nginx: https://nginx.org/en/
@@ -150,8 +150,8 @@ Yes, we will add more species gradually. But for epigenetic annotation, it depen
 
 - Citation: 
 - Contact
-  - Milk zhengym28@mail2.sysu.edu.cn
-  - JackLi litq7@mail2.sysu.edu.cn
+  - ![Yimin Zheng](https://github.com/Mr-Milk)\* zhengym28@mail2.sysu.edu.cn
+  - ![Tianqin Li](https://github.com/Crazy-Jack)\* litq7@mail2.sysu.edu.cn
+  - _\*These author contibuted equally.
 
-
-Copyright: Qu Lab, School of Life School, Sun Yat-sen University
+Copyright: Qu Lab, School of Life Science, Sun Yat-sen University, Guangzhou, CHINA.

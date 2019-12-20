@@ -217,7 +217,7 @@ $(document).ready(function () {
                                 if (processResult[0].call_process === true) {
                                     pass
                                 } else if (processResult[0].call_process === false) {
-                                    $('#processtip').text(processResult[0].error + 'Please <a id="refresher" onclick="location.reload()"><i>refresh</i><i class="fas fa-redo-alt ml-1"></i></a>');
+                                    $('#processtip').text("<p>" + processResult[0].error + 'Please <a id="refresher" onclick="location.reload()"><i>refresh</i><i class="fas fa-redo-alt ml-1"></i></a></p>');
                                 }
                             });
                             
