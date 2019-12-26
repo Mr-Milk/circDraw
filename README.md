@@ -4,7 +4,9 @@
 
 An online circRNA visualization, analysis tool with epigentic annotation.
 
-Using [circDraw](http://www.circdraw.com)
+Using circDraw at [https://www.circdraw.com](https://www.circdraw.com)
+
+Additionally, a stand alone program is also avaible [@circDraw-py](https://github.com/Mr-Milk/circDraw-py)
 
 ## Introduction
 
