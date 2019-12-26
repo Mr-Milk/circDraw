@@ -30,8 +30,8 @@ var modColor = {
     RBP: '#006284'
 };
 
-var pU_map = ['m5Um','Am','Cm','Gm','Tm','Um'],
-    OMe_map = ['N', 'Y'];
+var pU_map = ['N', 'Y'],
+    OMe_map = ['m5Um','Am','Cm','Gm','Tm','Um'];
 
 var colorIndex = 0;
 

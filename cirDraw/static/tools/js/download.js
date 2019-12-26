@@ -1,13 +1,15 @@
 $("#dendownload").click(function () {
+    console.log("Download den")
     var filetype = $("#fileType_2").val();
+    console.log(filetype)
     var den = Snap("#svg2");
     if (filetype == "SVG") {
-        //console.log('dendownload SVG');
+        console.log('dendownload SVG');
         var saveSvgAsSvg = den.paper.toString(),
             blob = new Blob([saveSvgAsSvg], {
                 type: 'text/plain'
             });
-        //console.log(saveSvgAsSvg, blob);
+        console.log(saveSvgAsSvg, blob);
         $("#dendownload").attr({
             "href": window.URL.createObjectURL(blob),
             "download": "circ.svg"
@@ -27,12 +29,12 @@ $("#dendownload").click(function () {
         doc.save("circ.pdf");
     }
 
-    $("#dendownload").attr({
-        "href": "",
-        "download": ""
-    });
+    //$("#dendownload").attr({
+    //    "href": "",
+    //    "download": ""
+    //});
 
-    $('#svg2').append(c);
+    //$('#svg2').append(c);
 });
 
 $("#drawdownload").click(function () {

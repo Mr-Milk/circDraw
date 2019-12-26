@@ -51,6 +51,8 @@ def render_display_page(request, md5):
 @csrf_exempt
 def save_to_files(request):
     if request.method == "POST":
+        print("POST: ", request.POST)
+        print("FILES: ", request.FILES)
         try:
             form = UploadFileForm(data=request.POST, files=request.FILES)
             if form.is_valid():
@@ -58,10 +60,15 @@ def save_to_files(request):
                 form_file = form.cleaned_data['file']
 
                 str_parameters = form.cleaned_data['parameters']
-
+                print(str_parameters)
+                print("OK here0")
                 parameters = json.loads(str_parameters)
+                print(parameters)
+                print("OK here1")
+
 
                 b_file = form_file.read()
+                print("OK here 2")
                 file_parameters = str_parameters.encode('utf-8') + b_file
                 md5 = hashlib.md5(file_parameters).hexdigest()
 
@@ -114,8 +121,12 @@ def save_to_files(request):
                 a.save()
 
                 return_json = [{'md5': md5, 'time': time_, 'save_status': True}]
-
                 return JsonResponse(return_json, safe=False)
+            else:
+                print("Form not valid")
+                print("Error: ", form.errors)
+
+
         except Exception as e:
             print("Save to file Failed: ", e)
             return_json = [{'md5':"", 'time': 0.0, 'save_status': False}]
