@@ -53,6 +53,8 @@ Upload instruction:
 ### circRNA density distribution analysis
 By processing the uploaded file in backend, you will be able to __interactively__ view the circRNA density distribution on chromosome. Choose your interesting region and then click on it to display it in detailed map. Most of the region contain only 1 circRNA, so it will be a bit messy if you don't set the limit.
 
+Click [here](https://www.circdraw.com/example) to try it yourself.
+
 <p align="center"><img src="src/density_nofilter.png" alt="300" width="cover"></p>
 
 
@@ -152,8 +154,8 @@ Yes, we will add more species gradually. But for epigenetic annotation, it depen
 
 - Citation: 
 - Contact
-  - ![Yimin Zheng](https://github.com/Mr-Milk)\* zhengym28@mail2.sysu.edu.cn
-  - ![Tianqin Li](https://github.com/Crazy-Jack)\* litq7@mail2.sysu.edu.cn
+  - [Yimin Zheng](https://github.com/Mr-Milk)\* zhengym28@mail2.sysu.edu.cn
+  - [Tianqin Li](https://github.com/Crazy-Jack)\* litq7@mail2.sysu.edu.cn
   - _\*These author contibuted equally.
 
 Copyright: Qu Lab, School of Life Science, Sun Yat-sen University, Guangzhou, CHINA.
