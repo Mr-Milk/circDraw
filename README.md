@@ -91,6 +91,7 @@ When the user choose no region from the density map, detailed map will display t
 - Top 20 gene with most circRNA isoforms
 
 <img src="src/toplist.png">
+
 ### Support for Further development
 - Scalibility was fully considered from the beginning of project, it includes:
 	- Extension of Upload Data Format. See details here.
